@@ -1,0 +1,101 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "all": "All",
+    "active": "Active",
+    "passive": "Inactive",
+    "total": "Total",
+    "date": "Date",
+    "status": "Status",
+    "actions": "Actions",
+    "noData": "No data found"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "customers": "Customers",
+    "vehicles": "Vehicles",
+    "services": "Service Orders",
+    "appointments": "Appointments",
+    "inventory": "Inventory",
+    "finances": "Finance",
+    "mechanics": "Mechanics",
+    "suppliers": "Suppliers",
+    "quotes": "Quotes",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "locations": "Locations"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome, {name}",
+    "activeServices": "Active Services",
+    "completedToday": "Completed Today",
+    "pendingInvoices": "Pending Invoices",
+    "lowStock": "Low Stock"
+  },
+  "customers": {
+    "title": "Customers",
+    "new": "New Customer",
+    "individual": "Individual",
+    "corporate": "Corporate",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "balance": "Balance",
+    "vehicles": "Vehicles"
+  },
+  "services": {
+    "title": "Service Orders",
+    "new": "New Service Order",
+    "status": {
+      "PENDING": "Pending",
+      "IN_PROGRESS": "In Progress",
+      "WAITING_APPROVAL": "Awaiting Approval",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    }
+  },
+  "auth": {
+    "login": "Sign In",
+    "logout": "Sign Out",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot Password",
+    "twoFactor": "Two-Factor Authentication",
+    "enterCode": "Enter 6-digit code"
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "security": "Security",
+    "notifications": "Notifications",
+    "subscription": "Subscription",
+    "twoFactor": "Two-Factor Authentication",
+    "language": "Language"
+  },
+  "offline": {
+    "title": "No Internet Connection",
+    "message": "Your connection was lost. Please check your internet connection.",
+    "retry": "Try Again"
+  },
+  "formats": {
+    "currency": "USD",
+    "locale": "en-US",
+    "dateFormat": "MM/DD/YYYY",
+    "timeFormat": "hh:mm a"
+  }
+}

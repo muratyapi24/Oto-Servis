@@ -1,0 +1,5 @@
+# Fatura, Odeme ve Muhasebe Entegrasyonu - Tasarim Belgesi
+
+## Genel Bakis
+
+Bu belge, MS Oto Servis SaaS platformunun **Fatura, Odeme ve Muhasebe Entegrasyonu** modulunun teknik tasarimini tanimlar.

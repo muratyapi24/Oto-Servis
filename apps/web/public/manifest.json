@@ -1,0 +1,42 @@
+{
+  "name": "MS Oto Servis",
+  "short_name": "BST Servis",
+  "description": "Profesyonel oto servis yönetim platformu",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#1e40af",
+  "background_color": "#ffffff",
+  "lang": "tr",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": [
+    "business",
+    "productivity"
+  ],
+  "shortcuts": [
+    {
+      "name": "Yeni Servis",
+      "url": "/dashboard/services/new",
+      "description": "Yeni servis emri oluştur"
+    },
+    {
+      "name": "Randevular",
+      "url": "/dashboard/appointments",
+      "description": "Randevu takvimini görüntüle"
+    }
+  ]
+}

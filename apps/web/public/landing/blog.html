@@ -1,0 +1,390 @@
+﻿<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-surface": "#121c2a",
+            "on-primary-container": "#eeefff",
+            "primary": "#004ac6",
+            "on-primary-fixed-variant": "#003ea8",
+            "inverse-primary": "#b4c5ff",
+            "surface-container-low": "#eff4ff",
+            "secondary-fixed-dim": "#4edea3",
+            "on-background": "#121c2a",
+            "on-tertiary-fixed": "#341100",
+            "tertiary-fixed": "#ffdbca",
+            "on-tertiary-fixed-variant": "#783200",
+            "inverse-surface": "#27313f",
+            "surface-bright": "#f8f9ff",
+            "surface-container-highest": "#d9e3f6",
+            "secondary-container": "#6cf8bb",
+            "on-secondary-fixed-variant": "#005236",
+            "on-tertiary": "#ffffff",
+            "primary-container": "#2563eb",
+            "inverse-on-surface": "#eaf1ff",
+            "secondary": "#006c49",
+            "on-secondary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container": "#e6eeff",
+            "primary-fixed": "#dbe1ff",
+            "error": "#ba1a1a",
+            "surface": "#f8f9ff",
+            "tertiary-fixed-dim": "#ffb690",
+            "on-primary": "#ffffff",
+            "primary-fixed-dim": "#b4c5ff",
+            "surface-tint": "#0053db",
+            "on-secondary-container": "#00714d",
+            "on-error": "#ffffff",
+            "tertiary": "#8e3c00",
+            "on-tertiary-container": "#ffece5",
+            "surface-dim": "#d0dbed",
+            "surface-variant": "#d9e3f6",
+            "outline-variant": "#c3c6d7",
+            "on-secondary-fixed": "#002113",
+            "outline": "#737686",
+            "surface-container-high": "#dee9fc",
+            "tertiary-container": "#b54e00",
+            "on-primary-fixed": "#00174b",
+            "background": "#f8f9ff",
+            "secondary-fixed": "#6ffbbe",
+            "on-surface-variant": "#434655",
+            "on-error-container": "#93000a",
+            "error-container": "#ffdad6"
+          },
+          fontFamily: {
+            "headline": ["Inter"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(20px);
+    }
+  </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- TopNavBar (Shared Component) -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl shadow-xl shadow-blue-900/5 transition-all">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-6 h-20">
+<div class="text-lg font-black tracking-tighter text-slate-900">ÖNCÜ OTO SERVİS PROGRAMI V.1.9</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/">Ana Sayfa</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/features">Özellikler</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/pricing">Fiyatlandırma</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/about">Hakkımızda</a>
+<a class="text-blue-600 font-bold border-b-2 border-blue-600 transition-colors" href="/blog">Blog</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/contact">İletişim</a>
+</div>
+<div class="flex items-center gap-4">
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-transform active:scale-90 px-4 py-2" href="/login">Giriş Yap</a>
+<a class="bg-primary-container text-on-primary-container font-bold px-6 py-2.5 rounded-lg transition-transform hover:scale-105 active:scale-95 shadow-lg shadow-primary/20" href="/register">Ücretsiz Dene</a>
+</div>
+</div>
+</nav>
+<main class="pt-28 pb-16">
+<!-- Blog Header & Search -->
+<section class="max-w-7xl mx-auto px-6 mb-16 text-center">
+<h1 class="text-5xl md:text-7xl font-black tracking-tight mb-6 text-on-surface">Oto Servis &amp; İşletme Blog'u</h1>
+<p class="text-xl text-on-surface-variant max-w-2xl mx-auto mb-12">İşletmenizi büyütmeniz için ipuçları, sektör trendleri ve teknik bilgiler.</p>
+<div class="max-w-3xl mx-auto mb-12 relative group">
+<div class="absolute inset-y-0 left-6 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline text-2xl">search</span>
+</div>
+<input class="w-full pl-16 pr-8 py-6 rounded-xl bg-surface-container-lowest border-none shadow-xl shadow-blue-900/5 focus:ring-2 focus:ring-primary transition-all text-lg outline-none" placeholder="İçeriklerde, teknik rehberlerde veya ipuçlarında ara..." type="text"/>
+</div>
+<div class="flex flex-wrap justify-center gap-3">
+<button class="px-6 py-2 rounded-full bg-primary text-white font-semibold text-sm">Tümü</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-semibold text-sm hover:bg-primary/10 hover:text-primary transition-colors">İşletme İpuçları</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-semibold text-sm hover:bg-primary/10 hover:text-primary transition-colors">Teknik Rehberler</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-semibold text-sm hover:bg-primary/10 hover:text-primary transition-colors">Müşteri İlişkileri</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-semibold text-sm hover:bg-primary/10 hover:text-primary transition-colors">Pazarlama</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-semibold text-sm hover:bg-primary/10 hover:text-primary transition-colors">Teknoloji</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-semibold text-sm hover:bg-primary/10 hover:text-primary transition-colors">Sektör Haberleri</button>
+</div>
+</section>
+<div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Left Content Area -->
+<div class="lg:col-span-8 space-y-16">
+<!-- Featured Post -->
+<article class="group relative overflow-hidden rounded-2xl bg-surface-container-lowest shadow-2xl shadow-blue-900/5 flex flex-col md:flex-row min-h-[450px]">
+<div class="md:w-1/2 relative overflow-hidden">
+<img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Modern high-tech auto repair shop with technicians using tablets and digital diagnostic tools in a clean bright environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLP4-5V4cRyozfYAs4dCQCWIyomzHXFRwMEaQvPBl4jOWccdWL_DIAGm4ShPlk1OyUC08X7Hs_WkAs79QenQi66dDfDJRrIwZdwkohJo-fJChhNUCvUBL-dYPyk-FyWeJNTxF140b1HJVbduEL3-2ipROUE0-NgIXTxfFDzjb1w6II2eILoJcl99muk_P61l45jVERB3dvRnWFzZkjrUOZKBsW3zsPEn-ZB0TeUy5pW7rlsCQGvLmApAUqpS2hAAHa8ktTj9he9ow4"/>
+<div class="absolute top-6 left-6">
+<span class="px-4 py-1.5 rounded-full bg-secondary text-white text-xs font-bold uppercase tracking-wider">İşletme İpuçları</span>
+</div>
+</div>
+<div class="md:w-1/2 p-10 flex flex-col justify-center">
+<h2 class="text-3xl font-black mb-6 leading-tight group-hover:text-primary transition-colors">Dijital Dönüşümle İşletmenizi Nasıl Büyütürsünüz?</h2>
+<p class="text-on-surface-variant mb-8 line-clamp-3">Oto servis sektöründe dijitalleşme artık bir seçenek değil, zorunluluk. Verimliliği %40 artırmanın yollarını ve müşteri sadakatini dijital araçlarla nasıl güçlendirebileceğinizi keşfedin.</p>
+<div class="mt-auto flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a professional business consultant in a suit looking confident and smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjDlaouejb11JNPiBvM4Ykpr4nARDUHmDk2eipyJExWIVOVDdogoQ_syjffoXxDh_teQ01OMLbcNl8nJFCYF8b1-aL98gjUmxI80DahkZ1WcoazJyL0f0HGpm7_YegdG0rwStZz3ynDY2u1CvtHlmaPH2zjnteqVPnPLUrn7sc6G2ThxGinvIVwsqehCJZvmkJOpLCCe7r15sQcHr3iJPzrsBNgeey7X6_yNwYX2MhyMRKGdrFiAaPeYbx-hnfTTjWMBApg9yLFirP"/>
+</div>
+<div>
+<div class="text-sm font-bold">Ahmet Yılmaz</div>
+<div class="text-xs text-on-surface-variant">8 dk okuma</div>
+</div>
+</div>
+<a class="flex items-center text-primary font-bold hover:gap-2 transition-all" href="#">
+                Devamını Oku
+                <span class="material-symbols-outlined ml-2">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<!-- Recent Posts Grid -->
+<section>
+<div class="flex items-center justify-between mb-8">
+<h3 class="text-2xl font-black">Son Yazılar</h3>
+<div class="h-1 flex-grow mx-8 bg-surface-container rounded-full"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Post 1 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all">
+<img class="w-full h-52 object-cover" data-alt="Professional mechanic hands working on a modern car engine with specialized precision tools" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_57EtDZIXxsutdlZ4LzlqSnpeJpzb8rr7rFs1WCzwXCgvtMS5Af3FT5n7yubmWDMn2CbtkGT3aA6EyJjT8h9fAhMxzZwgyYljG40OJVMumboyx2_1dYgzsQFGYmcaxWp1MpNDZ4832yABuPVcOIf2qzGHQgj7Yb4Ki-UHGSY-cstHo9s_IzaUGUK_X81FHAbdVRhgCojK9XZlsBcTaZ6_2iXkQ93eM__kNxolbfI7gT06crPI8Vhq55IXK6MkpQYMhOgu6KsO_oFb"/>
+<div class="p-6">
+<span class="px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant text-[10px] font-bold uppercase mb-4 inline-block">Teknik Rehberler</span>
+<h4 class="text-xl font-bold mb-3">Hibrit Araç Servis Bakımında Dikkat Edilmesi Gerekenler</h4>
+<p class="text-sm text-on-surface-variant mb-6 line-clamp-2">Yeni nesil araçların bakım süreçlerinde güvenlik protokolleri ve teknik donanım gereksinimleri hakkında kapsamlı rehber.</p>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Professional technician wearing a uniform smiling at the camera" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnf_WaJz3W1V0m9qOscJMzhkSAYd_Q5r_NBlFnvEXdu6SRd2GzbE9qsYd_Fjp9_2kHkxlhyldUIofC1eilKFfq8IsvsKel3DkGu1MQd1nRFGei8DE9gjzIPNhmWX_EB4FAwmd7_N11UL8LcpoR3knjfj8wEov2jMMvUC1crHvPe6LxZ7ihXr7dTxN26-LfkaOzbxm8xjk0HCwFW9Zcbyx6wdC96HqReri5NAMLeFDpLoDKuTWpNstVB_7zJiyLPeIu7Bb6Ga1G_JTs"/>
+</div>
+<span class="text-xs font-medium text-on-surface-variant">Mehmet Can • 5 dk</span>
+</div>
+</div>
+</div>
+<!-- Post 2 -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all">
+<img class="w-full h-52 object-cover" data-alt="Team of people working in a modern office environment discussing marketing strategy on a whiteboard" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7_IOvlFs1E_MsQCWlhu1Y9UHOnHKO0oUalmM4haORRn_k-G5p6oSM4k7mQI53nCGFpFA6pbr3uQKZVkOt7VhPe9Vk9SRdSsY6ROwibYghd2TOvZVCUmPs2q5S21EjSivCFzixWEpSlMM51rRaHWgZSVhcsdFwgEyUWrST5rvnPxkBlFE5aChJS9xobb58nYo__BG06v-FoeRLiPOmXf-XiEGZKaKj76GzTCfRTzELNAeGcok2MRK9xGyNtMWYNyOchXeSOT82dcTc"/>
+<div class="p-6">
+<span class="px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-bold uppercase mb-4 inline-block">Pazarlama</span>
+<h4 class="text-xl font-bold mb-3">Yerel SEO ile Servisinize Daha Fazla Müşteri Çekin</h4>
+<p class="text-sm text-on-surface-variant mb-6 line-clamp-2">Google Haritalar ve yerel aramalar üzerinden servis görünürlüğünüzü artıracak pratik ve etkili yöntemler.</p>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Female professional digital marketing specialist smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8KowmsTsITylHnxsbLGnEj-GAv2pQE0Fsw1TB5G5PdPW51VtFYXDE_adP-CuD-E9cfL5e8o40QJA3juvEBIk-9o4ki51FtclsSBR2t7v_62X_qGUkriBKRM3vezSeoKOIvQBAEQBxGyxVBPGeHGlyWMYap315EDeJTtWjKG8lUt4n0epp3i-x_xc8HEG26d9hMPfE-Kp2KHr8X-D1D83hgeUniAlqvXTvQrDwjuL1rw8tNIK3FOcEK6Up6rrxm5UF7fCQBBAAL2-h"/>
+</div>
+<span class="text-xs font-medium text-on-surface-variant">Selin Aras • 12 dk</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Video Tutorials -->
+<section class="bg-primary-container/5 rounded-3xl p-10">
+<div class="flex items-center gap-4 mb-8">
+<span class="material-symbols-outlined text-primary text-4xl">video_library</span>
+<h3 class="text-2xl font-black">Video Eğitimler</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="relative group cursor-pointer overflow-hidden rounded-xl">
+<img class="w-full h-48 object-cover" data-alt="High resolution screen capture of software interface showing analytics charts and data" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCao2h-vTPh5X_SJR6jiCC93bWQIwDWwLALOD3j-A9JqRvqUMWoNjerdyEPhGlEovvuyVjJvYkurhF1gp79M_0Qx0S1dsBEIKXw_VnjqaDEozXftKVvXhFuJmPQSNPgoJyqE1Emzic5V-4ws6BU0jJHicLOUek2cmoSlK4BoA7Dpw0QPvn-ZKjdPGmEVuth8O7UZk31WPhezITgT9HibnaWBtflraGLvsIHN5lnAuvQlN6Il3mAla1Q24RhNcpDwZVvdpXU_frA5YOP"/>
+<div class="absolute inset-0 bg-primary/20 group-hover:bg-primary/40 transition-colors flex items-center justify-center">
+<div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="absolute bottom-4 left-4 right-4">
+<div class="bg-white/90 backdrop-blur-md px-3 py-2 rounded-lg text-xs font-bold">Öncü Yazılım: İlk Kurulum ve Veri Aktarımı</div>
+</div>
+</div>
+<div class="relative group cursor-pointer overflow-hidden rounded-xl">
+<img class="w-full h-48 object-cover" data-alt="Professional automobile electrician working with wiring and fuses on a modern car chassis" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzshDP7nChNRJLtiwdqxsFRGlIk7ib_EjrZwQcIqhMfDue-3QRqDZol521-kRnufxteyeig64STV9lOFcvOX0gFCVFoCQKFq-hji3WHZ6RSXiQ-AnTKrAIJgBhCm77u924OBgX5Da7SjxlOtvKufLN1ydxmhm4PX-VPmcksiYdQWy7JdkrM1ts14GhTxQHOcgAeo_BXNT3D9LXFJxWoyU1G01OxrRJlIMbvriQ52axsCr0uJH7M4SkQZxs5BKrDlGtNXsxJLH5AMt4"/>
+<div class="absolute inset-0 bg-primary/20 group-hover:bg-primary/40 transition-colors flex items-center justify-center">
+<div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="absolute bottom-4 left-4 right-4">
+<div class="bg-white/90 backdrop-blur-md px-3 py-2 rounded-lg text-xs font-bold">Yeni Nesil Fren Sistemleri Bakım Teknikleri</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Sidebar Area -->
+<aside class="lg:col-span-4 space-y-12">
+<!-- Newsletter Signup -->
+<div class="bg-primary p-8 rounded-2xl text-white">
+<h4 class="text-xl font-bold mb-4">Haftalık Bülten</h4>
+<p class="text-white/80 text-sm mb-6">Sektördeki en son gelişmeleri ve özel işletme ipuçlarını kaçırmayın.</p>
+<div class="space-y-4">
+<input class="w-full bg-white/10 border-white/20 rounded-lg py-3 px-4 text-white placeholder:text-white/50 focus:ring-2 focus:ring-white outline-none" placeholder="E-posta adresiniz" type="email"/>
+<button class="w-full bg-white text-primary font-bold py-3 rounded-lg hover:bg-white/90 transition-colors">Abone Ol</button>
+</div>
+<p class="text-[10px] mt-4 text-white/60 text-center">İstediğiniz zaman abonelikten çıkabilirsiniz.</p>
+</div>
+<!-- Popular Posts -->
+<div>
+<h4 class="text-lg font-black mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">trending_up</span>
+            Popüler Yazılar
+          </h4>
+<div class="space-y-6">
+<a class="flex gap-4 group" href="#">
+<div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Classic car dashboard illuminated at night with sharp focus on the speedometer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7H5yj8BJabhVNjVbK-SYXpPE3q7JuL3ilyPzhSIfJpdEf7nQdC9bo1seAGsLg0y694-vH942H0QX2wVZ8_x1HZObevTOdkbUtO9m817Eb5ynr2Kc5LlufktjijkMlCwi9fy27AlkoKfEMlAwcvN2y16ZZf-Ep8O-2Mv9SFTWMlpcPMaULLkUHhydKwizlG-p0d-tEvPGwdwSlz0ybWBEzuT1Rspbh1EfcAQA_PCGqaYc6dj21SA3WZl_7qekeyxW7-le9WbaXuoTj"/>
+</div>
+<div>
+<h5 class="text-sm font-bold group-hover:text-primary transition-colors leading-snug">Eski Araçlarda Motor Revizyonu Kılavuzu</h5>
+<span class="text-[11px] text-on-surface-variant font-medium mt-2 block">1.4k Görüntülenme</span>
+</div>
+</a>
+<a class="flex gap-4 group" href="#">
+<div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Modern coworking space with laptops and minimalist design aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBlq3F2w2IQ8jh8rHiLy8Rl3EoyM10AufuPoyA3YyorGHvOmXEDhW2mvdneRxTGBV2VHhxxd09mLM5Qb_yGkFL-LJQTKxJ1yrC1p2_7JTFCD8Zz7CfO7tfRESVQI962X-Ii9yQum_5Zy-J5enT0ZxHUPrCRTHY--XKKd1BUwllQ2DBK7cl8DLHzrnDnzm7pI_I6UaLoux08pWCoB198tgfaGqKDCX8PBPrxnXxSk-8fSTzpMmPdeUyigfV10M-VMwR92Eg_XfjSRnJ"/>
+</div>
+<div>
+<h5 class="text-sm font-bold group-hover:text-primary transition-colors leading-snug">Servis Bekleme Alanı Tasarımı ve Müşteri Memnuniyeti</h5>
+<span class="text-[11px] text-on-surface-variant font-medium mt-2 block">980 Görüntülenme</span>
+</div>
+</a>
+</div>
+</div>
+<!-- Categories List -->
+<div class="bg-surface-container-low p-8 rounded-2xl">
+<h4 class="text-lg font-black mb-6">Kategoriler</h4>
+<ul class="space-y-3">
+<li>
+<a class="flex items-center justify-between group" href="#">
+<span class="text-sm font-medium text-on-surface-variant group-hover:text-primary transition-colors">İşletme İpuçları</span>
+<span class="text-xs bg-white px-2 py-1 rounded-md font-bold text-on-surface-variant">24</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between group" href="#">
+<span class="text-sm font-medium text-on-surface-variant group-hover:text-primary transition-colors">Teknik Rehberler</span>
+<span class="text-xs bg-white px-2 py-1 rounded-md font-bold text-on-surface-variant">18</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between group" href="#">
+<span class="text-sm font-medium text-on-surface-variant group-hover:text-primary transition-colors">Pazarlama</span>
+<span class="text-xs bg-white px-2 py-1 rounded-md font-bold text-on-surface-variant">12</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between group" href="#">
+<span class="text-sm font-medium text-on-surface-variant group-hover:text-primary transition-colors">Teknoloji</span>
+<span class="text-xs bg-white px-2 py-1 rounded-md font-bold text-on-surface-variant">7</span>
+</a>
+</li>
+</ul>
+</div>
+<!-- Tag Cloud -->
+<div>
+<h4 class="text-lg font-black mb-6">Etiketler</h4>
+<div class="flex flex-wrap gap-2">
+<a class="px-3 py-1.5 bg-white text-xs font-bold text-on-surface-variant rounded-lg border border-outline-variant/10 hover:border-primary hover:text-primary transition-all" href="#">Yazılım</a>
+<a class="px-3 py-1.5 bg-white text-xs font-bold text-on-surface-variant rounded-lg border border-outline-variant/10 hover:border-primary hover:text-primary transition-all" href="#">Müşteri Sadakati</a>
+<a class="px-3 py-1.5 bg-white text-xs font-bold text-on-surface-variant rounded-lg border border-outline-variant/10 hover:border-primary hover:text-primary transition-all" href="#">Egzoz Bakımı</a>
+<a class="px-3 py-1.5 bg-white text-xs font-bold text-on-surface-variant rounded-lg border border-outline-variant/10 hover:border-primary hover:text-primary transition-all" href="#">Dijitalleşme</a>
+<a class="px-3 py-1.5 bg-white text-xs font-bold text-on-surface-variant rounded-lg border border-outline-variant/10 hover:border-primary hover:text-primary transition-all" href="#">Verimlilik</a>
+<a class="px-3 py-1.5 bg-white text-xs font-bold text-on-surface-variant rounded-lg border border-outline-variant/10 hover:border-primary hover:text-primary transition-all" href="#">Hibrit</a>
+</div>
+</div>
+</aside>
+</div>
+<!-- Downloadable Resources -->
+<section class="max-w-7xl mx-auto px-6 mt-24">
+<div class="bg-on-surface rounded-[40px] p-12 relative overflow-hidden">
+<div class="relative z-10 grid grid-cols-1 md:grid-cols-2 items-center gap-12">
+<div>
+<h3 class="text-4xl font-black text-white mb-6">Ücretsiz Kaynaklar</h3>
+<p class="text-white/60 mb-10 text-lg">Servis yönetiminizi bir üst seviyeye taşıyacak e-kitaplar, kontrol listeleri ve şablonlar emrinizde.</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Resource 1 -->
+<div class="bg-white/5 border border-white/10 p-5 rounded-2xl hover:bg-white/10 transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-primary mb-4 block" style="font-variation-settings: 'FILL' 1;">book</span>
+<h5 class="text-white font-bold mb-1">Müşteri Yönetimi Rehberi</h5>
+<p class="text-white/40 text-xs">PDF • 4.2 MB</p>
+<span class="mt-4 flex items-center text-xs text-primary font-black group-hover:gap-2 transition-all">İNDİR <span class="material-symbols-outlined text-sm ml-1">download</span></span>
+</div>
+<!-- Resource 2 -->
+<div class="bg-white/5 border border-white/10 p-5 rounded-2xl hover:bg-white/10 transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-secondary mb-4 block" style="font-variation-settings: 'FILL' 1;">checklist</span>
+<h5 class="text-white font-bold mb-1">Günlük Açılış-Kapanış Check-list</h5>
+<p class="text-white/40 text-xs">Excel • 1.1 MB</p>
+<span class="mt-4 flex items-center text-xs text-secondary font-black group-hover:gap-2 transition-all">İNDİR <span class="material-symbols-outlined text-sm ml-1">download</span></span>
+</div>
+</div>
+</div>
+<div class="hidden md:block relative">
+<div class="absolute -inset-20 bg-primary/20 blur-3xl rounded-full"></div>
+<img class="relative rounded-2xl shadow-2xl rotate-3 scale-110" data-alt="Open laptop on a desk showing professional project management software with vibrant colorful charts" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCbejAQ9efSbawLO37D_2wV9wkwuNN8ElG-UDSwWttg3SsF38fkCB9A5j78StHpXcrIA7xqQGE1nS2_g8xfSHyoePMs0Z6UtP2Jxl-mhPSNYIvfBrUHBP2ceSqc99h0_F-ojenCtxjg-TjVjRrC6H4FQ_FJAcH11FvallKBN479Uj6v-6z0NEf3e-xSliq9OCMe85GlG5F6Ph_72Y8h5V8zU7IcJen1-0B2ZJ3aT0x2RXloQyNIlmiJGpIgc8COWZLamQmWLsH1jsF"/>
+</div>
+</div>
+<!-- Decorative bg -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[100px]"></div>
+</div>
+</section>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="bg-slate-950 text-slate-400 pt-20 pb-10 border-t border-slate-800">
+<div class="max-w-7xl mx-auto px-6">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-12 mb-20">
+<div class="col-span-2 md:col-span-1">
+<div class="text-xl font-bold text-white mb-8">ÖNCÜ</div>
+<p class="text-sm leading-relaxed mb-6">1985'ten bu yana otomotiv sektöründe dijital dönüşümün öncüsü.</p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center hover:bg-primary transition-colors" href="#"><span class="material-symbols-outlined text-white text-xl">language</span></a>
+<a class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center hover:bg-primary transition-colors" href="#"><span class="material-symbols-outlined text-white text-xl">share</span></a>
+</div>
+</div>
+<div>
+<h5 class="text-white font-bold mb-6">Ürün</h5>
+<ul class="space-y-4 text-sm">
+<li><a class="hover:text-blue-400 transition-colors" href="/features">Özellikler</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/pricing">Fiyatlandırma</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/register">Demo</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Güncellemeler</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-bold mb-6">Destek</h5>
+<ul class="space-y-4 text-sm">
+<li><a class="hover:text-blue-400 transition-colors" href="/contact">Yardım Merkezi</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Dokümantasyon</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Video Eğitimler</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Topluluk</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-bold mb-6">Kurumsal</h5>
+<ul class="space-y-4 text-sm">
+<li><a class="hover:text-blue-400 transition-colors" href="/about">Hakkımızda</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/about">Kariyer</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/contact">Gizlilik</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/contact">Koşullar</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-4 text-xs tracking-wider">
+<div>© 2026 ÖNCÜ. Tüm hakları saklıdır.</div>
+<div class="flex gap-8">
+<span>Türkiye'de ❤️ ile üretilmiştir.</span>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

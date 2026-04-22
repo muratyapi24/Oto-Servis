@@ -1,0 +1,444 @@
+﻿<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fiyatlandırma - ÖNCÜ OTO SERVİS PROGRAMI V.1.9</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-surface": "#121c2a",
+              "on-primary-container": "#eeefff",
+              "primary": "#004ac6",
+              "on-primary-fixed-variant": "#003ea8",
+              "inverse-primary": "#b4c5ff",
+              "surface-container-low": "#eff4ff",
+              "secondary-fixed-dim": "#4edea3",
+              "on-background": "#121c2a",
+              "on-tertiary-fixed": "#341100",
+              "tertiary-fixed": "#ffdbca",
+              "on-tertiary-fixed-variant": "#783200",
+              "inverse-surface": "#27313f",
+              "surface-bright": "#f8f9ff",
+              "surface-container-highest": "#d9e3f6",
+              "secondary-container": "#6cf8bb",
+              "on-secondary-fixed-variant": "#005236",
+              "on-tertiary": "#ffffff",
+              "primary-container": "#2563eb",
+              "inverse-on-surface": "#eaf1ff",
+              "secondary": "#006c49",
+              "on-secondary": "#ffffff",
+              "surface-container-lowest": "#ffffff",
+              "surface-container": "#e6eeff",
+              "primary-fixed": "#dbe1ff",
+              "error": "#ba1a1a",
+              "surface": "#f8f9ff",
+              "tertiary-fixed-dim": "#ffb690",
+              "on-primary": "#ffffff",
+              "primary-fixed-dim": "#b4c5ff",
+              "surface-tint": "#0053db",
+              "on-secondary-container": "#00714d",
+              "on-error": "#ffffff",
+              "tertiary": "#8e3c00",
+              "on-tertiary-container": "#ffece5",
+              "surface-dim": "#d0dbed",
+              "surface-variant": "#d9e3f6",
+              "outline-variant": "#c3c6d7",
+              "on-secondary-fixed": "#002113",
+              "outline": "#737686",
+              "surface-container-high": "#dee9fc",
+              "tertiary-container": "#b54e00",
+              "on-primary-fixed": "#00174b",
+              "background": "#f8f9ff",
+              "secondary-fixed": "#6ffbbe",
+              "on-surface-variant": "#434655",
+              "on-error-container": "#93000a",
+              "error-container": "#ffdad6"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); }
+        .milled-gradient { background: linear-gradient(15deg, #004ac6 0%, #2563eb 100%); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl shadow-xl shadow-blue-900/5 transition-all">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-6 h-20">
+<div class="text-lg font-black tracking-tighter text-slate-900">ÖNCÜ OTO SERVİS PROGRAMI V.1.9</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/">Ana Sayfa</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/features">Özellikler</a>
+<a class="text-blue-600 font-bold border-b-2 border-blue-600 transition-colors" href="/pricing">Fiyatlandırma</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/about">Hakkımızda</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/blog">Blog</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/contact">İletişim</a>
+</div>
+<div class="flex items-center gap-4">
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-transform active:scale-90 px-4 py-2" href="/login">Giriş Yap</a>
+<a class="bg-primary-container text-on-primary-container font-bold px-6 py-2.5 rounded-lg transition-transform hover:scale-105 active:scale-95 shadow-lg shadow-primary/20" href="/register">Ücretsiz Dene</a>
+</div>
+</div>
+</nav>
+<main class="pt-20">
+<!-- PRICING HERO -->
+<section class="relative py-24 px-6 overflow-hidden">
+<div class="absolute inset-0 milled-gradient -z-10"></div>
+<div class="absolute inset-0 opacity-10" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBOmj2EPjCOMnA1XzvNrY2Ag0lVWY21p_NSA2rQOfiLa0V_rsTpaFWLdJnoZs9QVZupuANLRlNZKVn5y2EWNAsTloKLN9-KLbHdcFnBNfzjq69X0nUfca5tdJHgmJ706rFDVvXk-QJzeJHd6OFR2TGhGUS1O1RCNykWYccjE2v_0xervbTV1RPNXmS2V8yhju0fNtFXKpI5wxzHBwHfRVsz0bvWKKa3wbgbUCRyWlw8zWwq5CjsyiUvD-7NtQyjB_BuGkhWpazN6U6X');"></div>
+<div class="max-w-4xl mx-auto text-center">
+<h1 class="text-5xl md:text-7xl font-black text-white tracking-tighter mb-8 leading-none">Şeffaf Fiyatlandırma,<br/>Gizli Ücret Yok</h1>
+<p class="text-xl text-on-primary-container/80 mb-12 font-medium">İşletmenizin büyüklüğüne en uygun planı seçin, verimliliğinizi hemen artırın.</p>
+<!-- Toggle -->
+<div class="flex items-center justify-center gap-4">
+<span class="text-white font-semibold">Aylık</span>
+<button class="w-16 h-8 bg-white/20 rounded-full relative p-1 flex items-center transition-all">
+<div class="w-6 h-6 bg-white rounded-full translate-x-8"></div>
+</button>
+<div class="flex items-center gap-2">
+<span class="text-white font-semibold">Yıllık</span>
+<span class="bg-secondary-container text-on-secondary-container text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">%20 İndirim</span>
+</div>
+</div>
+</div>
+</section>
+<!-- PRICING TIERS -->
+<section class="max-w-7xl mx-auto px-6 -mt-16 relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Starter -->
+<div class="bg-surface-container-lowest p-10 rounded-xl shadow-xl shadow-on-surface/5 flex flex-col">
+<div class="mb-8">
+<h3 class="text-xl font-bold text-on-surface-variant mb-2">Starter</h3>
+<div class="flex items-baseline gap-1">
+<span class="text-4xl font-black text-on-surface">₺299</span>
+<span class="text-on-surface-variant/60 font-medium">/ay</span>
+</div>
+<p class="text-sm text-on-surface-variant mt-4">Butik servisler ve yeni başlayan işletmeler için.</p>
+</div>
+<div class="space-y-4 mb-10 flex-grow">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary font-bold" data-icon="check">check</span>
+<span class="text-on-surface-variant font-medium">1 Kullanıcı</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary font-bold" data-icon="check">check</span>
+<span class="text-on-surface-variant font-medium">Müşteri Yönetimi (CRM)</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary font-bold" data-icon="check">check</span>
+<span class="text-on-surface-variant font-medium">Servis Kaydı Oluşturma</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error font-bold" data-icon="close">close</span>
+<span class="text-on-surface-variant/40 font-medium">Stok Takibi</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error font-bold" data-icon="close">close</span>
+<span class="text-on-surface-variant/40 font-medium">Mobil Uygulama</span>
+</div>
+</div>
+<button class="w-full py-4 rounded-lg font-bold text-primary bg-surface-container-high hover:bg-surface-container-highest transition-colors active:scale-95">Ücretsiz Başlayın</button>
+</div>
+<!-- Professional -->
+<div class="bg-surface-container-lowest p-10 rounded-xl shadow-2xl shadow-primary/20 border-t-8 border-primary relative flex flex-col scale-105 transform">
+<div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-black px-6 py-2 rounded-full uppercase tracking-widest">En Popüler</div>
+<div class="mb-8">
+<h3 class="text-xl font-bold text-primary mb-2">Professional</h3>
+<div class="flex items-baseline gap-1">
+<span class="text-4xl font-black text-on-surface">₺599</span>
+<span class="text-on-surface-variant/60 font-medium">/ay</span>
+</div>
+<p class="text-sm text-on-surface-variant mt-4">Büyüyen ve profesyonel hizmet veren servisler için.</p>
+</div>
+<div class="space-y-4 mb-10 flex-grow">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary font-bold" data-icon="check">check</span>
+<span class="text-on-surface font-semibold">5 Kullanıcı</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary font-bold" data-icon="check">check</span>
+<span class="text-on-surface font-semibold">Gelişmiş Servis &amp; İş Emri</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary font-bold" data-icon="check">check</span>
+<span class="text-on-surface font-semibold">Stok &amp; Envanter Takibi</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary font-bold" data-icon="check">check</span>
+<span class="text-on-surface font-semibold">SMS Bildirimleri</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary font-bold" data-icon="check">check</span>
+<span class="text-on-surface font-semibold">Mobil Uygulama Erişimi</span>
+</div>
+</div>
+<button class="w-full py-4 rounded-lg font-bold text-white milled-gradient shadow-lg shadow-primary/30 hover:scale-[0.98] transition-transform active:scale-90">14 Gün Ücretsiz Dene</button>
+</div>
+<!-- Enterprise -->
+<div class="bg-surface-container-lowest p-10 rounded-xl shadow-xl shadow-on-surface/5 flex flex-col">
+<div class="mb-8">
+<h3 class="text-xl font-bold text-on-surface-variant mb-2">Enterprise</h3>
+<div class="flex items-baseline gap-1">
+<span class="text-4xl font-black text-on-surface">₺999</span>
+<span class="text-on-surface-variant/60 font-medium">/ay</span>
+</div>
+<p class="text-sm text-on-surface-variant mt-4">Çok şubeli ve tam entegre sistem isteyen devler için.</p>
+</div>
+<div class="space-y-4 mb-10 flex-grow">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary font-bold" data-icon="check">check</span>
+<span class="text-on-surface-variant font-medium">Sınırsız Kullanıcı</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary font-bold" data-icon="check">check</span>
+<span class="text-on-surface-variant font-medium">Çoklu Şube Yönetimi</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary font-bold" data-icon="check">check</span>
+<span class="text-on-surface-variant font-medium">Gelişmiş BI Raporları</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary font-bold" data-icon="check">check</span>
+<span class="text-on-surface-variant font-medium">Muhasebe Entegrasyonu</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary font-bold" data-icon="check">check</span>
+<span class="text-on-surface-variant font-medium">7/24 Özel Danışman</span>
+</div>
+</div>
+<button class="w-full py-4 rounded-lg font-bold text-on-surface bg-surface-container-high hover:bg-surface-container-highest transition-colors active:scale-95">Bize Ulaşın</button>
+</div>
+</section>
+<!-- PLAN COMPARISON TABLE -->
+<section class="max-w-7xl mx-auto px-6 py-32">
+<h2 class="text-4xl font-black tracking-tighter text-center mb-16">Detaylı Plan Karşılaştırması</h2>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-separate border-spacing-0">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="p-6 rounded-tl-xl text-on-surface-variant font-bold uppercase text-xs tracking-widest">Özellik</th>
+<th class="p-6 text-on-surface font-black">Starter</th>
+<th class="p-6 text-primary font-black">Professional</th>
+<th class="p-6 rounded-tr-xl text-on-surface font-black">Enterprise</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-highest">
+<!-- Kullanıcı & Erişim -->
+<tr class="bg-surface-container-lowest">
+<td class="p-6 font-bold text-primary uppercase text-xs tracking-widest bg-surface-container-low/50" colspan="4">Kullanıcı &amp; Erişim</td>
+</tr>
+<tr>
+<td class="p-6 text-on-surface-variant font-medium">Kullanıcı Sayısı</td>
+<td class="p-6">1 Kullanıcı</td>
+<td class="p-6 font-bold">5 Kullanıcı</td>
+<td class="p-6">Sınırsız</td>
+</tr>
+<tr>
+<td class="p-6 text-on-surface-variant font-medium">Yetkilendirme</td>
+<td class="p-6 text-on-surface-variant/40"><span class="material-symbols-outlined" data-icon="remove">remove</span></td>
+<td class="p-6"><span class="material-symbols-outlined text-secondary" data-icon="check">check</span></td>
+<td class="p-6"><span class="material-symbols-outlined text-secondary" data-icon="check">check</span></td>
+</tr>
+<!-- Müşteri Yönetimi -->
+<tr class="bg-surface-container-lowest">
+<td class="p-6 font-bold text-primary uppercase text-xs tracking-widest bg-surface-container-low/50" colspan="4">Müşteri &amp; Servis</td>
+</tr>
+<tr>
+<td class="p-6 text-on-surface-variant font-medium">Müşteri Veritabanı</td>
+<td class="p-6 font-bold">Sınırsız</td>
+<td class="p-6 font-bold">Sınırsız</td>
+<td class="p-6 font-bold">Sınırsız</td>
+</tr>
+<tr>
+<td class="p-6 text-on-surface-variant font-medium">Dijital İş Emri</td>
+<td class="p-6"><span class="material-symbols-outlined text-secondary" data-icon="check">check</span></td>
+<td class="p-6"><span class="material-symbols-outlined text-secondary" data-icon="check">check</span></td>
+<td class="p-6"><span class="material-symbols-outlined text-secondary" data-icon="check">check</span></td>
+</tr>
+<tr>
+<td class="p-6 text-on-surface-variant font-medium">Fotoğraf &amp; Video Ekleme</td>
+<td class="p-6 text-on-surface-variant/40">10MB Sınır</td>
+<td class="p-6">Sınırsız</td>
+<td class="p-6">Sınırsız</td>
+</tr>
+<!-- Finans -->
+<tr class="bg-surface-container-lowest">
+<td class="p-6 font-bold text-primary uppercase text-xs tracking-widest bg-surface-container-low/50" colspan="4">Finans &amp; Raporlama</td>
+</tr>
+<tr>
+<td class="p-6 text-on-surface-variant font-medium">e-Fatura Entegrasyonu</td>
+<td class="p-6 text-on-surface-variant/40"><span class="material-symbols-outlined" data-icon="close">close</span></td>
+<td class="p-6">Opsiyonel</td>
+<td class="p-6 font-bold text-secondary">Dahil</td>
+</tr>
+<tr>
+<td class="p-6 text-on-surface-variant font-medium">Gelişmiş BI Paneli</td>
+<td class="p-6 text-on-surface-variant/40"><span class="material-symbols-outlined" data-icon="close">close</span></td>
+<td class="p-6 text-on-surface-variant/40"><span class="material-symbols-outlined" data-icon="close">close</span></td>
+<td class="p-6"><span class="material-symbols-outlined text-secondary" data-icon="check">check</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- ADD-ONS -->
+<section class="bg-surface-container-low py-32">
+<div class="max-w-7xl mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-4xl font-black tracking-tighter mb-4">Ek Hizmetler &amp; Paketler</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto">Planınıza dilediğiniz zaman ekleyebileceğiniz özel çözümlerle gücünüzü artırın.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-xl transition-shadow flex flex-col items-center text-center">
+<div class="w-16 h-16 bg-primary-container/10 text-primary rounded-full flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-3xl" data-icon="sms">sms</span>
+</div>
+<h4 class="font-bold text-lg mb-2">Ek SMS Paketi</h4>
+<p class="text-sm text-on-surface-variant mb-4">Müşterilerinize otomatik bilgilendirme SMS'leri gönderin.</p>
+<span class="mt-auto text-primary font-bold">₺99'dan başlayan</span>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-xl transition-shadow flex flex-col items-center text-center">
+<div class="w-16 h-16 bg-secondary-container/20 text-secondary rounded-full flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-3xl" data-icon="support_agent">support_agent</span>
+</div>
+<h4 class="font-bold text-lg mb-2">Premium Destek</h4>
+<p class="text-sm text-on-surface-variant mb-4">Size özel atanan müşteri temsilcisi ile anında çözüm.</p>
+<span class="mt-auto text-primary font-bold">₺149/ay</span>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-xl transition-shadow flex flex-col items-center text-center">
+<div class="w-16 h-16 bg-tertiary-fixed/20 text-tertiary rounded-full flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-3xl" data-icon="analytics">analytics</span>
+</div>
+<h4 class="font-bold text-lg mb-2">Gelişmiş BI</h4>
+<p class="text-sm text-on-surface-variant mb-4">Derinlemesine veri analizi ve özel dashboardlar.</p>
+<span class="mt-auto text-primary font-bold">₺199/ay</span>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-xl transition-shadow flex flex-col items-center text-center">
+<div class="w-16 h-16 bg-on-surface/5 text-on-surface rounded-full flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-3xl" data-icon="directions_car">directions_car</span>
+</div>
+<h4 class="font-bold text-lg mb-2">Filo Yönetimi</h4>
+<p class="text-sm text-on-surface-variant mb-4">Kurumsal müşterileriniz için özel portal ve takip sistemi.</p>
+<span class="mt-auto text-primary font-bold">Teklif Alın</span>
+</div>
+</div>
+</div>
+</section>
+<!-- FAQ SECTION -->
+<section class="max-w-4xl mx-auto px-6 py-32">
+<h2 class="text-4xl font-black tracking-tighter text-center mb-16">Sıkça Sorulan Sorular</h2>
+<div class="space-y-4">
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden group">
+<button class="w-full flex items-center justify-between p-6 text-left focus:outline-none">
+<span class="font-bold text-on-surface">Ücretsiz deneme süresi ne kadar?</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:rotate-180 transition-transform" data-icon="expand_more">expand_more</span>
+</button>
+<div class="px-6 pb-6 text-on-surface-variant leading-relaxed">
+                        Tüm Professional ve Enterprise özelliklerini 14 gün boyunca kredi kartı bilgisi girmeden ücretsiz deneyebilirsiniz.
+                    </div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden group border-l-4 border-transparent hover:border-primary transition-all">
+<button class="w-full flex items-center justify-between p-6 text-left focus:outline-none">
+<span class="font-bold text-on-surface">İstediğim zaman plan değişikliği yapabilir miyim?</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:rotate-180 transition-transform" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden group border-l-4 border-transparent hover:border-primary transition-all">
+<button class="w-full flex items-center justify-between p-6 text-left focus:outline-none">
+<span class="font-bold text-on-surface">Fiyatlara KDV dahil mi? Gizli ücretler var mı?</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:rotate-180 transition-transform" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden group border-l-4 border-transparent hover:border-primary transition-all">
+<button class="w-full flex items-center justify-between p-6 text-left focus:outline-none">
+<span class="font-bold text-on-surface">Yıllık ödemede nasıl bir indirim uygulanıyor?</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:rotate-180 transition-transform" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden group border-l-4 border-transparent hover:border-primary transition-all">
+<button class="w-full flex items-center justify-between p-6 text-left focus:outline-none">
+<span class="font-bold text-on-surface">İptal politikası nedir? Verilerimi alabilir miyim?</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:rotate-180 transition-transform" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+</div>
+</section>
+<!-- FINAL CTA -->
+<section class="max-w-7xl mx-auto px-6 pb-32">
+<div class="milled-gradient rounded-3xl p-12 md:p-24 text-center relative overflow-hidden shadow-2xl shadow-primary/40">
+<div class="absolute inset-0 opacity-20" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCklWuQDMhvjqIYXliDotvnqPRkZOyMGePevILSz9nskrW_c1vdvAHngxp21ZqflZ7feIwdp_agAENmOvuAy1bCa7P1uJr1Hj_zYROEuNAulZsaGt6VUKr_mFgfiSVjuppuR_0HlACx3csW9cfL0UZF2-V7p6Xqmc1xdd8n1DvW5oJiE2AWPuj0QgOdAxXJU-6H26RX2pF3H6weuxRhUyBPkNO4v5U4SZqW_BbsPC27wyBwYVpDZxz5pAJyzMXzvOOVCMuJuSNmtm7s');"></div>
+<div class="relative z-10">
+<h2 class="text-4xl md:text-6xl font-black text-white mb-8 leading-tight">Hemen Başlamaya Hazır mısınız?</h2>
+<p class="text-xl text-white/80 mb-12 max-w-2xl mx-auto">Saniyeler içinde kayıt olun, servisinizdeki karmaşaya son verin ve profesyonel yönetimin tadını çıkarın.</p>
+<div class="flex flex-col md:flex-row items-center justify-center gap-6">
+<button class="bg-white text-primary px-10 py-5 rounded-xl font-black text-lg shadow-xl shadow-black/10 hover:scale-105 active:scale-95 transition-transform">14 Gün Ücretsiz Dene</button>
+<button class="text-white border-2 border-white/30 px-10 py-5 rounded-xl font-bold text-lg hover:bg-white/10 transition-colors">Uzmanımızla Görüşün</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-slate-950 text-slate-400 pt-20 pb-10 border-t border-slate-800">
+<div class="max-w-7xl mx-auto px-6">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-12 mb-20">
+<div class="col-span-2 md:col-span-1">
+<div class="text-xl font-bold text-white mb-8">ÖNCÜ</div>
+<p class="text-sm leading-relaxed mb-6">1985'ten bu yana otomotiv sektöründe dijital dönüşümün öncüsü.</p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center hover:bg-primary transition-colors" href="#"><span class="material-symbols-outlined text-white text-xl">language</span></a>
+<a class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center hover:bg-primary transition-colors" href="#"><span class="material-symbols-outlined text-white text-xl">share</span></a>
+</div>
+</div>
+<div>
+<h5 class="text-white font-bold mb-6">Ürün</h5>
+<ul class="space-y-4 text-sm">
+<li><a class="hover:text-blue-400 transition-colors" href="/features">Özellikler</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/pricing">Fiyatlandırma</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/register">Demo</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Güncellemeler</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-bold mb-6">Destek</h5>
+<ul class="space-y-4 text-sm">
+<li><a class="hover:text-blue-400 transition-colors" href="/contact">Yardım Merkezi</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Dokümantasyon</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Video Eğitimler</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Topluluk</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-bold mb-6">Kurumsal</h5>
+<ul class="space-y-4 text-sm">
+<li><a class="hover:text-blue-400 transition-colors" href="/about">Hakkımızda</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/about">Kariyer</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/contact">Gizlilik</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/contact">Koşullar</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-4 text-xs tracking-wider">
+<div>© 2026 ÖNCÜ. Tüm hakları saklıdır.</div>
+<div class="flex gap-8">
+<span>Türkiye'de ❤️ ile üretilmiştir.</span>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

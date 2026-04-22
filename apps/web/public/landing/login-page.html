@@ -1,0 +1,207 @@
+﻿<!DOCTYPE html>
+<html class="scroll-smooth" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Giriş Yap - ÖNCÜ OTO SERVİS PROGRAMI V.1.9</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-surface": "#121c2a",
+              "on-primary-container": "#eeefff",
+              "primary": "#004ac6",
+              "on-primary-fixed-variant": "#003ea8",
+              "inverse-primary": "#b4c5ff",
+              "surface-container-low": "#eff4ff",
+              "secondary-fixed-dim": "#4edea3",
+              "on-background": "#121c2a",
+              "on-tertiary-fixed": "#341100",
+              "tertiary-fixed": "#ffdbca",
+              "on-tertiary-fixed-variant": "#783200",
+              "inverse-surface": "#27313f",
+              "surface-bright": "#f8f9ff",
+              "surface-container-highest": "#d9e3f6",
+              "secondary-container": "#6cf8bb",
+              "on-secondary-fixed-variant": "#005236",
+              "on-tertiary": "#ffffff",
+              "primary-container": "#2563eb",
+              "inverse-on-surface": "#eaf1ff",
+              "secondary": "#006c49",
+              "on-secondary": "#ffffff",
+              "surface-container-lowest": "#ffffff",
+              "surface-container": "#e6eeff",
+              "primary-fixed": "#dbe1ff",
+              "error": "#ba1a1a",
+              "surface": "#f8f9ff",
+              "tertiary-fixed-dim": "#ffb690",
+              "on-primary": "#ffffff",
+              "primary-fixed-dim": "#b4c5ff",
+              "surface-tint": "#0053db",
+              "on-secondary-container": "#00714d",
+              "on-error": "#ffffff",
+              "tertiary": "#8e3c00",
+              "on-tertiary-container": "#ffece5",
+              "surface-dim": "#d0dbed",
+              "surface-variant": "#d9e3f6",
+              "outline-variant": "#c3c6d7",
+              "on-secondary-fixed": "#002113",
+              "outline": "#737686",
+              "surface-container-high": "#dee9fc",
+              "tertiary-container": "#b54e00",
+              "on-primary-fixed": "#00174b",
+              "background": "#f8f9ff",
+              "secondary-fixed": "#6ffbbe",
+              "on-surface-variant": "#434655",
+              "on-error-container": "#93000a",
+              "error-container": "#ffdad6"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+        .auth-gradient {
+            background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased min-h-screen flex flex-col">
+<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl shadow-xl shadow-blue-900/5 transition-all">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-6 h-20">
+<div class="text-lg font-black tracking-tighter text-slate-900">ÖNCÜ OTO SERVİS PROGRAMI V.1.9</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/">Ana Sayfa</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/features">Özellikler</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/pricing">Fiyatlandırma</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/about">Hakkımızda</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/blog">Blog</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/contact">İletişim</a>
+</div>
+<div class="flex items-center gap-4">
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-transform active:scale-90 px-4 py-2" href="/login">Giriş Yap</a>
+<a class="bg-primary-container text-on-primary-container font-bold px-6 py-2.5 rounded-lg transition-transform hover:scale-105 active:scale-95 shadow-lg shadow-primary/20" href="/register">Ücretsiz Dene</a>
+</div>
+</div>
+</nav>
+<main class="flex-grow pt-20 flex items-center justify-center relative overflow-hidden auth-gradient">
+<div class="absolute inset-0 opacity-20 pointer-events-none">
+<div class="absolute top-1/4 -left-20 w-96 h-96 bg-primary rounded-full blur-[120px]"></div>
+<div class="absolute bottom-1/4 -right-20 w-96 h-96 bg-secondary rounded-full blur-[120px]"></div>
+</div>
+<div class="relative z-10 w-full max-w-md px-6 py-12">
+<div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl shadow-black/50 p-8 md:p-10 border border-white/10">
+<div class="text-center mb-10">
+<div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 text-primary mb-6">
+<span class="material-symbols-outlined text-4xl">lock_open</span>
+</div>
+<h1 class="text-3xl font-black text-on-surface dark:text-white tracking-tighter mb-2">Hoş Geldiniz</h1>
+<p class="text-on-surface-variant dark:text-slate-400 font-medium">Servis yönetim panelinize erişmek için giriş yapın.</p>
+</div>
+<form class="space-y-6">
+<div>
+<label class="block text-sm font-bold text-on-surface dark:text-slate-300 mb-2" for="email">E-posta veya Kullanıcı Adı</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-xl">person</span>
+<input class="w-full bg-surface-container-lowest dark:bg-slate-800 border-outline-variant/30 dark:border-slate-700 rounded-xl py-3.5 pl-12 pr-4 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none text-on-surface dark:text-white" id="email" placeholder="ornek@servis.com" type="text"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-bold text-on-surface dark:text-slate-300 mb-2" for="password">Şifre</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-xl">lock</span>
+<input class="w-full bg-surface-container-lowest dark:bg-slate-800 border-outline-variant/30 dark:border-slate-700 rounded-xl py-3.5 pl-12 pr-12 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none text-on-surface dark:text-white" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-xl">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="w-5 h-5 rounded border-outline-variant/30 text-primary focus:ring-primary cursor-pointer bg-white dark:bg-slate-800" type="checkbox"/>
+<span class="text-sm font-medium text-on-surface-variant dark:text-slate-400 group-hover:text-on-surface dark:group-hover:text-white transition-colors">Beni Hatırla</span>
+</label>
+<a class="text-sm font-bold text-primary hover:text-on-primary-fixed-variant transition-colors" href="#">Şifremi Unuttum</a>
+</div>
+<button class="w-full bg-primary hover:bg-on-primary-fixed-variant text-white font-black py-4 px-6 rounded-xl shadow-xl shadow-primary/30 transition-all transform hover:scale-[1.02] active:scale-[0.98]" type="submit">
+                    Giriş Yap
+                </button>
+</form>
+<div class="mt-8 pt-8 border-t border-outline-variant/10 text-center">
+<p class="text-on-surface-variant dark:text-slate-400 text-sm">
+                    Henüz bir hesabınız yok mu? 
+                    <a class="text-primary font-bold hover:underline" href="#">Hemen Ücretsiz Deneyin</a>
+</p>
+</div>
+</div>
+<p class="mt-8 text-center text-slate-500 text-xs font-medium tracking-widest uppercase">
+            Güvenli Giriş • SSL Korumalı
+        </p>
+</div>
+</main>
+<footer class="bg-slate-950 text-slate-400 pt-20 pb-10 border-t border-slate-800">
+<div class="max-w-7xl mx-auto px-6">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-12 mb-20">
+<div class="col-span-2 md:col-span-1">
+<div class="text-xl font-bold text-white mb-8">ÖNCÜ</div>
+<p class="text-sm leading-relaxed mb-6">1985'ten bu yana otomotiv sektöründe dijital dönüşümün öncüsü.</p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center hover:bg-primary transition-colors" href="#"><span class="material-symbols-outlined text-white text-xl">language</span></a>
+<a class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center hover:bg-primary transition-colors" href="#"><span class="material-symbols-outlined text-white text-xl">share</span></a>
+</div>
+</div>
+<div>
+<h5 class="text-white font-bold mb-6">Ürün</h5>
+<ul class="space-y-4 text-sm">
+<li><a class="hover:text-blue-400 transition-colors" href="/features">Özellikler</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/pricing">Fiyatlandırma</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/register">Demo</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Güncellemeler</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-bold mb-6">Destek</h5>
+<ul class="space-y-4 text-sm">
+<li><a class="hover:text-blue-400 transition-colors" href="/contact">Yardım Merkezi</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Dokümantasyon</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Video Eğitimler</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Topluluk</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-bold mb-6">Kurumsal</h5>
+<ul class="space-y-4 text-sm">
+<li><a class="hover:text-blue-400 transition-colors" href="/about">Hakkımızda</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/about">Kariyer</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/contact">Gizlilik</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/contact">Koşullar</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-4 text-xs tracking-wider">
+<div>© 2026 ÖNCÜ. Tüm hakları saklıdır.</div>
+<div class="flex gap-8">
+<span>Türkiye'de ❤️ ile üretilmiştir.</span>
+</div>
+</div>
+</div>
+</footer>
+
+</body></html>

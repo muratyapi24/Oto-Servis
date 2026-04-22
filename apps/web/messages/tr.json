@@ -1,0 +1,101 @@
+{
+  "common": {
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "add": "Ekle",
+    "search": "Ara",
+    "loading": "Yükleniyor...",
+    "error": "Hata oluştu",
+    "success": "Başarılı",
+    "confirm": "Onayla",
+    "back": "Geri",
+    "next": "İleri",
+    "close": "Kapat",
+    "yes": "Evet",
+    "no": "Hayır",
+    "all": "Tümü",
+    "active": "Aktif",
+    "passive": "Pasif",
+    "total": "Toplam",
+    "date": "Tarih",
+    "status": "Durum",
+    "actions": "İşlemler",
+    "noData": "Veri bulunamadı"
+  },
+  "nav": {
+    "dashboard": "Ana Panel",
+    "customers": "Müşteriler",
+    "vehicles": "Araçlar",
+    "services": "Servis Emirleri",
+    "appointments": "Randevular",
+    "inventory": "Stok",
+    "finances": "Finans",
+    "mechanics": "Ustalar",
+    "suppliers": "Tedarikçiler",
+    "quotes": "Teklifler",
+    "analytics": "Analitik",
+    "settings": "Ayarlar",
+    "locations": "Lokasyonlar"
+  },
+  "dashboard": {
+    "title": "Ana Panel",
+    "welcome": "Hoş geldiniz, {name}",
+    "activeServices": "Aktif Servisler",
+    "completedToday": "Bugün Tamamlanan",
+    "pendingInvoices": "Bekleyen Faturalar",
+    "lowStock": "Kritik Stok"
+  },
+  "customers": {
+    "title": "Müşteriler",
+    "new": "Yeni Müşteri",
+    "individual": "Bireysel",
+    "corporate": "Kurumsal",
+    "phone": "Telefon",
+    "email": "E-posta",
+    "address": "Adres",
+    "balance": "Bakiye",
+    "vehicles": "Araçlar"
+  },
+  "services": {
+    "title": "Servis Emirleri",
+    "new": "Yeni Servis Emri",
+    "status": {
+      "PENDING": "Bekliyor",
+      "IN_PROGRESS": "Devam Ediyor",
+      "WAITING_APPROVAL": "Onay Bekliyor",
+      "COMPLETED": "Tamamlandı",
+      "CANCELLED": "İptal Edildi"
+    }
+  },
+  "auth": {
+    "login": "Giriş Yap",
+    "logout": "Çıkış Yap",
+    "email": "E-posta",
+    "password": "Şifre",
+    "forgotPassword": "Şifremi Unuttum",
+    "twoFactor": "İki Faktörlü Doğrulama",
+    "enterCode": "6 haneli kodu girin"
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "profile": "Profil",
+    "security": "Güvenlik",
+    "notifications": "Bildirimler",
+    "subscription": "Abonelik",
+    "twoFactor": "İki Faktörlü Doğrulama",
+    "language": "Dil"
+  },
+  "offline": {
+    "title": "İnternet Bağlantısı Yok",
+    "message": "Bağlantınız kesildi. Lütfen internet bağlantınızı kontrol edin.",
+    "retry": "Yeniden Dene"
+  },
+  "formats": {
+    "currency": "TRY",
+    "locale": "tr-TR",
+    "dateFormat": "DD.MM.YYYY",
+    "timeFormat": "HH:mm"
+  }
+}

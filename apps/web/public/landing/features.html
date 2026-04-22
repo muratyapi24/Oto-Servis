@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Özellikler - ÖNCÜ OTO SERVİS PROGRAMI V.1.9</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-surface": "#121c2a",
+                        "on-primary-container": "#eeefff",
+                        "primary": "#004ac6",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "inverse-primary": "#b4c5ff",
+                        "surface-container-low": "#eff4ff",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-background": "#121c2a",
+                        "on-tertiary-fixed": "#341100",
+                        "tertiary-fixed": "#ffdbca",
+                        "on-tertiary-fixed-variant": "#783200",
+                        "inverse-surface": "#27313f",
+                        "surface-bright": "#f8f9ff",
+                        "surface-container-highest": "#d9e3f6",
+                        "secondary-container": "#6cf8bb",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-tertiary": "#ffffff",
+                        "primary-container": "#2563eb",
+                        "inverse-on-surface": "#eaf1ff",
+                        "secondary": "#006c49",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#e6eeff",
+                        "primary-fixed": "#dbe1ff",
+                        "error": "#ba1a1a",
+                        "surface": "#f8f9ff",
+                        "tertiary-fixed-dim": "#ffb690",
+                        "on-primary": "#ffffff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "surface-tint": "#0053db",
+                        "on-secondary-container": "#00714d",
+                        "on-error": "#ffffff",
+                        "tertiary": "#8e3c00",
+                        "on-tertiary-container": "#ffece5",
+                        "surface-dim": "#d0dbed",
+                        "surface-variant": "#d9e3f6",
+                        "outline-variant": "#c3c6d7",
+                        "on-secondary-fixed": "#002113",
+                        "outline": "#737686",
+                        "surface-container-high": "#dee9fc",
+                        "tertiary-container": "#b54e00",
+                        "on-primary-fixed": "#00174b",
+                        "background": "#f8f9ff",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-surface-variant": "#434655",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-header {
+            background: linear-gradient(15deg, #004ac6 0%, #2563eb 100%);
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl shadow-xl shadow-blue-900/5 transition-all">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-6 h-20">
+<div class="text-lg font-black tracking-tighter text-slate-900">ÖNCÜ OTO SERVİS PROGRAMI V.1.9</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/">Ana Sayfa</a>
+<a class="text-blue-600 font-bold border-b-2 border-blue-600 transition-colors" href="/features">Özellikler</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/pricing">Fiyatlandırma</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/about">Hakkımızda</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/blog">Blog</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/contact">İletişim</a>
+</div>
+<div class="flex items-center gap-4">
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-transform active:scale-90 px-4 py-2" href="/login">Giriş Yap</a>
+<a class="bg-primary-container text-on-primary-container font-bold px-6 py-2.5 rounded-lg transition-transform hover:scale-105 active:scale-95 shadow-lg shadow-primary/20" href="/register">Ücretsiz Dene</a>
+</div>
+</div>
+</nav>
+<main class="pt-20">
+<!-- Hero Header -->
+<header class="glass-header pt-24 pb-32 px-6 text-white text-center">
+<div class="max-w-4xl mx-auto">
+<nav class="flex justify-center items-center gap-2 mb-6 text-sm font-medium opacity-80">
+<a class="hover:underline" href="/">Ana Sayfa</a>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span>Özellikler</span>
+</nav>
+<h1 class="text-5xl md:text-7xl font-black tracking-tighter mb-6 font-headline">Platform Özellikleri</h1>
+<p class="text-xl md:text-2xl font-light opacity-90 max-w-2xl mx-auto leading-relaxed">
+                    İşletmenizi yönetmek ve büyütmek için ihtiyacınız olan tüm araçlar tek bir platformda birleşti.
+                </p>
+</div>
+</header>
+<!-- Feature Category Tabs -->
+<div class="max-w-7xl mx-auto px-6 -mt-10">
+<div class="bg-surface-container-lowest rounded-2xl shadow-2xl shadow-blue-900/10 p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-2 overflow-x-auto w-full no-scrollbar pb-2 md:pb-0">
+<button class="px-5 py-2.5 rounded-full bg-primary text-white font-bold whitespace-nowrap">Tümü</button>
+<button class="px-5 py-2.5 rounded-full text-on-surface-variant font-medium hover:bg-surface-container transition-colors whitespace-nowrap">Müşteri Yönetimi</button>
+<button class="px-5 py-2.5 rounded-full text-on-surface-variant font-medium hover:bg-surface-container transition-colors whitespace-nowrap">Servis İşlemleri</button>
+<button class="px-5 py-2.5 rounded-full text-on-surface-variant font-medium hover:bg-surface-container transition-colors whitespace-nowrap">Stok &amp; Parça</button>
+<button class="px-5 py-2.5 rounded-full text-on-surface-variant font-medium hover:bg-surface-container transition-colors whitespace-nowrap">Finans</button>
+<button class="px-5 py-2.5 rounded-full text-on-surface-variant font-medium hover:bg-surface-container transition-colors whitespace-nowrap">Raporlama</button>
+<button class="px-5 py-2.5 rounded-full text-on-surface-variant font-medium hover:bg-surface-container transition-colors whitespace-nowrap">Mobil</button>
+</div>
+<div class="relative w-full md:w-72">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-2.5 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary text-sm" placeholder="Özellik ara..." type="text"/>
+</div>
+</div>
+</div>
+<!-- Main Features Bento Grid -->
+<section class="max-w-7xl mx-auto px-6 py-24">
+<div class="bento-grid">
+<!-- Section A: CRM -->
+<div class="col-span-12 md:col-span-7 bg-surface-container-lowest p-8 rounded-3xl relative overflow-hidden group">
+<div class="flex flex-col h-full relative z-10">
+<span class="material-symbols-outlined text-primary text-4xl mb-4" data-icon="groups">groups</span>
+<h3 class="text-3xl font-black mb-4 font-headline">CRM &amp; Müşteri Yönetimi</h3>
+<p class="text-on-surface-variant mb-6 text-lg leading-relaxed">Müşterilerinizle olan bağınızı güçlendirin. Araç geçmişinden özel hatırlatıcılara kadar her şey elinizin altında.</p>
+<ul class="space-y-3 mt-auto">
+<li class="flex items-center gap-3 font-medium"><span class="material-symbols-outlined text-secondary text-sm">check_circle</span> Detaylı müşteri profilleri ve notlar</li>
+<li class="flex items-center gap-3 font-medium"><span class="material-symbols-outlined text-secondary text-sm">check_circle</span> Araç servis ve parça değişim geçmişi</li>
+<li class="flex items-center gap-3 font-medium"><span class="material-symbols-outlined text-secondary text-sm">check_circle</span> Otomatik SMS ve E-posta hatırlatıcıları</li>
+</ul>
+</div>
+<img class="absolute -right-20 -bottom-10 w-80 opacity-10 group-hover:opacity-20 transition-opacity rotate-12" data-alt="Close up of a tablet screen displaying a sophisticated CRM dashboard with customer profiles and charts in a clean UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuApOOepFBg-jyj-TIwJnjEOB1VWxi0s0zLa_bPpxQkCOO0inZQupMaXpjawSezmcQkSf2oJlW_yjij9IyQB8VoT81Si6SiT_klamJdjoWezKHIvaHC_ZYmJLEz5wm1Tas9iCi5DWWEAuwQJblOZJFnxcznk7ln8uokYGHCR4ESMEANLqS0ZkxzErksiwxJbAe_5FtmXzX_hALOTSlxbt_YVTX9Ok3B6RPFlRdyuFFjnLPydcODQNaWesShcgkRXAHTFRgqbHbcg5MCS"/>
+</div>
+<!-- Section B: Servis Yönetimi -->
+<div class="col-span-12 md:col-span-5 bg-surface-container-high p-8 rounded-3xl group">
+<div class="h-12 w-12 bg-primary-container rounded-xl flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-white" data-icon="home_repair_service">home_repair_service</span>
+</div>
+<h3 class="text-2xl font-black mb-4 font-headline">Servis Yönetimi</h3>
+<p class="text-on-surface-variant mb-6">Dijital iş emirleri ve anlık takip ile atölye verimliliğini %40 artırın.</p>
+<div class="space-y-4">
+<div class="bg-surface-container-lowest p-4 rounded-xl flex items-center justify-between">
+<span class="font-bold">Dijital Ekspertiz Formu</span>
+<span class="material-symbols-outlined text-primary">arrow_forward</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl flex items-center justify-between">
+<span class="font-bold">Teknisyen Atama &amp; Takip</span>
+<span class="material-symbols-outlined text-primary">arrow_forward</span>
+</div>
+</div>
+</div>
+<!-- Section C: Stok Yönetimi -->
+<div class="col-span-12 md:col-span-4 bg-surface-container-low p-8 rounded-3xl">
+<span class="material-symbols-outlined text-tertiary text-4xl mb-4" data-icon="inventory_2">inventory_2</span>
+<h3 class="text-2xl font-black mb-4 font-headline">Stok Yönetimi</h3>
+<p class="text-on-surface-variant mb-8">Parça stoklarını barkod sistemi ile anlık takip edin, kritik seviye uyarıları alın.</p>
+<div class="flex items-center gap-4">
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-3/4"></div>
+</div>
+<span class="text-xs font-bold text-tertiary">Kritik Stok</span>
+</div>
+</div>
+<!-- Section D: Finansal Suite -->
+<div class="col-span-12 md:col-span-8 bg-on-surface text-white p-8 rounded-3xl relative overflow-hidden">
+<div class="relative z-10 flex flex-col md:flex-row gap-8 items-center">
+<div class="md:w-1/2">
+<h3 class="text-3xl font-black mb-4 font-headline">Finansal Suite</h3>
+<p class="opacity-70 mb-6 text-lg leading-relaxed">Faturalandırma, ödeme tahsilatı ve detaylı kar analizi ile finansal kontrol sizde olsun.</p>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-white/5 p-4 rounded-2xl">
+<div class="text-2xl font-bold mb-1">₺240K+</div>
+<div class="text-xs opacity-50">Aylık Tahsilat Takibi</div>
+</div>
+<div class="bg-white/5 p-4 rounded-2xl">
+<div class="text-2xl font-bold mb-1">0 Hata</div>
+<div class="text-xs opacity-50">Fatura Entegrasyonu</div>
+</div>
+</div>
+</div>
+<div class="md:w-1/2 bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/5">
+<div class="flex justify-between items-center mb-6">
+<span class="font-bold">Gelir Grafiği</span>
+<span class="text-xs bg-secondary-container text-on-secondary-container px-2 py-1 rounded-full font-bold">+12.4%</span>
+</div>
+<div class="h-32 flex items-end gap-2">
+<div class="w-full bg-primary h-1/2 rounded-t-sm"></div>
+<div class="w-full bg-primary h-2/3 rounded-t-sm"></div>
+<div class="w-full bg-primary h-3/4 rounded-t-sm"></div>
+<div class="w-full bg-primary h-full rounded-t-sm"></div>
+<div class="w-full bg-white/20 h-1/2 rounded-t-sm"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Reporting Capabilities (Tabbed Interface) -->
+<section class="bg-surface-container-low py-24">
+<div class="max-w-7xl mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-4xl font-black mb-4 font-headline">Gelişmiş Raporlama Kabiliyetleri</h2>
+<p class="text-on-surface-variant max-w-xl mx-auto">Veriye dayalı kararlar alarak işletmenizin geleceğini bugünden şekillendirin.</p>
+</div>
+<div class="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-xl border border-outline-variant/10">
+<div class="flex border-b border-outline-variant/10 overflow-x-auto no-scrollbar">
+<button class="px-8 py-6 font-bold text-primary border-b-4 border-primary whitespace-nowrap">Servis İstatistikleri</button>
+<button class="px-8 py-6 font-bold text-on-surface-variant opacity-60 hover:opacity-100 whitespace-nowrap">Finansal Raporlar</button>
+<button class="px-8 py-6 font-bold text-on-surface-variant opacity-60 hover:opacity-100 whitespace-nowrap">Stok Durum Analizi</button>
+</div>
+<div class="p-8 md:p-12 grid md:grid-cols-2 gap-12 items-center">
+<div>
+<h4 class="text-2xl font-black mb-6">Servis Verimlilik Analizi</h4>
+<div class="space-y-6">
+<div class="flex gap-4">
+<div class="h-10 w-10 shrink-0 bg-surface-container rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">speed</span>
+</div>
+<div>
+<div class="font-bold mb-1">Ortalama İşlem Süresi</div>
+<div class="text-sm text-on-surface-variant leading-relaxed">Servis girişinden teslimata kadar geçen süreyi teknisyen bazlı analiz edin.</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="h-10 w-10 shrink-0 bg-surface-container rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">repeat</span>
+</div>
+<div>
+<div class="font-bold mb-1">Tekrar Gelen Araç Oranı</div>
+<div class="text-sm text-on-surface-variant leading-relaxed">Müşteri memnuniyetini ve servis kalitesini dönüş verileriyle ölçümleyin.</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface p-8 rounded-2xl relative">
+<div class="flex justify-between items-end h-48 gap-4">
+<div class="w-full bg-primary-container/30 h-32 rounded-lg"></div>
+<div class="w-full bg-primary-container/30 h-40 rounded-lg"></div>
+<div class="w-full bg-primary-container h-48 rounded-lg relative group">
+<div class="absolute -top-12 left-1/2 -translate-x-1/2 bg-on-surface text-white text-xs px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity font-bold">%94 Verim</div>
+</div>
+<div class="w-full bg-primary-container/30 h-36 rounded-lg"></div>
+<div class="w-full bg-primary-container/30 h-44 rounded-lg"></div>
+</div>
+<div class="flex justify-between mt-4 text-xs font-bold text-on-surface-variant">
+<span>Pzt</span><span>Sal</span><span>Çar</span><span>Per</span><span>Cum</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Integration Ecosystem -->
+<section class="py-24 max-w-7xl mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-3xl font-black mb-4 font-headline">Güçlü İş Birlikleri ve Entegrasyonlar</h2>
+<p class="text-on-surface-variant">Favori araçlarınızla kusursuz uyum içinde çalışın.</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+<div class="bg-surface-container-low h-24 rounded-2xl flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer">
+<span class="font-bold text-lg opacity-50">QuickBooks</span>
+</div>
+<div class="bg-surface-container-low h-24 rounded-2xl flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer">
+<span class="font-bold text-lg opacity-50">Stripe</span>
+</div>
+<div class="bg-surface-container-low h-24 rounded-2xl flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer">
+<span class="font-bold text-lg opacity-50 text-green-600">WhatsApp</span>
+</div>
+<div class="bg-surface-container-low h-24 rounded-2xl flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer">
+<span class="font-bold text-lg opacity-50">Google</span>
+</div>
+<div class="bg-surface-container-low h-24 rounded-2xl flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer">
+<span class="font-bold text-lg opacity-50">EDM Bilişim</span>
+</div>
+<div class="bg-surface-container-low h-24 rounded-2xl flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer">
+<span class="font-bold text-lg opacity-50">Trendyol</span>
+</div>
+</div>
+</section>
+<!-- Comparison Table -->
+<section class="py-24 bg-surface">
+<div class="max-w-7xl mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-4xl font-black mb-4 font-headline">Neden ÖNCÜ?</h2>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full border-separate border-spacing-y-4">
+<thead>
+<tr>
+<th class="p-6 text-left text-xl font-black">Özellik</th>
+<th class="p-6 text-center bg-primary text-white rounded-t-2xl">ÖNCÜ V.1.9</th>
+<th class="p-6 text-center text-on-surface-variant/50">Geleneksel Yazılım</th>
+<th class="p-6 text-center text-on-surface-variant/50">Manuel / Excel</th>
+</tr>
+</thead>
+<tbody>
+<tr class="bg-surface-container-lowest">
+<td class="p-6 font-bold rounded-l-2xl">Bulut Erişim (7/24 Her Yerden)</td>
+<td class="p-6 text-center text-primary"><span class="material-symbols-outlined" data-weight="fill">check_circle</span></td>
+<td class="p-6 text-center text-outline-variant"><span class="material-symbols-outlined">cancel</span></td>
+<td class="p-6 text-center text-outline-variant rounded-r-2xl"><span class="material-symbols-outlined">cancel</span></td>
+</tr>
+<tr class="bg-surface-container-low">
+<td class="p-6 font-bold rounded-l-2xl">Otomatik Yedekleme</td>
+<td class="p-6 text-center text-primary"><span class="material-symbols-outlined" data-weight="fill">check_circle</span></td>
+<td class="p-6 text-center text-outline-variant"><span class="material-symbols-outlined">info</span></td>
+<td class="p-6 text-center text-outline-variant rounded-r-2xl"><span class="material-symbols-outlined">cancel</span></td>
+</tr>
+<tr class="bg-surface-container-lowest">
+<td class="p-6 font-bold rounded-l-2xl">Mobil Uygulama (iOS/Android)</td>
+<td class="p-6 text-center text-primary"><span class="material-symbols-outlined" data-weight="fill">check_circle</span></td>
+<td class="p-6 text-center text-outline-variant"><span class="material-symbols-outlined">cancel</span></td>
+<td class="p-6 text-center text-outline-variant rounded-r-2xl"><span class="material-symbols-outlined">cancel</span></td>
+</tr>
+<tr class="bg-surface-container-low">
+<td class="p-6 font-bold rounded-l-2xl">Yapay Zeka Tahminleme</td>
+<td class="p-6 text-center text-primary"><span class="material-symbols-outlined" data-weight="fill">check_circle</span></td>
+<td class="p-6 text-center text-outline-variant"><span class="material-symbols-outlined">cancel</span></td>
+<td class="p-6 text-center text-outline-variant rounded-r-2xl"><span class="material-symbols-outlined">cancel</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- Feature CTA -->
+<section class="max-w-7xl mx-auto px-6 py-12">
+<div class="bg-gradient-to-r from-[#ff8c00] to-[#e63946] rounded-[3rem] p-12 md:p-24 text-center text-white relative overflow-hidden">
+<div class="relative z-10">
+<h2 class="text-4xl md:text-6xl font-black mb-8 font-headline leading-tight">Tüm Özellikleri Keşfetmeye<br/>Hazır mısınız?</h2>
+<p class="text-xl mb-12 opacity-90 max-w-2xl mx-auto">Hemen şimdi 14 günlük ücretsiz deneme sürümünü başlatın. Kredi kartı gerekmez.</p>
+<div class="flex flex-col sm:flex-row justify-center gap-6">
+<button class="bg-white text-on-surface font-black px-10 py-5 rounded-2xl hover:bg-opacity-90 transition-all text-lg">Hemen Başla</button>
+<button class="bg-black/20 backdrop-blur-md text-white font-black px-10 py-5 rounded-2xl hover:bg-black/30 transition-all text-lg">Demoyu İzle</button>
+</div>
+</div>
+<!-- Decorative element -->
+<div class="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-3xl -mr-48 -mt-48 rounded-full"></div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-slate-950 text-slate-400 pt-20 pb-10 border-t border-slate-800">
+<div class="max-w-7xl mx-auto px-6">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-12 mb-20">
+<div class="col-span-2 md:col-span-1">
+<div class="text-xl font-bold text-white mb-8">ÖNCÜ</div>
+<p class="text-sm leading-relaxed mb-6">1985'ten bu yana otomotiv sektöründe dijital dönüşümün öncüsü.</p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center hover:bg-primary transition-colors" href="#"><span class="material-symbols-outlined text-white text-xl">language</span></a>
+<a class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center hover:bg-primary transition-colors" href="#"><span class="material-symbols-outlined text-white text-xl">share</span></a>
+</div>
+</div>
+<div>
+<h5 class="text-white font-bold mb-6">Ürün</h5>
+<ul class="space-y-4 text-sm">
+<li><a class="hover:text-blue-400 transition-colors" href="/features">Özellikler</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/pricing">Fiyatlandırma</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/register">Demo</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Güncellemeler</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-bold mb-6">Destek</h5>
+<ul class="space-y-4 text-sm">
+<li><a class="hover:text-blue-400 transition-colors" href="/contact">Yardım Merkezi</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Dokümantasyon</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Video Eğitimler</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Topluluk</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-bold mb-6">Kurumsal</h5>
+<ul class="space-y-4 text-sm">
+<li><a class="hover:text-blue-400 transition-colors" href="/about">Hakkımızda</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/about">Kariyer</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/contact">Gizlilik</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/contact">Koşullar</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-4 text-xs tracking-wider">
+<div>© 2026 ÖNCÜ. Tüm hakları saklıdır.</div>
+<div class="flex gap-8">
+<span>Türkiye'de ❤️ ile üretilmiştir.</span>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

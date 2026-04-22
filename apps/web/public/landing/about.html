@@ -1,0 +1,427 @@
+﻿<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hakkımızda - ÖNCÜ OTO SERVİS PROGRAMI V.1.9</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-surface": "#121c2a",
+              "on-primary-container": "#eeefff",
+              "primary": "#004ac6",
+              "on-primary-fixed-variant": "#003ea8",
+              "inverse-primary": "#b4c5ff",
+              "surface-container-low": "#eff4ff",
+              "secondary-fixed-dim": "#4edea3",
+              "on-background": "#121c2a",
+              "on-tertiary-fixed": "#341100",
+              "tertiary-fixed": "#ffdbca",
+              "on-tertiary-fixed-variant": "#783200",
+              "inverse-surface": "#27313f",
+              "surface-bright": "#f8f9ff",
+              "surface-container-highest": "#d9e3f6",
+              "secondary-container": "#6cf8bb",
+              "on-secondary-fixed-variant": "#005236",
+              "on-tertiary": "#ffffff",
+              "primary-container": "#2563eb",
+              "inverse-on-surface": "#eaf1ff",
+              "secondary": "#006c49",
+              "on-secondary": "#ffffff",
+              "surface-container-lowest": "#ffffff",
+              "surface-container": "#e6eeff",
+              "primary-fixed": "#dbe1ff",
+              "error": "#ba1a1a",
+              "surface": "#f8f9ff",
+              "tertiary-fixed-dim": "#ffb690",
+              "on-primary": "#ffffff",
+              "primary-fixed-dim": "#b4c5ff",
+              "surface-tint": "#0053db",
+              "on-secondary-container": "#00714d",
+              "on-error": "#ffffff",
+              "tertiary": "#8e3c00",
+              "on-tertiary-container": "#ffece5",
+              "surface-dim": "#d0dbed",
+              "surface-variant": "#d9e3f6",
+              "outline-variant": "#c3c6d7",
+              "on-secondary-fixed": "#002113",
+              "outline": "#737686",
+              "surface-container-high": "#dee9fc",
+              "tertiary-container": "#b54e00",
+              "on-primary-fixed": "#00174b",
+              "background": "#f8f9ff",
+              "secondary-fixed": "#6ffbbe",
+              "on-surface-variant": "#434655",
+              "on-error-container": "#93000a",
+              "error-container": "#ffdad6"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- TopNavBar (Shared Component) -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl shadow-xl shadow-blue-900/5 transition-all">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-6 h-20">
+<div class="text-lg font-black tracking-tighter text-slate-900">ÖNCÜ OTO SERVİS PROGRAMI V.1.9</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/">Ana Sayfa</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/features">Özellikler</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/pricing">Fiyatlandırma</a>
+<a class="text-blue-600 font-bold border-b-2 border-blue-600 transition-colors" href="/about">Hakkımızda</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/blog">Blog</a>
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-colors" href="/contact">İletişim</a>
+</div>
+<div class="flex items-center gap-4">
+<a class="text-slate-600 font-medium hover:text-blue-700 transition-transform active:scale-90 px-4 py-2" href="/login">Giriş Yap</a>
+<a class="bg-primary-container text-on-primary-container font-bold px-6 py-2.5 rounded-lg transition-transform hover:scale-105 active:scale-95 shadow-lg shadow-primary/20" href="/register">Ücretsiz Dene</a>
+</div>
+</div>
+</nav>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative h-[716px] flex items-center overflow-hidden">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="ultra-modern automotive repair shop with sleek diagnostic equipment, cinematic blue lighting and dark moody atmosphere, professional aesthetics" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHoQ-t2MX-a2NsleEGHajb5ykPu2q5Dob8uGHrCjl-jHU-_wpENbGycQlbvSrHFQB7hxrJ6fIStgQ-L9fS9t7nLC6K_Putt02-TRFdR1DwSMlQNh42nURVWNglUhvjzcFdqo82gVymbthRpCjvQE2qXaWibD9cKpATYGCD3BoaaIc24yqvIMWFqkuAFCEZ74gmkawqqMuk2MKxSebD53EPUioB8K2n1-IleGyPumkv3P33npqGz78xHGa0h5QAMsumsNyK4PWz-udQ"/>
+<div class="absolute inset-0 bg-gradient-to-r from-on-surface via-on-surface/80 to-transparent"></div>
+<div class="relative max-w-7xl mx-auto px-6 w-full">
+<span class="inline-block px-4 py-1.5 mb-6 rounded-full bg-primary/20 text-inverse-primary font-bold tracking-widest text-xs border border-primary/30 uppercase">Kurumsal Miras</span>
+<h1 class="text-5xl md:text-7xl font-black text-white max-w-3xl leading-tight tracking-tighter mb-8">
+                    1985'ten Beri Oto Servis Sektöründe
+                </h1>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 py-8 border-t border-white/10 max-w-4xl">
+<div class="flex flex-col">
+<span class="text-3xl font-black text-white">38+</span>
+<span class="text-surface-variant/80 text-sm font-medium uppercase tracking-wider">Yıl Deneyim</span>
+</div>
+<div class="flex flex-col">
+<span class="text-3xl font-black text-white">1000+</span>
+<span class="text-surface-variant/80 text-sm font-medium uppercase tracking-wider">Mutlu Müşteri</span>
+</div>
+<div class="flex flex-col">
+<span class="text-3xl font-black text-white">50.000+</span>
+<span class="text-surface-variant/80 text-sm font-medium uppercase tracking-wider">Servis İşlemi</span>
+</div>
+<div class="flex flex-col">
+<span class="text-3xl font-black text-white">%99.8</span>
+<span class="text-surface-variant/80 text-sm font-medium uppercase tracking-wider">Memnuniyet</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Our Story Section -->
+<section class="py-24 bg-surface">
+<div class="max-w-7xl mx-auto px-6">
+<div class="grid md:grid-cols-12 gap-16">
+<div class="md:col-span-5">
+<h2 class="text-4xl font-black text-on-surface tracking-tighter mb-6">Hikayemiz</h2>
+<div class="space-y-6 text-on-surface-variant text-lg leading-relaxed">
+<p>ÖNCÜ'nün temelleri, otomotiv dünyasının mekanik ustalığa dayandığı 1985 yılında, küçük bir tamirhanede atıldı. O günkü vizyonumuz bugün olduğu gibi basitti: En karmaşık sorunlara en güvenilir çözümleri üretmek.</p>
+<p>Yıllar içinde mekanik ustalığımızı dijital zeka ile birleştirerek, Türkiye'nin en kapsamlı SaaS tabanlı oto servis yönetim platformunu inşa ettik. Bugün, binlerce servis noktasına güç veriyoruz.</p>
+</div>
+<div class="mt-12 p-8 rounded-2xl bg-surface-container-low border-l-4 border-primary">
+<span class="material-symbols-outlined text-primary text-4xl mb-4" data-icon="format_quote">format_quote</span>
+<p class="italic text-on-surface font-medium text-xl">"Gelecek, mekanik tecrübenin veri ile buluştuğu noktadadır."</p>
+</div>
+</div>
+<!-- Timeline -->
+<div class="md:col-span-7 space-y-12 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-primary before:via-surface-container-highest before:to-transparent">
+<!-- 1985 -->
+<div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+<div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-primary text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+<span class="material-symbols-outlined text-sm" data-icon="flag">flag</span>
+</div>
+<div class="w-[calc(100%-4rem)] md:w-[45%] p-6 rounded-2xl bg-surface-container-lowest shadow-xl shadow-blue-900/5">
+<time class="font-black text-primary text-xl">1985</time>
+<div class="text-on-surface font-bold text-lg mt-1 tracking-tight">İlk Temeller Atıldı</div>
+<p class="text-on-surface-variant mt-2">Ankara'da küçük bir mekanik atölye olarak hizmete başladık.</p>
+</div>
+</div>
+<!-- 2005 -->
+<div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+<div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-primary text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+<span class="material-symbols-outlined text-sm" data-icon="computer">computer</span>
+</div>
+<div class="w-[calc(100%-4rem)] md:w-[45%] p-6 rounded-2xl bg-surface-container-lowest shadow-xl shadow-blue-900/5">
+<time class="font-black text-primary text-xl">2005</time>
+<div class="text-on-surface font-bold text-lg mt-1 tracking-tight">Dijital Dönüşümün İlk Adımı</div>
+<p class="text-on-surface-variant mt-2">İlk yerel ağ tabanlı servis kayıt yazılımımızı devreye aldık.</p>
+</div>
+</div>
+<!-- 2018 -->
+<div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+<div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-primary text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+<span class="material-symbols-outlined text-sm" data-icon="cloud">cloud</span>
+</div>
+<div class="w-[calc(100%-4rem)] md:w-[45%] p-6 rounded-2xl bg-surface-container-lowest shadow-xl shadow-blue-900/5">
+<time class="font-black text-primary text-xl">2018</time>
+<div class="text-on-surface font-bold text-lg mt-1 tracking-tight">SaaS Dönüşümü</div>
+<p class="text-on-surface-variant mt-2">ÖNCÜ V.1.0 ile bulut tabanlı ekosisteme geçiş yaptık.</p>
+</div>
+</div>
+<!-- 2026 -->
+<div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+<div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-secondary text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+<span class="material-symbols-outlined text-sm" data-icon="rocket_launch">rocket_launch</span>
+</div>
+<div class="w-[calc(100%-4rem)] md:w-[45%] p-6 rounded-2xl bg-surface-container-lowest shadow-xl shadow-blue-900/5 border-2 border-secondary/20">
+<time class="font-black text-secondary text-xl">2026</time>
+<div class="text-on-surface font-bold text-lg mt-1 tracking-tight">Global Vizyon</div>
+<p class="text-on-surface-variant mt-2">Yapay zeka destekli otonom teşhis sistemleri ile global pazara açılıyoruz.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Mission & Values -->
+<section class="py-24 bg-surface-container-low">
+<div class="max-w-7xl mx-auto px-6">
+<div class="text-center mb-16">
+<h2 class="text-4xl font-black text-on-surface tracking-tighter">Değerlerimiz</h2>
+<p class="text-on-surface-variant mt-4 max-w-2xl mx-auto">Sektördeki liderliğimizi borçlu olduğumuz dört temel direk.</p>
+</div>
+<div class="grid md:grid-cols-4 gap-8">
+<div class="bg-surface-container-lowest p-8 rounded-2xl border-t-4 border-primary shadow-lg shadow-blue-900/5">
+<div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary" data-icon="groups">groups</span>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-3">Müşteri Odaklılık</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Servis sahiplerinin ve son kullanıcıların ihtiyaçlarını her şeyin önünde tutuyoruz.</p>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-2xl border-t-4 border-secondary shadow-lg shadow-blue-900/5">
+<div class="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-secondary" data-icon="lightbulb">lightbulb</span>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-3">İnovasyon</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Yazılım ve teknolojiyi otomotiv tecrübemizle harmanlayarak sürekli yenileniyoruz.</p>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-2xl border-t-4 border-tertiary shadow-lg shadow-blue-900/5">
+<div class="w-12 h-12 bg-tertiary/10 rounded-xl flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-tertiary" data-icon="verified_user">verified_user</span>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-3">Güven</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Şeffaf işlem süreçleri ve veri güvenliği ile ekosistemimize güven aşılıyoruz.</p>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-2xl border-t-4 border-primary-fixed-dim shadow-lg shadow-blue-900/5">
+<div class="w-12 h-12 bg-primary-fixed-dim/10 rounded-xl flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary-fixed-dim" data-icon="high_quality">high_quality</span>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-3">Kalite</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Ölçülebilir başarı ve hatasız yazılım mimarisi ile standartları biz belirliyoruz.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Team Section -->
+<section class="py-24 bg-surface">
+<div class="max-w-7xl mx-auto px-6">
+<div class="flex justify-between items-end mb-16">
+<div class="max-w-xl">
+<h2 class="text-4xl font-black text-on-surface tracking-tighter">Yönetim Ekibimiz</h2>
+<p class="text-on-surface-variant mt-4">Yazılım mühendislerinden mekanik uzmanlara, sektörün en iyileri ÖNCÜ için bir arada.</p>
+</div>
+</div>
+<div class="grid md:grid-cols-4 gap-8">
+<!-- Member 1 -->
+<div class="group">
+<div class="relative overflow-hidden rounded-2xl aspect-[4/5] mb-6">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="professional male CEO in luxury office setting, wearing modern suit, confident expression, soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClz0mnfyxBTI5aq_G6ITSf0SHJ2SE7Fz_q-fpTPRsDQJH4uDzwBKXS2KA5U2xBdKOjm6DMgrroCIxsQD4KVTMtGWQleW1HfWX6Ri1DmsfI3YQ9WYv9Fgub0HCD-3_T6zlIjVI28V3IBaV4hhWOfIucrrpZUuCYOut4a6EoSLVRrpvwnfC1OCnZobdr7pQcsFgG7VqAGUxHlr8b6XG1ZQH0ZYAmVYVQjoncdkl92FBlhGX61i-7u0p_YhVe-lKfD2Lg1eYnS3smDhFt"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-white" data-icon="share">share</span>
+</div>
+</div>
+</div>
+<h4 class="text-xl font-black text-on-surface">Caner Öncü</h4>
+<p class="text-primary font-bold text-sm tracking-widest uppercase mb-2">CEO &amp; Kurucu</p>
+<p class="text-on-surface-variant text-sm">30 yıllık otomotiv tecrübesini teknoloji ile birleştiren vizyoner lider.</p>
+</div>
+<!-- Member 2 -->
+<div class="group">
+<div class="relative overflow-hidden rounded-2xl aspect-[4/5] mb-6">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="professional female CTO in tech environment, blurred data screens in background, tech-savvy and focused look" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpDQV2NIqF0NGYZL87vq6TdXtrI2uls5F21-Fgnha-1wm33zZCDktyZWs0WX0MnS1FgLcdxoJ8wklEcvyCUCJHCtI-7dHZr4R7rEWDrNtnpTzs3Qu2MkHJukeiybtoKDMPRl_NHBnHU-5CdHijXaP_CeWdydvNJH4gLXCdlHnFeLKIRsN43yPudv97Tbf79OBFNSECLfwMAurNYKzbFbwTnufPcrJkbCir8jOpJCqXRxHEl3GhL9nUkElV8v2EEhjWghJWFTVjAA_0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6"></div>
+</div>
+<h4 class="text-xl font-black text-on-surface">Selin Aksoy</h4>
+<p class="text-primary font-bold text-sm tracking-widest uppercase mb-2">CTO</p>
+<p class="text-on-surface-variant text-sm">Bulut bilişim ve yapay zeka mimarileri konusunda uzman baş mühendisimiz.</p>
+</div>
+<!-- Member 3 -->
+<div class="group">
+<div class="relative overflow-hidden rounded-2xl aspect-[4/5] mb-6">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="smiling male professional in operations role, modern office workspace, collaborative atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCf7sAvHnzoU9UhCwH3K_tmWV2Jab0k8phzvOnSG4Ha7vi9iE4iUwfanTLa81Mm0pyYTXeoxBbXSbcU-MZE8urC5Yxfxgur1MZ9g_YLPasxWJbqM43NNX21wycNML-kq8vahU82cdcMleb3BpgyLTy87XLqDeDoRJXCMhUm4GCoqxu5I82XTBipc6jyUxv0nXf4MK1JyHyRsF4Yy7cpmg3Lia5V8vJkZ93p7G6qw8jCbucJOa9oMEe78Ev8RYy0UYt2Ov4hre9-R8Ig"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6"></div>
+</div>
+<h4 class="text-xl font-black text-on-surface">Murat Demir</h4>
+<p class="text-primary font-bold text-sm tracking-widest uppercase mb-2">Operasyon Direktörü</p>
+<p class="text-on-surface-variant text-sm">Saha operasyonları ve iş geliştirme süreçlerinin arkasındaki stratejik beyin.</p>
+</div>
+<!-- Member 4 -->
+<div class="group">
+<div class="relative overflow-hidden rounded-2xl aspect-[4/5] mb-6">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="professional female head of support, friendly and approachable look, clean corporate headshot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCO5aPlONIRVi3JyIXfpZ8WZF_rB2CBcu_nTxR0mQHQ5Bb087wfPy7luZrX0P11RugJeprV9jpYezRdBWszvSZbY9WqdVxpMO05PAkkocRSy3-FzNZtKo5pXf-Sna9maTZWn6anJ_NnF7OLmMPNpYCED271kP09kU1j60oms32X6KvvtWXmaG027YsuTxVzA9qgbmTM0hZ1-himllSHnIyH1FdLt-NZae5c96P1rnsBqcs9SGOM4n3pc5xpCjA5E1FuF3qwqjzDTDh6"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6"></div>
+</div>
+<h4 class="text-xl font-black text-on-surface">Elif Yılmaz</h4>
+<p class="text-primary font-bold text-sm tracking-widest uppercase mb-2">Destek Birimi Başkanı</p>
+<p class="text-on-surface-variant text-sm">Kullanıcı memnuniyeti ve teknik destek süreçlerinin titiz yöneticisi.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Achievements -->
+<section class="py-16 bg-surface-container-high/50 border-y border-outline-variant/10">
+<div class="max-w-7xl mx-auto px-6">
+<div class="flex flex-wrap items-center justify-center gap-12 md:gap-24 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-4xl text-on-surface" data-icon="verified">verified</span>
+<span class="font-black text-on-surface tracking-tighter">ISO 9001</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-4xl text-on-surface" data-icon="security">security</span>
+<span class="font-black text-on-surface tracking-tighter">SOC 2 TYPE II</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-4xl text-on-surface" data-icon="encrypted">encrypted</span>
+<span class="font-black text-on-surface tracking-tighter">KVKK COMPLIANT</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-4xl text-on-surface" data-icon="cloud_done">cloud_done</span>
+<span class="font-black text-on-surface tracking-tighter">AWS PARTNER</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Office Locations & Map -->
+<section class="py-24 bg-surface">
+<div class="max-w-7xl mx-auto px-6">
+<div class="grid md:grid-cols-2 gap-16 items-center">
+<div>
+<h2 class="text-4xl font-black text-on-surface tracking-tighter mb-8">Ofislerimiz</h2>
+<div class="space-y-8">
+<div class="flex items-start gap-6 p-6 rounded-2xl bg-surface-container-low">
+<div class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-white" data-icon="location_on">location_on</span>
+</div>
+<div>
+<h4 class="text-xl font-bold text-on-surface mb-1">İstanbul Genel Merkez</h4>
+<p class="text-on-surface-variant">Levent Plaza, Büyükdere Cad. No:126<br/>Beşiktaş, İstanbul</p>
+</div>
+</div>
+<div class="flex items-start gap-6 p-6 rounded-2xl bg-surface-container-lowest shadow-lg shadow-blue-900/5">
+<div class="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-white" data-icon="apartment">apartment</span>
+</div>
+<div>
+<h4 class="text-xl font-bold text-on-surface mb-1">Ankara Ar-Ge Merkezi</h4>
+<p class="text-on-surface-variant">ODTÜ Teknokent, Galyum Blok No:14<br/>Çankaya, Ankara</p>
+</div>
+</div>
+</div>
+</div>
+<div class="relative h-[400px] rounded-3xl overflow-hidden shadow-2xl shadow-blue-900/10">
+<img class="w-full h-full object-cover" data-alt="minimalist map of Turkey showing Istanbul and Ankara connections with glowing blue dots and lines" data-location="Istanbul" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwatA8k_-xHYyt-DbDXlvK6-RuZ8Z38EVBrjsFg_JwTE8WUuHaES2ng35Z5SFsH-ACss82eUYMTZANNkeZUbNX-R2EyPh3LhD4Wk4V3HPJNZlwFcZzcvt67vUmtN7HRSD36o36zTSJg5I7L2cnaRnO7w0-QwAoAXmwoBwSs2PB2u4J5mPNYaTfleD-V1PpHwVYw_xuSFoD2qeMU8RU_ir16drCjKCvl56Q-Dj4D-h2mXBztj7CPI9WMq6FIQMiO77tNCCf6d8pNv65"/>
+<div class="absolute top-1/4 left-1/4">
+<div class="relative flex items-center justify-center">
+<span class="absolute inline-flex h-12 w-12 animate-ping rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex h-4 w-4 rounded-full bg-primary border-2 border-white"></span>
+</div>
+</div>
+<div class="absolute top-1/2 left-1/3 ml-12">
+<div class="relative flex items-center justify-center">
+<span class="absolute inline-flex h-12 w-12 animate-ping rounded-full bg-secondary opacity-75"></span>
+<span class="relative inline-flex h-4 w-4 rounded-full bg-secondary border-2 border-white"></span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Careers CTA -->
+<section class="py-24 bg-on-surface relative overflow-hidden">
+<div class="absolute inset-0 opacity-10">
+<div class="absolute top-0 left-0 w-96 h-96 bg-primary rounded-full blur-[120px]"></div>
+<div class="absolute bottom-0 right-0 w-96 h-96 bg-secondary rounded-full blur-[120px]"></div>
+</div>
+<div class="max-w-7xl mx-auto px-6 relative z-10 text-center">
+<h2 class="text-4xl md:text-5xl font-black text-white tracking-tighter mb-6">Ekibimize Katılın</h2>
+<p class="text-surface-variant text-xl max-w-2xl mx-auto mb-12">Otomotiv teknolojilerinin geleceğini bizimle birlikte şekillendirmek ister misiniz? Büyüyen ekibimizde kariyer fırsatlarını keşfedin.</p>
+<div class="flex flex-wrap justify-center gap-6">
+<button class="bg-primary hover:bg-primary-container text-white font-bold py-4 px-10 rounded-xl transition-all scale-100 hover:scale-105 active:scale-95 shadow-xl shadow-primary/30">Açık Pozisyonları Gör</button>
+<button class="bg-white/10 hover:bg-white/20 text-white font-bold py-4 px-10 rounded-xl transition-all backdrop-blur-md">Bize Yazın</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="bg-slate-950 text-slate-400 pt-20 pb-10 border-t border-slate-800">
+<div class="max-w-7xl mx-auto px-6">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-12 mb-20">
+<div class="col-span-2 md:col-span-1">
+<div class="text-xl font-bold text-white mb-8">ÖNCÜ</div>
+<p class="text-sm leading-relaxed mb-6">1985'ten bu yana otomotiv sektöründe dijital dönüşümün öncüsü.</p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center hover:bg-primary transition-colors" href="#"><span class="material-symbols-outlined text-white text-xl">language</span></a>
+<a class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center hover:bg-primary transition-colors" href="#"><span class="material-symbols-outlined text-white text-xl">share</span></a>
+</div>
+</div>
+<div>
+<h5 class="text-white font-bold mb-6">Ürün</h5>
+<ul class="space-y-4 text-sm">
+<li><a class="hover:text-blue-400 transition-colors" href="/features">Özellikler</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/pricing">Fiyatlandırma</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/register">Demo</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Güncellemeler</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-bold mb-6">Destek</h5>
+<ul class="space-y-4 text-sm">
+<li><a class="hover:text-blue-400 transition-colors" href="/contact">Yardım Merkezi</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Dokümantasyon</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Video Eğitimler</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/blog">Topluluk</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-bold mb-6">Kurumsal</h5>
+<ul class="space-y-4 text-sm">
+<li><a class="hover:text-blue-400 transition-colors" href="/about">Hakkımızda</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/about">Kariyer</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/contact">Gizlilik</a></li>
+<li><a class="hover:text-blue-400 transition-colors" href="/contact">Koşullar</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-4 text-xs tracking-wider">
+<div>© 2026 ÖNCÜ. Tüm hakları saklıdır.</div>
+<div class="flex gap-8">
+<span>Türkiye'de ❤️ ile üretilmiştir.</span>
+</div>
+</div>
+</div>
+</footer>
+</body></html>
