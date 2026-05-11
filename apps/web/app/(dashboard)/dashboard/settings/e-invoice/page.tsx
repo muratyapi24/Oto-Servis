@@ -1,8 +1,9 @@
 import { prisma } from "@repo/database";
 import { auth } from "@/auth";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
+import SettingsWorkspaceNav from "@/components/dashboard/settings/SettingsWorkspaceNav";
 import Link from "next/link";
-import { ArrowLeft, Zap } from "lucide-react";
+import { Zap } from "lucide-react";
 
 export const metadata = {
   title: "e-Fatura Ayarları | MS Oto Servis",
@@ -44,17 +45,9 @@ export default async function EInvoicePage() {
     <PageShell
       title="e-Fatura / e-Arşiv Ayarları"
       subtitle="GİB uyumlu elektronik fatura entegrasyonu."
-      sectionLabel="Muhasebe"
-      actions={
-        <Link
-          href="/dashboard/settings"
-          className="flex items-center gap-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-sm font-bold transition-all"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Geri Dön
-        </Link>
-      }
+      sectionLabel="Ayarlar"
     >
+      <SettingsWorkspaceNav />
       <div className="space-y-6">
         {/* Entegratör Durumu */}
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">

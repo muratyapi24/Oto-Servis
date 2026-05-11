@@ -2,8 +2,8 @@ import { prisma } from "@repo/database";
 import { auth } from "@/auth";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
 import NotificationListClient from "./NotificationListClient";
-import Link from "next/link";
-import { Bell, Settings } from "lucide-react";
+import NotificationWorkspaceNav from "@/components/dashboard/notifications/NotificationWorkspaceNav";
+import type { NotificationListItem } from "@/components/dashboard/notifications/types";
 
 export const metadata = {
   title: "Bildirimler | MS Oto Servis",
@@ -43,36 +43,16 @@ export default async function NotificationsPage() {
   ]);
 
   const successRate = recentTotal > 0 ? Math.round((recentSent / recentTotal) * 100) : 0;
+  const serializedNotifications = JSON.parse(JSON.stringify(notifications)) as NotificationListItem[];
 
   return (
     <PageShell
       title="Bildirimler"
       subtitle="Gönderilen bildirimlerin geçmişini görüntüleyin ve yönetin."
       sectionLabel="İletişim"
-      actions={
-        <div className="flex items-center gap-3">
-          <Link
-            href="/dashboard/notifications/templates"
-            className="flex items-center gap-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-sm font-bold transition-all"
-          >
-            Şablonlar
-          </Link>
-          <Link
-            href="/dashboard/notifications/bulk"
-            className="flex items-center gap-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-sm font-bold transition-all"
-          >
-            Toplu Bildirim
-          </Link>
-          <Link
-            href="/dashboard/settings/notifications"
-            className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2.5 rounded-xl text-sm font-black shadow-sm transition-all"
-          >
-            <Settings className="w-4 h-4" />
-            Sağlayıcı Ayarları
-          </Link>
-        </div>
-      }
     >
+      <NotificationWorkspaceNav />
+
       {/* Özet Kart */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
@@ -99,7 +79,7 @@ export default async function NotificationsPage() {
       </div>
 
       <NotificationListClient
-        notifications={JSON.parse(JSON.stringify(notifications))}
+        notifications={serializedNotifications}
         total={total}
       />
     </PageShell>

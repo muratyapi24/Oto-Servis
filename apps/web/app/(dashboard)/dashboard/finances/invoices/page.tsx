@@ -2,6 +2,7 @@ import { getAllInvoices } from "@/lib/actions/invoice-list.actions";
 import { getCustomers } from "@/lib/actions/customer.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
 import InvoiceListClient from "@/components/dashboard/finances/InvoiceListClient";
+import FinanceWorkspaceNav from "@/components/dashboard/finances/FinanceWorkspaceNav";
 
 export const metadata = {
   title: "Tüm Faturalar | MS Oto Servis"
@@ -26,6 +27,7 @@ export default async function InvoicesPage() {
       subtitle="Tüm satış ve alış faturalarınızı görüntüleyin, filtreleyin ve yönetin."
       sectionLabel="Finans"
     >
+      <FinanceWorkspaceNav />
       <InvoiceListClient invoices={invoices} customers={customers} />
     </PageShell>
   );

@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation";
 import { getInvoiceById } from "@/lib/actions/finance.actions";
 import PageShell from "@/components/dashboard/PageShell";
+import FinanceWorkspaceNav from "@/components/dashboard/finances/FinanceWorkspaceNav";
 import InvoiceDetailClient from "./InvoiceDetailClient";
 
 export const metadata = { title: "Fatura Detayı | MS Oto Servis" };
@@ -24,6 +25,7 @@ export default async function InvoiceDetailPage({
       subtitle="Fatura detayları, ödeme geçmişi ve ödeme kaydetme."
       sectionLabel="Finans & Kasa"
     >
+      <FinanceWorkspaceNav />
       <InvoiceDetailClient invoice={result.invoice} />
     </PageShell>
   );

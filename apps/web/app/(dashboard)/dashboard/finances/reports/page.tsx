@@ -1,5 +1,6 @@
 import { getMonthlyFinanceReport } from "@/lib/actions/finance.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
+import FinanceWorkspaceNav from "@/components/dashboard/finances/FinanceWorkspaceNav";
 import MonthlyReportClient from "@/components/dashboard/finances/MonthlyReportClient";
 
 export const metadata = {
@@ -19,6 +20,7 @@ export default async function ReportsPage() {
       subtitle="Son 6 aylık gelir-gider trendlerini ve kârlılık performansınızı analiz edin."
       sectionLabel="Finans Raporları"
     >
+      <FinanceWorkspaceNav />
       <MonthlyReportClient data={reportRes.data || []} />
     </PageShell>
   );

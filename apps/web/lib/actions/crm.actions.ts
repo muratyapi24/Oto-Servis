@@ -2,7 +2,6 @@
 
 import { prisma } from "@repo/database";
 import { guardTenant } from "@/lib/guards";
-import { revalidatePath } from "next/cache";
 import dayjs from "dayjs";
 
 // ─────────────────────────────────────────────────────────────
@@ -179,7 +178,6 @@ export async function sendMaintenanceReminderSms(
 export async function sendBulkMaintenanceReminders() {
   const g = await guardTenant();
   if ("error" in g) return g as never;
-  const { tenantId } = g;
   try {
 
     const result = await getUpcomingMaintenances();

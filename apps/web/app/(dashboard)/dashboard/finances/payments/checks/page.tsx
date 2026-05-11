@@ -2,6 +2,7 @@ import { prisma } from "@repo/database";
 import { auth } from "@/auth";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
 import ChecksClient from "@/components/dashboard/finances/ChecksClient";
+import FinanceWorkspaceNav from "@/components/dashboard/finances/FinanceWorkspaceNav";
 import { getUpcomingCheckPayments } from "@/lib/actions/payment.actions";
 
 export const metadata = {
@@ -37,6 +38,7 @@ export default async function ChecksPage() {
       subtitle="Vadesi yaklaşan ve bekleyen çek/senetleri yönetin."
       sectionLabel="Finans & Kasa"
     >
+      <FinanceWorkspaceNav />
       <ChecksClient
         checks={JSON.parse(JSON.stringify(allChecks))}
         upcomingCount={upcomingResult.data?.payments?.length ?? 0}

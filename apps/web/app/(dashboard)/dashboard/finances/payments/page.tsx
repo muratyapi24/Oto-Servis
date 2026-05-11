@@ -1,5 +1,6 @@
 import { getPayments } from "@/lib/actions/payment.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
+import FinanceWorkspaceNav from "@/components/dashboard/finances/FinanceWorkspaceNav";
 import PaymentListClient, { type PaymentListItem } from "@/components/dashboard/finances/PaymentListClient";
 import Link from "next/link";
 import { CreditCard, Plus } from "lucide-react";
@@ -24,23 +25,16 @@ export default async function PaymentsPage() {
       subtitle="Tahsilatları kaydedin ve ödeme geçmişini takip edin."
       sectionLabel="Finans & Kasa"
       actions={
-        <div className="flex items-center gap-3">
-          <Link
-            href="/dashboard/finances/payments/checks"
-            className="flex items-center gap-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-sm font-bold transition-all"
-          >
-            Çek/Senet Takibi
-          </Link>
-          <Link
-            href="/dashboard/finances/payments/new"
-            className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-5 py-2.5 rounded-xl text-sm font-black shadow-sm transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            Ödeme Kaydet
-          </Link>
-        </div>
+        <Link
+          href="/dashboard/finances/payments/new"
+          className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-5 py-2.5 rounded-xl text-sm font-black shadow-sm transition-all"
+        >
+          <Plus className="w-4 h-4" />
+          Ödeme Kaydet
+        </Link>
       }
     >
+      <FinanceWorkspaceNav />
       {payments.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-16 text-center">
           <CreditCard className="w-12 h-12 mx-auto text-slate-300 mb-4" />

@@ -1,5 +1,8 @@
 import { getNotificationProviders } from "@/lib/actions/notification-provider.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
+import NotificationWorkspaceNav from "@/components/dashboard/notifications/NotificationWorkspaceNav";
+import type { NotificationProviderListItem } from "@/components/dashboard/notifications/types";
+import SettingsWorkspaceNav from "@/components/dashboard/settings/SettingsWorkspaceNav";
 import NotificationSettingsClient from "./NotificationSettingsClient";
 
 export const metadata = {
@@ -13,14 +16,16 @@ export default async function NotificationSettingsPage() {
     return <PageError message={result.error ?? "Sağlayıcılar yüklenemedi."} />;
   }
 
-  const providers = (result.data?.providers ?? []) as any[];
+  const providers = (result.data?.providers ?? []) as NotificationProviderListItem[];
 
   return (
     <PageShell
       title="Bildirim Sağlayıcıları"
       subtitle="SMS, WhatsApp ve e-posta sağlayıcılarını yapılandırın."
-      sectionLabel="Ayarlar"
+      sectionLabel="İletişim"
     >
+      <SettingsWorkspaceNav />
+      <NotificationWorkspaceNav />
       <NotificationSettingsClient providers={providers} />
     </PageShell>
   );

@@ -256,13 +256,31 @@ describe("RBAC: route permission matrix", () => {
   it("izin verilen dashboard alt rotalarına erişim sağlar", () => {
     expect(canAccess("TENANT_ADMIN", "/dashboard/services/service-001")).toBe(true);
     expect(canAccess("RECEPTIONIST", "/dashboard/appointments/calendar")).toBe(true);
+    expect(canAccess("RECEPTIONIST", "/dashboard/customers/maintenance")).toBe(true);
     expect(canAccess("ACCOUNTANT", "/dashboard/finances/invoices/inv-001")).toBe(true);
+    expect(canAccess("ACCOUNTANT", "/dashboard/finances/payments/checks")).toBe(true);
+    expect(canAccess("ACCOUNTANT", "/dashboard/finances/reports")).toBe(true);
     expect(canAccess("ACCOUNTANT", "/dashboard/finance/invoices/inv-001")).toBe(true);
+    expect(canAccess("TENANT_ADMIN", "/dashboard/crm")).toBe(true);
+    expect(canAccess("TENANT_ADMIN", "/dashboard/settings/locations")).toBe(true);
+    expect(canAccess("TENANT_ADMIN", "/dashboard/settings/notifications")).toBe(true);
+    expect(canAccess("TENANT_ADMIN", "/dashboard/settings/e-invoice")).toBe(true);
+    expect(canAccess("TENANT_ADMIN", "/dashboard/settings/parasut")).toBe(true);
+    expect(canAccess("TENANT_ADMIN", "/dashboard/settings/billing")).toBe(true);
+    expect(canAccess("TENANT_ADMIN", "/dashboard/settings/referral")).toBe(true);
+    expect(canAccess("TENANT_ADMIN", "/dashboard/locations")).toBe(true);
+    expect(canAccess("RECEPTIONIST", "/dashboard/notifications/bulk")).toBe(true);
   });
 
   it("izin verilmeyen dashboard alt rotalarını reddeder", () => {
     expect(canAccess("MECHANIC", "/dashboard/finances/payments")).toBe(false);
+    expect(canAccess("MECHANIC", "/dashboard/finances/reports")).toBe(false);
     expect(canAccess("ACCOUNTANT", "/dashboard/services/service-001")).toBe(false);
+    expect(canAccess("ACCOUNTANT", "/dashboard/customers/maintenance")).toBe(false);
+    expect(canAccess("ACCOUNTANT", "/dashboard/settings/locations")).toBe(false);
+    expect(canAccess("ACCOUNTANT", "/dashboard/settings/billing")).toBe(false);
+    expect(canAccess("ACCOUNTANT", "/dashboard/settings/referral")).toBe(false);
+    expect(canAccess("RECEPTIONIST", "/dashboard/settings/notifications")).toBe(false);
     expect(canAccess("CUSTOMER", "/dashboard/services")).toBe(false);
   });
 });

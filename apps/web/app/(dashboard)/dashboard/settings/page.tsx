@@ -1,6 +1,7 @@
 import { getTenantProfile, getTenantAnalytics } from "@/lib/actions/tenant.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
 import SettingsFormClient from "@/components/dashboard/settings/SettingsFormClient";
+import SettingsWorkspaceNav from "@/components/dashboard/settings/SettingsWorkspaceNav";
 
 export const metadata = {
   title: "Firma Profili ve Ayarlar | MS Oto Servis"
@@ -23,8 +24,9 @@ export default async function SettingsPage() {
     <PageShell
       title="Firma Profili & Ayarlar"
       subtitle="Firma bilgilerinizi güncelleyin ve entegrasyon ayarlarınızı yönetin."
-      sectionLabel="Yönetim"
+      sectionLabel="Ayarlar"
     >
+      <SettingsWorkspaceNav />
       <SettingsFormClient initialData={initialData} metrics={metrics} />
     </PageShell>
   );

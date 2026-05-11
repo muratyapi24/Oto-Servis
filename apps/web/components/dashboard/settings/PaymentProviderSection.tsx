@@ -4,10 +4,25 @@ import { useState } from "react";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 
 interface PaymentProviderSectionProps {
-  currentSettings: Record<string, any>;
+  currentSettings: PaymentProviderSettings;
 }
 
 type Provider = "IYZICO" | "PAYTR" | "NONE";
+
+type PaymentProviderSettings = {
+  paymentProvider?: Provider | string | null;
+  paymentApiKey?: string | null;
+  paymentSecretKey?: string | null;
+  paymentMerchantId?: string | null;
+};
+
+function isProvider(value: unknown): value is Provider {
+  return value === "IYZICO" || value === "PAYTR" || value === "NONE";
+}
+
+function stringSetting(value: unknown) {
+  return typeof value === "string" ? value : "";
+}
 
 async function savePaymentSettings(
   provider: Provider,
@@ -23,17 +38,11 @@ export default function PaymentProviderSection({
   currentSettings,
 }: PaymentProviderSectionProps) {
   const [provider, setProvider] = useState<Provider>(
-    (currentSettings.paymentProvider as Provider) ?? "NONE"
+    isProvider(currentSettings.paymentProvider) ? currentSettings.paymentProvider : "NONE"
   );
-  const [apiKey, setApiKey] = useState(
-    currentSettings.paymentApiKey ?? ""
-  );
-  const [secretKey, setSecretKey] = useState(
-    currentSettings.paymentSecretKey ?? ""
-  );
-  const [merchantId, setMerchantId] = useState(
-    currentSettings.paymentMerchantId ?? ""
-  );
+  const [apiKey, setApiKey] = useState(stringSetting(currentSettings.paymentApiKey));
+  const [secretKey, setSecretKey] = useState(stringSetting(currentSettings.paymentSecretKey));
+  const [merchantId, setMerchantId] = useState(stringSetting(currentSettings.paymentMerchantId));
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
 

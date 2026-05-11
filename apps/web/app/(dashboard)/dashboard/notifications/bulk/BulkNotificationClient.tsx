@@ -9,6 +9,8 @@ import {
   startBulkCampaign,
   previewBulkCampaign,
 } from "@/lib/actions/bulk-notification.actions";
+import type { BulkCampaignInput } from "@/lib/validations/notification";
+import type { BulkCampaignListItem } from "@/components/dashboard/notifications/types";
 
 const SEGMENT_LABELS: Record<string, string> = {
   ALL: "Tüm Müşteriler",
@@ -25,14 +27,14 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   FAILED: { label: "Başarısız", color: "text-red-600" },
 };
 
-export default function BulkNotificationClient({ campaigns }: { campaigns: any[] }) {
+export default function BulkNotificationClient({ campaigns }: { campaigns: BulkCampaignListItem[] }) {
   const router = useRouter();
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [startingId, setStartingId] = useState<string | null>(null);
   const [previewCount, setPreviewCount] = useState<number | null>(null);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<BulkCampaignInput>({
     name: "",
     channel: "SMS",
     messageBody: "",
@@ -50,7 +52,7 @@ export default function BulkNotificationClient({ campaigns }: { campaigns: any[]
   const handleCreate = async () => {
     setIsSubmitting(true);
     try {
-      const result = await createBulkCampaign(formData as any);
+      const result = await createBulkCampaign(formData);
       if (result.success) {
         setShowForm(false);
         router.refresh();
@@ -102,7 +104,7 @@ export default function BulkNotificationClient({ campaigns }: { campaigns: any[]
               <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-2">Kanal</label>
               <select
                 value={formData.channel}
-                onChange={(e) => setFormData({ ...formData, channel: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, channel: e.target.value as BulkCampaignInput["channel"] })}
                 className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
               >
                 <option value="SMS">SMS</option>
@@ -113,7 +115,7 @@ export default function BulkNotificationClient({ campaigns }: { campaigns: any[]
               <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-2">Hedef Segment</label>
               <select
                 value={formData.segmentType}
-                onChange={(e) => setFormData({ ...formData, segmentType: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, segmentType: e.target.value as BulkCampaignInput["segmentType"] })}
                 className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
               >
                 {Object.entries(SEGMENT_LABELS).map(([k, v]) => (

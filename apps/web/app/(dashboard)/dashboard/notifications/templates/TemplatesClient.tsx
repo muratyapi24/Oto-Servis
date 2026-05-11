@@ -9,6 +9,8 @@ import {
   deleteNotificationTemplate,
   previewTemplate,
 } from "@/lib/actions/template.actions";
+import type { NotificationTemplateInput } from "@/lib/validations/notification";
+import type { NotificationTemplateListItem } from "@/components/dashboard/notifications/types";
 
 const TYPE_LABELS: Record<string, string> = {
   SERVICE_STATUS: "Servis Durumu",
@@ -25,15 +27,15 @@ const CHANNEL_LABELS: Record<string, string> = {
   EMAIL: "E-posta",
 };
 
-export default function TemplatesClient({ templates }: { templates: any[] }) {
+export default function TemplatesClient({ templates }: { templates: NotificationTemplateListItem[] }) {
   const router = useRouter();
   const [showForm, setShowForm] = useState(false);
-  const [editingTemplate, setEditingTemplate] = useState<any>(null);
+  const [editingTemplate, setEditingTemplate] = useState<NotificationTemplateListItem | null>(null);
   const [previewText, setPreviewText] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<NotificationTemplateInput>({
     type: "SERVICE_STATUS",
     channel: "SMS",
     name: "",
@@ -51,9 +53,9 @@ export default function TemplatesClient({ templates }: { templates: any[] }) {
     setIsSubmitting(true);
     try {
       if (editingTemplate) {
-        await updateNotificationTemplate(editingTemplate.id, formData as any);
+        await updateNotificationTemplate(editingTemplate.id, formData);
       } else {
-        await createNotificationTemplate(formData as any);
+        await createNotificationTemplate(formData);
       }
       setShowForm(false);
       setEditingTemplate(null);
@@ -63,7 +65,7 @@ export default function TemplatesClient({ templates }: { templates: any[] }) {
     }
   };
 
-  const handleEdit = (template: any) => {
+  const handleEdit = (template: NotificationTemplateListItem) => {
     setEditingTemplate(template);
     setFormData({
       type: template.type,
@@ -124,7 +126,7 @@ export default function TemplatesClient({ templates }: { templates: any[] }) {
               <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-2">Tür</label>
               <select
                 value={formData.type}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value as NotificationTemplateInput["type"] })}
                 className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
               >
                 {Object.entries(TYPE_LABELS).map(([k, v]) => (
@@ -136,7 +138,7 @@ export default function TemplatesClient({ templates }: { templates: any[] }) {
               <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-2">Kanal</label>
               <select
                 value={formData.channel}
-                onChange={(e) => setFormData({ ...formData, channel: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, channel: e.target.value as NotificationTemplateInput["channel"] })}
                 className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
               >
                 {Object.entries(CHANNEL_LABELS).map(([k, v]) => (

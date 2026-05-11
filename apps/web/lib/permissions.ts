@@ -12,7 +12,7 @@ export const ROLE_ACCESS_MATRIX = {
     // Müşteri & Araç
     "/dashboard/customers",
     "/dashboard/vehicles",
-    "/dashboard/crm",
+    "/dashboard/crm", // Legacy redirect: /dashboard/customers/maintenance
     // Personel
     "/dashboard/mechanics",
     "/dashboard/staff",
@@ -57,7 +57,7 @@ export const ROLE_ACCESS_MATRIX = {
     "/dashboard/appointments",
     "/dashboard/customers",
     "/dashboard/vehicles",
-    "/dashboard/crm",
+    "/dashboard/crm", // Legacy redirect: /dashboard/customers/maintenance
     "/dashboard/notifications",
     "/m/firma/panel",
     "/m/firma/kuyruk",
@@ -98,7 +98,15 @@ export function canAccess(role: string | undefined | null, href: string): boolea
   });
 }
 
-export function filterNavItems(role: string | null | undefined, items: any[]): any[] {
+type FilterableNavItem = {
+  href?: string;
+  name?: string;
+};
+
+export function filterNavItems<TItem extends FilterableNavItem>(
+  role: string | null | undefined,
+  items: TItem[]
+): TItem[] {
   if (!role) return [];
   if (role === "SUPER_ADMIN") return items; // SA her şeyi görebilir (teknik olarak firma menüsünde de)
   

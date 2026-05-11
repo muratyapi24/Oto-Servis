@@ -5,6 +5,11 @@ import { prisma } from "@repo/database";
 import { guardTenantRole, guardTenant } from "@/lib/guards";
 import { checkFeature, checkLimit } from "@/lib/subscription-guard";
 
+function revalidateLocationPaths() {
+  revalidatePath("/dashboard/settings/locations");
+  revalidatePath("/dashboard/locations");
+}
+
 export async function getLocations() {
   const g = await guardTenant();
   if ("error" in g) return g;
@@ -67,7 +72,7 @@ export async function createLocation(data: {
     },
   });
 
-  revalidatePath("/dashboard/locations");
+  revalidateLocationPaths();
   return { success: "Lokasyon oluşturuldu", locationId: location.id };
 }
 
@@ -99,7 +104,7 @@ export async function updateLocation(
     data,
   });
 
-  revalidatePath("/dashboard/locations");
+  revalidateLocationPaths();
   return { success: "Lokasyon güncellendi" };
 }
 
@@ -118,7 +123,7 @@ export async function deleteLocation(id: string) {
 
   await prisma.location.delete({ where: { id, tenantId } });
 
-  revalidatePath("/dashboard/locations");
+  revalidateLocationPaths();
   return { success: "Lokasyon silindi" };
 }
 

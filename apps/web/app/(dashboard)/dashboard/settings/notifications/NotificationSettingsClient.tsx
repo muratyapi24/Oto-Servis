@@ -8,6 +8,7 @@ import {
   toggleNotificationProvider,
   testNotificationProvider,
 } from "@/lib/actions/notification-provider.actions";
+import type { NotificationProviderListItem } from "@/components/dashboard/notifications/types";
 
 const PROVIDER_TYPES = [
   { type: "SMS", label: "SMS", providers: ["TWILIO", "NETGSM", "ILETI_MERKEZI"] },
@@ -47,7 +48,7 @@ const PROVIDER_FIELDS: Record<string, Array<{ key: string; label: string; type?:
   ],
 };
 
-export default function NotificationSettingsClient({ providers }: { providers: any[] }) {
+export default function NotificationSettingsClient({ providers }: { providers: NotificationProviderListItem[] }) {
   const router = useRouter();
   const [showForm, setShowForm] = useState(false);
   const [selectedType, setSelectedType] = useState("SMS");
@@ -200,9 +201,9 @@ export default function NotificationSettingsClient({ providers }: { providers: a
                   <div className="flex-1">
                     <p className="font-bold text-slate-800">{p.provider}</p>
                     <p className="text-xs text-slate-400">
-                      {Object.entries((p.settings as Record<string, string>) ?? {})
+                      {Object.entries(p.settings ?? {})
                         .slice(0, 2)
-                        .map(([k, v]) => `${k}: ${v}`)
+                        .map(([k, v]) => `${k}: ${String(v)}`)
                         .join(" · ")}
                     </p>
                   </div>

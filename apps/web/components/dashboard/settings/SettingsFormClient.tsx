@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,15 +18,13 @@ import {
   Wrench,
   BellRing,
   CheckCircle,
-  Plus,
   CreditCard,
   Zap,
 } from "lucide-react";
 import PaymentProviderSection from "./PaymentProviderSection";
-import Image from "next/image";
 
 interface SettingsFormClientProps {
-  initialData: any;
+  initialData?: SettingsFormInitialData | null;
   metrics?: {
     staffCount: number;
     monthlyVolume: number;
@@ -34,13 +33,25 @@ interface SettingsFormClientProps {
   };
 }
 
+type TenantSettings = NonNullable<UpdateTenantInput["settings"]> & {
+  paymentProvider?: string | null;
+  paymentApiKey?: string | null;
+  paymentSecretKey?: string | null;
+  paymentMerchantId?: string | null;
+};
+
+type SettingsFormInitialData = Partial<Omit<UpdateTenantInput, "settings">> & {
+  settings?: Partial<TenantSettings> | null;
+};
+
 export default function SettingsFormClient({ initialData, metrics }: SettingsFormClientProps) {
   const [isPending, setIsPending] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  const defaultSettings = typeof initialData?.settings === 'object' && initialData?.settings !== null 
-    ? initialData.settings 
+  const settings = initialData?.settings;
+  const defaultSettings: Partial<TenantSettings> = typeof settings === 'object' && settings !== null 
+    ? settings 
     : {};
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<UpdateTenantInput>({
@@ -194,7 +205,9 @@ export default function SettingsFormClient({ initialData, metrics }: SettingsFor
                                    <MapPin className="w-8 h-8 drop-shadow-lg opacity-50 relative top-2" />
                                 </div>
                                 <div className="absolute inset-0 bg-blue-900/10 flex items-center justify-center opacity-0 group-hover/map:opacity-100 transition-opacity backdrop-blur-sm">
-                                    <button type="button" className="bg-white text-blue-800 px-4 py-1.5 text-xs font-bold rounded-full shadow-lg">Konumu Düzenle</button>
+                                    <Link href="/dashboard/settings/locations" className="bg-white text-blue-800 px-4 py-1.5 text-xs font-bold rounded-full shadow-lg">
+                                        Şubeleri Yönet
+                                    </Link>
                                 </div>
                             </div>
                         </div>
@@ -213,9 +226,9 @@ export default function SettingsFormClient({ initialData, metrics }: SettingsFor
                         <h3 className="text-2xl font-black mb-2 tracking-tight">Ekip Yönetimi</h3>
                         <p className="text-sm opacity-80 mb-6 leading-relaxed font-medium">Birim erişim seviyelerini yönetin, usta davetleri yollayın ve personel takibini düzenleyin.</p>
                     </div>
-                    <button type="button" className="relative z-10 w-full bg-white text-blue-800 py-3.5 rounded-xl font-black flex items-center justify-center hover:bg-slate-50 transition-all active:scale-95 shadow-md text-sm">
+                    <Link href="/dashboard/mechanics" className="relative z-10 w-full bg-white text-blue-800 py-3.5 rounded-xl font-black flex items-center justify-center hover:bg-slate-50 transition-all active:scale-95 shadow-md text-sm">
                         Personel Listesine Git
-                    </button>
+                    </Link>
                 </div>
             </div>
 
@@ -365,7 +378,9 @@ export default function SettingsFormClient({ initialData, metrics }: SettingsFor
       <section className="mt-12">
         <div className="flex items-center justify-between mb-8 border-b border-slate-200 pb-4">
             <h2 className="text-xl md:text-2xl font-black tracking-tight text-slate-900">Servis Kapasitesi & Performans</h2>
-            <button className="text-xs font-bold text-blue-600 underline hover:text-blue-800 transition-colors">Tüm Raporu İncele</button>
+            <Link href="/dashboard/analytics" className="text-xs font-bold text-blue-600 underline hover:text-blue-800 transition-colors">
+              Tüm Raporu İncele
+            </Link>
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -409,7 +424,7 @@ export default function SettingsFormClient({ initialData, metrics }: SettingsFor
           <h2 className="text-xl md:text-2xl font-black tracking-tight text-slate-900">Entegrasyonlar</h2>
         </div>
         
-        <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm flex items-center justify-between group hover:border-blue-200 transition-colors cursor-pointer" onClick={() => window.location.href = '/dashboard/settings/parasut'}>
+        <Link href="/dashboard/settings/parasut" className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm flex items-center justify-between group hover:border-blue-200 transition-colors">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
                <Settings2 className="w-6 h-6" />
@@ -419,12 +434,12 @@ export default function SettingsFormClient({ initialData, metrics }: SettingsFor
               <p className="text-sm text-slate-500 font-medium">Cari hesap bağlama ve otomatik fatura senkronizasyonu.</p>
             </div>
           </div>
-          <button type="button" className="px-5 py-2 text-sm font-bold text-blue-700 bg-blue-50 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-colors">
+          <span className="px-5 py-2 text-sm font-bold text-blue-700 bg-blue-50 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-colors">
             Yönet
-          </button>
-        </div>
+          </span>
+        </Link>
 
-        <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm flex items-center justify-between group hover:border-purple-200 transition-colors cursor-pointer" onClick={() => window.location.href = '/dashboard/settings/e-invoice'}>
+        <Link href="/dashboard/settings/e-invoice" className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm flex items-center justify-between group hover:border-purple-200 transition-colors">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center group-hover:bg-purple-600 group-hover:text-white transition-colors duration-300">
                <Zap className="w-6 h-6" />
@@ -434,12 +449,12 @@ export default function SettingsFormClient({ initialData, metrics }: SettingsFor
               <p className="text-sm text-slate-500 font-medium">GİB uyumlu elektronik fatura ve entegratör ayarları.</p>
             </div>
           </div>
-          <button type="button" className="px-5 py-2 text-sm font-bold text-purple-700 bg-purple-50 rounded-xl group-hover:bg-purple-600 group-hover:text-white transition-colors">
+          <span className="px-5 py-2 text-sm font-bold text-purple-700 bg-purple-50 rounded-xl group-hover:bg-purple-600 group-hover:text-white transition-colors">
             Yönet
-          </button>
-        </div>
+          </span>
+        </Link>
 
-        <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm flex items-center justify-between group hover:border-blue-200 transition-colors cursor-pointer" onClick={() => window.location.href = '/dashboard/settings/notifications'}>
+        <Link href="/dashboard/settings/notifications" className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm flex items-center justify-between group hover:border-blue-200 transition-colors">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300">
                <BellRing className="w-6 h-6" />
@@ -449,10 +464,10 @@ export default function SettingsFormClient({ initialData, metrics }: SettingsFor
               <p className="text-sm text-slate-500 font-medium">NetGSM, Twilio ve İleti Merkezi SMS/WhatsApp entegrasyonu.</p>
             </div>
           </div>
-          <button type="button" className="px-5 py-2 text-sm font-bold text-emerald-700 bg-emerald-50 rounded-xl group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+          <span className="px-5 py-2 text-sm font-bold text-emerald-700 bg-emerald-50 rounded-xl group-hover:bg-emerald-600 group-hover:text-white transition-colors">
             Yönet
-          </button>
-        </div>
+          </span>
+        </Link>
 
         {/* Ödeme Sağlayıcısı */}
         <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">

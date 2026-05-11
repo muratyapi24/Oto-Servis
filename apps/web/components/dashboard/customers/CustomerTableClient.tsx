@@ -5,16 +5,16 @@ import Link from "next/link";
 import CustomerFormModal from "./CustomerFormModal";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { deleteCustomer } from "@/lib/actions/customer.actions";
-import { Phone, MessageCircle, History, Star, Car, Edit, Trash2, UserPlus, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { History, Star, Edit, Trash2, UserPlus, Search } from "lucide-react";
+import { getCustomerDisplayName, type CustomerListItem } from "./types";
 
-export default function CustomerTableClient({ initialCustomers }: { initialCustomers: any[] }) {
-  const [customers, setCustomers] = useState(initialCustomers); // Note: Since the page fetches mostly this is just for initial UI, usually you'd rely on Next.js revalidatePath routing. We map directly to initialCustomers to be reactive to server changes.
+export default function CustomerTableClient({ initialCustomers }: { initialCustomers: CustomerListItem[] }) {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerListItem | null>(null);
   
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [customerToDelete, setCustomerToDelete] = useState<any>(null);
+  const [customerToDelete, setCustomerToDelete] = useState<CustomerListItem | null>(null);
   
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -23,12 +23,12 @@ export default function CustomerTableClient({ initialCustomers }: { initialCusto
     setIsFormModalOpen(true);
   };
 
-  const handleEdit = (customer: any) => {
+  const handleEdit = (customer: CustomerListItem) => {
     setSelectedCustomer(customer);
     setIsFormModalOpen(true);
   };
 
-  const handleDeleteClick = (customer: any) => {
+  const handleDeleteClick = (customer: CustomerListItem) => {
     setCustomerToDelete(customer);
     setIsDeleteModalOpen(true);
   };
@@ -45,8 +45,8 @@ export default function CustomerTableClient({ initialCustomers }: { initialCusto
   // Filter based on search
   const filteredCustomers = initialCustomers.filter(c => {
     const term = searchTerm.toLowerCase();
-    const name = c.type === 'INDIVIDUAL' ? `${c.firstName} ${c.lastName}` : c.companyName;
-    const phone = c.phone || "";
+    const name = getCustomerDisplayName(c);
+    const phone = c.phone ?? "";
     const plate = c.vehicles?.[0]?.plate || "";
     return name?.toLowerCase().includes(term) || phone.includes(term) || plate.toLowerCase().includes(term);
   });
@@ -91,8 +91,8 @@ export default function CustomerTableClient({ initialCustomers }: { initialCusto
             {filteredCustomers.length === 0 ? (
               <tr><td colSpan={5} className="p-8 text-center text-sm font-bold text-slate-400">Sistemde aramayla eşleşen müşteri yok.</td></tr>
             ) : (
-              filteredCustomers.map((customer: any) => {
-                const name = customer.type === 'INDIVIDUAL' ? `${customer.firstName} ${customer.lastName}` : customer.companyName;
+              filteredCustomers.map((customer) => {
+                const name = getCustomerDisplayName(customer);
                 const initial = name?.charAt(0) || 'U';
                 const vehicle = customer.vehicles?.[0];
                 

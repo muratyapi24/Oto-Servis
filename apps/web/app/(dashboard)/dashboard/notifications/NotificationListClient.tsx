@@ -8,6 +8,7 @@ import {
   Download, RefreshCw, Loader2
 } from "lucide-react";
 import { exportToCsv } from "@/lib/csv-utils";
+import { getNotificationCustomerName, type NotificationListItem } from "@/components/dashboard/notifications/types";
 
 dayjs.locale("tr");
 
@@ -36,7 +37,7 @@ export default function NotificationListClient({
   notifications,
   total,
 }: {
-  notifications: any[];
+  notifications: NotificationListItem[];
   total: number;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -45,16 +46,11 @@ export default function NotificationListClient({
   const [page, setPage] = useState(1);
   const [resendingId, setResendingId] = useState<string | null>(null);
 
-  const getCustomerName = (customer: any) => {
-    if (!customer) return "—";
-    return customer.companyName || [customer.firstName, customer.lastName].filter(Boolean).join(" ") || "—";
-  };
-
   const filtered = useMemo(() => {
     return notifications.filter((n) => {
       const matchSearch =
         !searchTerm ||
-        getCustomerName(n.customer).toLowerCase().includes(searchTerm.toLowerCase()) ||
+        getNotificationCustomerName(n.customer).toLowerCase().includes(searchTerm.toLowerCase()) ||
         n.recipient.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (n.body ?? "").toLowerCase().includes(searchTerm.toLowerCase());
       const matchStatus = statusFilter === "ALL" || n.status === statusFilter;
@@ -69,7 +65,7 @@ export default function NotificationListClient({
   const handleExportCsv = () => {
     const rows = filtered.map((n) => ({
       Tarih: dayjs(n.createdAt).format("DD.MM.YYYY HH:mm"),
-      Müşteri: getCustomerName(n.customer),
+      Müşteri: getNotificationCustomerName(n.customer),
       Alıcı: n.recipient,
       Kanal: n.channel.toUpperCase(),
       Durum: STATUS_CONFIG[n.status]?.label ?? n.status,
@@ -170,7 +166,7 @@ export default function NotificationListClient({
                         {dayjs(n.createdAt).format("DD MMM HH:mm")}
                       </td>
                       <td className="px-6 py-4 font-medium text-slate-700">
-                        {getCustomerName(n.customer)}
+                        {getNotificationCustomerName(n.customer)}
                       </td>
                       <td className="px-6 py-4">
                         <span className="text-base">{channelIcon}</span>
@@ -214,7 +210,7 @@ export default function NotificationListClient({
         {totalPages > 1 && (
           <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
             <p className="text-xs text-slate-500">
-              {filtered.length} sonuçtan {(page - 1) * PAGE_SIZE + 1}–
+              {total} kayıt içinde {filtered.length} sonuçtan {(page - 1) * PAGE_SIZE + 1}–
               {Math.min(page * PAGE_SIZE, filtered.length)} gösteriliyor
             </p>
             <div className="flex items-center gap-2">

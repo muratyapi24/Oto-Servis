@@ -18,7 +18,7 @@ interface FeatureItem {
   enabled: boolean;
 }
 
-interface Plan {
+export interface BillingPlan {
   id: string;
   name: string;
   slug: string;
@@ -59,7 +59,7 @@ interface BillingClientProps {
     usage: UsageItem[];
     features: FeatureItem[];
   } | null;
-  plans: Plan[];
+  plans: BillingPlan[];
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
