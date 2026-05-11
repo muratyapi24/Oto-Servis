@@ -76,7 +76,7 @@ export default function MesajlarScreen() {
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
       >
-        {MOCK_THREADS.length === 0 ? (
+        {(__DEV__ ? MOCK_THREADS : []).length === 0 ? (
           <View style={styles.emptyState}>
             <Text style={styles.emptyIcon}>💬</Text>
             <Text style={styles.emptyTitle}>Mesaj yok</Text>
@@ -85,7 +85,7 @@ export default function MesajlarScreen() {
             </Text>
           </View>
         ) : (
-          MOCK_THREADS.map((thread) => (
+          (__DEV__ ? MOCK_THREADS : []).map((thread) => (
             <TouchableOpacity
               key={thread.id}
               style={[styles.card, Shadow.navy]}

@@ -1,7 +1,8 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 
 /**
@@ -13,11 +14,12 @@ export async function checkOnboardingStatus(): Promise<{
   currentStep?: number;
 }> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { completed: true }; // session yoksa engelleme
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g; // session yoksa engelleme
 
     const tenant = await prisma.tenant.findUnique({
-      where: { id: session.user.tenantId },
+      where: { id: tenantId },
       select: { settings: true },
     });
 
@@ -38,10 +40,10 @@ export async function checkOnboardingStatus(): Promise<{
  */
 export async function saveOnboardingStep(step: number, data: Record<string, unknown>) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const tenant = await prisma.tenant.findUnique({
       where: { id: tenantId },
@@ -82,11 +84,12 @@ export async function completeOnboardingStep1(data: {
   city?: string;
 }) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     await prisma.tenant.update({
-      where: { id: session.user.tenantId },
+      where: { id: tenantId },
       data: {
         name: data.name,
         phone: data.phone || null,
@@ -115,18 +118,19 @@ export async function completeOnboardingStep2(data: {
   theme?: string;
 }) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const tenant = await prisma.tenant.findUnique({
-      where: { id: session.user.tenantId },
+      where: { id: tenantId },
       select: { settings: true },
     });
 
     const currentSettings = (tenant?.settings as Record<string, unknown>) || {};
 
     await prisma.tenant.update({
-      where: { id: session.user.tenantId },
+      where: { id: tenantId },
       data: {
         logoUrl: data.logoUrl || null,
         slogan: data.slogan || null,
@@ -155,18 +159,19 @@ export async function completeOnboardingStep3(data: {
   openingHoursSunday?: string;
 }) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const tenant = await prisma.tenant.findUnique({
-      where: { id: session.user.tenantId },
+      where: { id: tenantId },
       select: { settings: true },
     });
 
     const currentSettings = (tenant?.settings as Record<string, unknown>) || {};
 
     await prisma.tenant.update({
-      where: { id: session.user.tenantId },
+      where: { id: tenantId },
       data: {
         settings: {
           ...currentSettings,
@@ -193,18 +198,19 @@ export async function completeOnboardingStep3(data: {
  */
 export async function completeOnboarding() {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
     const tenant = await prisma.tenant.findUnique({
-      where: { id: session.user.tenantId },
+      where: { id: tenantId },
       select: { settings: true },
     });
 
     const currentSettings = (tenant?.settings as Record<string, unknown>) || {};
 
     await prisma.tenant.update({
-      where: { id: session.user.tenantId },
+      where: { id: tenantId },
       data: {
         settings: {
           ...currentSettings,
@@ -221,7 +227,7 @@ export async function completeOnboarding() {
         module: "ONBOARDING",
         message: "Firma kurulum sihirbazı tamamlandı.",
         userId: session.user.id,
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
       },
     });
 

@@ -31,25 +31,25 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = "ma
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-900/60 dark:bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
           />
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 15 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
-            className={`relative w-full ${maxWidth} bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[90vh]`}
+            className={`relative w-full ${maxWidth} bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]`}
           >
-            <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-              <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{title}</h3>
+            <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-slate-50/50">
+              <h3 className="text-xl font-black text-slate-900 tracking-tight">{title}</h3>
               <button 
                 onClick={onClose}
-                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-white dark:hover:text-white dark:hover:bg-slate-800 rounded-full transition-colors absolute right-4 top-4 bg-slate-100 dark:bg-slate-800"
+                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-white rounded-full transition-colors absolute right-4 top-4 bg-slate-100"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-white dark:bg-slate-950">
+            <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-white">
               {children}
             </div>
           </motion.div>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { requestPlanUpgrade, requestCancelSubscription } from "@/lib/actions/subscription.actions";
 
 interface UsageItem {
@@ -78,6 +79,16 @@ export default function BillingClient({ subscription, currentPlan, usage, plans 
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const payment = searchParams.get("payment");
+    if (payment === "success") {
+      setMessage({ type: "success", text: "Ödemeniz başarıyla alındı. Aboneliğiniz aktif edildi!" });
+    } else if (payment === "failed") {
+      setMessage({ type: "error", text: "Ödeme işlemi başarısız oldu. Lütfen tekrar deneyin veya destek ile iletişime geçin." });
+    }
+  }, [searchParams]);
 
   const defaultStatus = { label: "Bilinmiyor", color: "bg-slate-100 text-slate-600" };
   const statusInfo = STATUS_LABELS[subscription?.status || ""] ?? defaultStatus;

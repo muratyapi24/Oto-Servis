@@ -6,88 +6,21 @@ import { signOut, useSession } from "next-auth/react";
 import { filterNavItems } from "@/lib/permissions";
 import { useEffect, useState } from "react";
 import { getTenantProfile } from "@/lib/actions/tenant.actions";
-
-type MenuItem = {
-  name: string;
-  href: string;
-  icon: string;
-};
-
-type MenuGroup = {
-  label: string;
-  items: MenuItem[];
-};
-
-const menuGroups: MenuGroup[] = [
-  {
-    label: "",
-    items: [
-      { name: "Genel Bakış", href: "/dashboard", icon: "dashboard" },
-    ],
-  },
-  {
-    label: "Servis",
-    items: [
-      { name: "Servis Emirleri", href: "/dashboard/services", icon: "build" },
-      { name: "Teklifler", href: "/dashboard/quotes", icon: "request_quote" },
-      { name: "Randevular", href: "/dashboard/appointments", icon: "calendar_month" },
-    ],
-  },
-  {
-    label: "Müşteri & Araç",
-    items: [
-      { name: "Müşteriler", href: "/dashboard/customers", icon: "people" },
-      { name: "Araçlar", href: "/dashboard/vehicles", icon: "directions_car" },
-      { name: "CRM & Bakım", href: "/dashboard/crm", icon: "handshake" },
-    ],
-  },
-  {
-    label: "Personel",
-    items: [
-      { name: "Personel", href: "/dashboard/mechanics", icon: "group" },
-      { name: "Vardiya Takvimi", href: "/dashboard/staff", icon: "calendar_view_week" },
-    ],
-  },
-  {
-    label: "Stok & Tedarik",
-    items: [
-      { name: "Stok & Envanter", href: "/dashboard/inventory", icon: "inventory_2" },
-      { name: "Tedarikçiler", href: "/dashboard/suppliers", icon: "local_shipping" },
-    ],
-  },
-  {
-    label: "Finans",
-    items: [
-      { name: "Finans Genel", href: "/dashboard/finances", icon: "payments" },
-      { name: "Muhasebe", href: "/dashboard/finance/accounting", icon: "calculate" },
-      { name: "Faturalar", href: "/dashboard/finance/invoices", icon: "receipt_long" },
-      { name: "Ödemeler", href: "/dashboard/finance/payments", icon: "account_balance_wallet" },
-    ],
-  },
-  {
-    label: "Analitik",
-    items: [
-      { name: "Analitik & Raporlar", href: "/dashboard/analytics", icon: "insights" },
-    ],
-  },
-  {
-    label: "Yönetim",
-    items: [
-      { name: "Bildirimler", href: "/dashboard/notifications", icon: "notifications" },
-      { name: "Lokasyonlar", href: "/dashboard/locations", icon: "location_on" },
-      { name: "Ayarlar", href: "/dashboard/settings", icon: "settings" },
-    ],
-  },
-];
+import {
+  DASHBOARD_NAV_GROUPS,
+  flattenDashboardNavGroups,
+} from "@/lib/dashboard-navigation";
+import { DASHBOARD_LAYOUT } from "@/lib/dashboard-ui-standards";
 
 // Flatten all items for permission filtering
-const allMenuItems = menuGroups.flatMap((g) => g.items);
+const allMenuItems = flattenDashboardNavGroups(DASHBOARD_NAV_GROUPS);
 
 export function Sidebar() {
   const pathname = usePathname();
 
   const { data: session } = useSession();
-  const userRole = (session?.user as any)?.role as string | undefined;
+  const userRole = session?.user?.role;
+  const tenantId = session?.user?.tenantId;
 
   const accessibleHrefs = new Set(
     filterNavItems(userRole, allMenuItems).map((i) => i.href)
@@ -100,7 +33,7 @@ export function Sidebar() {
   } | null>(null);
 
   useEffect(() => {
-    if ((session?.user as any)?.tenantId) {
+    if (tenantId) {
       getTenantProfile().then((res) => {
         if (res?.tenant) {
           setTenantInfo({
@@ -111,10 +44,12 @@ export function Sidebar() {
         }
       });
     }
-  }, [(session?.user as any)?.tenantId]);
+  }, [tenantId]);
 
   return (
-    <aside className="h-screen w-64 fixed left-0 top-0 bg-blue-50/50 flex flex-col py-4 z-50 overflow-y-auto border-r border-outline-variant/15">
+    <aside
+      className={`h-screen ${DASHBOARD_LAYOUT.sidebarWidth} fixed left-0 top-0 bg-blue-50/50 flex flex-col py-4 z-50 overflow-y-auto border-r border-outline-variant/15`}
+    >
       {/* Brand */}
       <div className="px-6 mb-6 flex items-center space-x-3 shrink-0">
         <div className="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center overflow-hidden shrink-0">
@@ -151,7 +86,7 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-2 space-y-0.5">
-        {menuGroups.map((group) => {
+        {DASHBOARD_NAV_GROUPS.map((group) => {
           const visibleItems = group.items.filter((item) =>
             accessibleHrefs.has(item.href)
           );

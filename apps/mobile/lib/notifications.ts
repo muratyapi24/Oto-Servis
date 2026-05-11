@@ -7,9 +7,10 @@ import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getApiBaseUrl } from "@/lib/api";
 
 const PUSH_TOKEN_KEY = "expo_push_token";
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
+const API_URL = getApiBaseUrl();
 
 // Bildirim gösterim ayarları
 Notifications.setNotificationHandler({

@@ -2,25 +2,46 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
+import { guardTenantRole } from "@/lib/guards";
 import { SupplierInput, supplierSchema } from "../validations/suppliers";
 
 export async function getSuppliers() {
+  const g = await guardTenantRole(["TENANT_ADMIN", "RECEPTIONIST"]);
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-
     const suppliersResult = await prisma.supplier.findMany({
       where: {
-        tenantId: session.user.tenantId,
+        tenantId,
         deletedAt: null,
+      },
+      include: {
+        invoices: {
+          where: { type: "PURCHASE", status: { not: "CANCELLED" } },
+          select: { totalAmount: true }
+        },
+        payments: {
+          select: { amount: true, paymentType: true }
+        }
       },
       orderBy: {
         name: "asc",
       },
     });
 
-    const suppliers = JSON.parse(JSON.stringify(suppliersResult));
+    const suppliersWithDynamicBalance = suppliersResult.map(s => {
+      const totalPurchases = s.invoices.reduce((sum, inv) => sum + Number(inv.totalAmount || 0), 0);
+      const totalPaymentsOut = s.payments.filter(p => p.paymentType === "OUTGOING").reduce((sum, p) => sum + Number(p.amount || 0), 0);
+      const totalPaymentsIn = s.payments.filter(p => p.paymentType === "INCOMING").reduce((sum, p) => sum + Number(p.amount || 0), 0);
+      
+      const { invoices, payments, ...rest } = s;
+      return {
+        ...rest,
+        balance: totalPurchases - totalPaymentsOut + totalPaymentsIn,
+      };
+    });
+
+    const suppliers = JSON.parse(JSON.stringify(suppliersWithDynamicBalance));
 
     return { suppliers };
   } catch (err) {
@@ -30,16 +51,16 @@ export async function getSuppliers() {
 }
 
 export async function createSupplier(data: SupplierInput) {
+  const g = await guardTenantRole(["TENANT_ADMIN"]);
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-
     const val = supplierSchema.parse(data);
 
     const supplier = await prisma.supplier.create({
       data: {
         ...val,
-        tenantId: session.user.tenantId,
+        tenantId,
       },
     });
 
@@ -54,14 +75,14 @@ export async function createSupplier(data: SupplierInput) {
 }
 
 export async function updateSupplier(id: string, data: SupplierInput) {
+  const g = await guardTenantRole(["TENANT_ADMIN"]);
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz" };
-
     const val = supplierSchema.parse(data);
 
     await prisma.supplier.update({
-      where: { id, tenantId: session.user.tenantId },
+      where: { id, tenantId },
       data: val,
     });
 
@@ -74,12 +95,12 @@ export async function updateSupplier(id: string, data: SupplierInput) {
 }
 
 export async function deleteSupplier(id: string) {
+  const g = await guardTenantRole(["TENANT_ADMIN"]);
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz" };
-
     await prisma.supplier.update({
-      where: { id, tenantId: session.user.tenantId },
+      where: { id, tenantId },
       data: { deletedAt: new Date() },
     });
 

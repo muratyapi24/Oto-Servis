@@ -2,6 +2,7 @@ import Link from "next/link";
 import SuperAdminFooter from "@/components/super-admin/Footer";
 import { getAPIKeys, getAPIUsageStats } from "@/lib/actions/superadmin.actions";
 import APIKeyActions from "./APIKeyActions";
+import { MockPageGuard } from "@/components/super-admin/MockPageGuard";
 
 export const metadata = { title: "Geliştirici API Portalı | Super Admin" };
 
@@ -45,6 +46,7 @@ export default async function DeveloperPage(props: {
   const svgW = stats.byEndpoint.length * (barW + barGap);
 
   return (
+    <MockPageGuard title="Geliştirici API Portalı" description="API dokümantasyonu ve anahtar yönetimi yakında gerçek veriye bağlanacaktır.">
     <>
       <header className="h-12 bg-white flex shrink-0 items-center justify-between px-6 border-b border-outline/20 sticky top-0 z-40">
         <div className="flex items-center gap-2">
@@ -215,5 +217,6 @@ export default async function DeveloperPage(props: {
 
       <SuperAdminFooter />
     </>
+    </MockPageGuard>
   );
 }

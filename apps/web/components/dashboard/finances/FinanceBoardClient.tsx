@@ -10,10 +10,9 @@ import {
   Download, 
   TrendingUp, 
   Receipt,
+  CreditCard,
   AlertTriangle,
   Hourglass,
-  BellRing,
-  Bell,
   Network
 } from "lucide-react";
 
@@ -88,11 +87,14 @@ export default function FinanceBoardClient({ metrics, customers }: FinanceBoardP
             <Link href="/dashboard/finances/invoices" className="flex items-center gap-2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-slate-50 transition-all">
                <Receipt className="w-4 h-4" /> Tüm Faturalar
             </Link>
+            <Link href="/dashboard/finances/payments" className="flex items-center gap-2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-slate-50 transition-all">
+               <CreditCard className="w-4 h-4" /> Ödemeler
+            </Link>
             <Link href="/dashboard/finances/reports" className="flex items-center gap-2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-slate-50 transition-all">
                <TrendingUp className="w-4 h-4" /> Aylık Rapor
             </Link>
             <button className="flex items-center gap-2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-slate-50 transition-all">
-               <Download className="w-4 h-4" /> Excel'e Aktar
+               <Download className="w-4 h-4" /> Excel&apos;e Aktar
             </button>
             <button 
                onClick={() => setIsInvoiceModalOpen(true)}
@@ -298,18 +300,29 @@ export default function FinanceBoardClient({ metrics, customers }: FinanceBoardP
                {upcomingExpenses.length === 0 ? (
                  <p className="text-xs font-bold text-slate-400">Yaklaşan ödeme kaydı bulunmuyor.</p>
                ) : (
-                 upcomingExpenses.map((expense: any, idx: number) => (
-                   <div key={idx} className="flex items-center gap-3">
-                     <div className="w-1.5 h-10 bg-red-500 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.5)]"></div>
-                     <div className="flex-1">
-                       <p className="text-sm font-bold text-slate-900 capitalize">{expense.title}</p>
-                       <p className="text-[10px] font-bold text-slate-500 mt-0.5">Vade: {expense.dueDate ? dayjs(expense.dueDate).format("DD MMM YYYY") : 'Belirsiz'}</p>
+                 upcomingExpenses.map((expense: any, idx: number) => {
+                   const remaining = expense.amount - (expense.paidAmount || 0);
+                   return (
+                   <div key={idx} className="flex flex-col sm:flex-row sm:items-center gap-3 bg-white p-4 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                     <div className="flex items-center gap-3 flex-1">
+                       <div className="w-1.5 h-10 bg-red-500 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.5)] shrink-0"></div>
+                       <div>
+                         <p className="text-sm font-bold text-slate-900 capitalize line-clamp-1">{expense.title}</p>
+                         <p className="text-[10px] font-bold text-slate-500 mt-0.5">Vade: {expense.dueDate ? dayjs(expense.dueDate).format("DD MMM YYYY") : 'Belirsiz'}</p>
+                       </div>
                      </div>
-                     <span className="text-sm font-black text-slate-900 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
-                       {formatMoney(expense.amount)}
-                     </span>
+                     <div className="flex items-center gap-4 justify-between sm:justify-end w-full sm:w-auto">
+                       <span className="text-sm font-black text-slate-900 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 shrink-0">
+                         {formatMoney(remaining)}
+                       </span>
+                       <button
+                         onClick={() => setPaymentInvoice({ id: expense.id, type: "OUTGOING", totalAmount: expense.amount, paidAmount: expense.paidAmount, supplierId: expense.supplierId, invoiceNumber: expense.title })}
+                         className="bg-slate-100 text-slate-700 hover:bg-red-50 hover:text-red-600 hover:border-red-200 border-2 border-transparent border-dashed px-3 py-1.5 rounded-lg text-[10px] font-black tracking-widest transition-all shrink-0">
+                         ÖDEME YAP
+                       </button>
+                     </div>
                    </div>
-                 ))
+                 )})
                )}
              </div>
              <button 

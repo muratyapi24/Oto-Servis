@@ -1,8 +1,9 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import * as Sentry from "@sentry/nextjs";
 import { inngest } from "@/lib/inngest/client";
 import { testParasutConnectionWithCreds } from "@/lib/parasut/client";
@@ -21,12 +22,10 @@ export async function syncInvoiceToParasut(
   invoiceId: string
 ): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const invoice = await prisma.invoice.findFirst({
       where: { id: invoiceId, tenantId, deletedAt: null },
@@ -62,12 +61,10 @@ export async function testParasutConnection(): Promise<
   ActionResult<{ connected: boolean }>
 > {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const integration = await prisma.accountingIntegration.findFirst({
       where: { tenantId, provider: "PARASUT" },
@@ -100,12 +97,10 @@ export async function getParasutSyncLogs(
   invoiceId: string
 ): Promise<ActionResult<{ logs: unknown[] }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const logs = await prisma.parasutSyncLog.findMany({
       where: { tenantId, invoiceId },

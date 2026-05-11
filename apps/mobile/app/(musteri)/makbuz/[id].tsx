@@ -12,7 +12,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { GlassHeader } from "@/components/GlassHeader";
 import { Colors, Radius, Shadow } from "@/constants/theme";
 
-const MOCK_RECEIPT = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const MOCK_RECEIPT: any = {
   customerName: "Ahmet Yılmaz",
   customerPhone: "0532 123 45 67",
   amount: 1670,
@@ -22,7 +23,9 @@ const MOCK_RECEIPT = {
 };
 
 export default function MakbuzScreen() {
+  if (!__DEV__) return null; // TODO: Connect to real payment API
   const { id } = useLocalSearchParams<{ id: string }>();
+  const receipt = MOCK_RECEIPT;
   const receiptNumber = `MKB-${(id ?? "000").toString().slice(-6).toUpperCase()}`;
 
   return (
@@ -45,9 +48,9 @@ export default function MakbuzScreen() {
           {/* Customer Info */}
           <View style={styles.section}>
             <Text style={styles.sectionLabel}>MÜŞTERİ BİLGİLERİ</Text>
-            <Text style={styles.sectionValue}>{MOCK_RECEIPT.customerName}</Text>
+            <Text style={styles.sectionValue}>{receipt?.customerName}</Text>
             <Text style={styles.sectionSub}>
-              Telefon: {MOCK_RECEIPT.customerPhone}
+              Telefon: {receipt?.customerPhone}
             </Text>
           </View>
 
@@ -57,7 +60,7 @@ export default function MakbuzScreen() {
           <View style={styles.amountSection}>
             <Text style={styles.amountLabel}>TUTAR</Text>
             <Text style={styles.amountValue}>
-              ₺{MOCK_RECEIPT.amount.toLocaleString("tr-TR")}
+              ₺{receipt?.amount.toLocaleString("tr-TR")}
             </Text>
           </View>
 
@@ -67,19 +70,19 @@ export default function MakbuzScreen() {
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Ödeme Yöntemi</Text>
             <View style={styles.methodBadge}>
-              <Text style={styles.methodText}>{MOCK_RECEIPT.paymentMethod}</Text>
+              <Text style={styles.methodText}>{receipt?.paymentMethod}</Text>
             </View>
           </View>
 
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Taksit</Text>
-            <Text style={styles.infoValue}>{MOCK_RECEIPT.installments}</Text>
+            <Text style={styles.infoValue}>{receipt?.installments}</Text>
           </View>
 
           {/* Date */}
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Tarih</Text>
-            <Text style={styles.infoValue}>{MOCK_RECEIPT.date}</Text>
+            <Text style={styles.infoValue}>{receipt?.date}</Text>
           </View>
 
           <View style={styles.divider} />

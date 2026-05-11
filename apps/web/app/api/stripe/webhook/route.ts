@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@repo/database";
 import { STRIPE_WEBHOOK_SECRET, getStripe } from "@/lib/stripe";
+import {
+  markWebhookEventFailed,
+  markWebhookEventProcessed,
+  reserveWebhookEvent,
+} from "@/lib/webhooks/idempotency";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -17,18 +22,29 @@ export async function POST(req: NextRequest) {
   }
 
   let event: any;
+  let stripe: Awaited<ReturnType<typeof getStripe>>;
   try {
-    const stripe = await getStripe();
+    stripe = await getStripe();
     event = stripe.webhooks.constructEvent(body, sig, STRIPE_WEBHOOK_SECRET);
-  } catch (err: any) {
+  } catch (err) {
     await prisma.auditLog.create({
       data: {
         level: "ERROR",
         module: "STRIPE-WEBHOOK",
-        message: `İmza doğrulama hatası: ${err.message}`,
+        message: `İmza doğrulama hatası: ${(err instanceof Error ? err.message : String(err))}`,
       },
     });
     return NextResponse.json({ error: "Webhook imzası geçersiz" }, { status: 400 });
+  }
+
+  const reservedEvent = await reserveWebhookEvent({
+    provider: "stripe",
+    providerEventId: event.id,
+    rawPayload: body,
+  });
+
+  if (!reservedEvent.shouldProcess) {
+    return NextResponse.json({ received: true, duplicate: true });
   }
 
   try {
@@ -38,14 +54,21 @@ export async function POST(req: NextRequest) {
         const { tenantId, planId } = s.metadata ?? {};
         if (tenantId && planId) {
           const existing = await prisma.subscription.findUnique({ where: { tenantId } });
-          const periodEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+          const subscription =
+            s.subscription ? await stripe.subscriptions.retrieve(String(s.subscription)) : null;
+          const periodStart = subscription?.current_period_start
+            ? new Date(subscription.current_period_start * 1000)
+            : new Date();
+          const periodEnd = subscription?.current_period_end
+            ? new Date(subscription.current_period_end * 1000)
+            : null;
           if (existing) {
             await prisma.subscription.update({
               where: { tenantId },
               data: {
                 status: "ACTIVE",
                 stripeSubscriptionId: s.subscription,
-                currentPeriodStart: new Date(),
+                currentPeriodStart: periodStart,
                 currentPeriodEnd: periodEnd,
               },
             });
@@ -57,7 +80,7 @@ export async function POST(req: NextRequest) {
                 status: "ACTIVE",
                 startDate: new Date(),
                 stripeSubscriptionId: s.subscription,
-                currentPeriodStart: new Date(),
+                currentPeriodStart: periodStart,
                 currentPeriodEnd: periodEnd,
               },
             });
@@ -98,7 +121,9 @@ export async function POST(req: NextRequest) {
         break;
       }
     }
-  } catch (err: any) {
+    await markWebhookEventProcessed(reservedEvent.eventId!);
+  } catch (err) {
+    await markWebhookEventFailed(reservedEvent.eventId, err);
     console.error("Webhook işleme hatası:", err);
     return NextResponse.json({ error: "İşleme hatası" }, { status: 500 });
   }

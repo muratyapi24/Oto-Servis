@@ -2,19 +2,18 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
+import { guardTenantRole, guardTenant } from "@/lib/guards";
 import { CreateMechanicInput, createMechanicSchema } from "@/lib/validations/mechanics";
 import { checkLimit } from "@/lib/subscription-guard";
 
 export async function createMechanic(data: CreateMechanicInput) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { error: "Yetkisiz erişim." };
-    }
 
     // Subscription Guard — Personel limit kontrolü
-    const limitCheck = await checkLimit(session.user.tenantId, "maxMechanics");
+    const limitCheck = await checkLimit(tenantId, "maxMechanics");
     if (!limitCheck.allowed) {
       return { error: limitCheck.message || "Personel limitinize ulaştınız. Paketinizi yükseltin." };
     }
@@ -23,7 +22,7 @@ export async function createMechanic(data: CreateMechanicInput) {
 
     const newMechanic = await prisma.mechanic.create({
       data: {
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         firstName: validatedData.firstName,
         lastName: validatedData.lastName,
         phone: validatedData.phone || null,
@@ -32,27 +31,29 @@ export async function createMechanic(data: CreateMechanicInput) {
         experienceYears: validatedData.experienceYears || null,
         hourlyRate: validatedData.hourlyRate || null,
         isActive: validatedData.isActive,
+        role: validatedData.role,
+        shiftStart: validatedData.shiftStart || null,
+        shiftEnd: validatedData.shiftEnd || null,
       },
     });
 
     revalidatePath("/dashboard/mechanics");
     return { success: "Usta başarıyla kaydedildi", mechanicId: newMechanic.id };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Usta kaydı hatası:", error);
     return { error: "Usta kaydedilirken bir hata oluştu." };
   }
 }
 
 export async function getMechanics() {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      throw new Error("Yetkisiz erişim");
-    }
 
     const mechanics = await prisma.mechanic.findMany({
       where: {
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         deletedAt: null,
       },
       include: {
@@ -73,16 +74,17 @@ export async function getMechanics() {
     }));
 
     return { mechanics: serializedMechanics };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Ustalar getirilemedi:", error);
     return { error: "Usta listesi alınamadı." };
   }
 }
 
 export async function updateMechanic(data: any) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
 
     // Schema import olmadığı için data'yı güvenli varsayıp update atabiliriz ya da import ettik
     // "UpdateMechanicInput" yukarıda import edilmediyse dinamik parse yapabiliriz AMA import listesinde yok.
@@ -91,7 +93,7 @@ export async function updateMechanic(data: any) {
     if(!id) return { error: "ID bulunamadı" };
 
     await prisma.mechanic.update({
-      where: { id, tenantId: session.user.tenantId },
+      where: { id, tenantId: tenantId },
       data: {
         firstName: updateData.firstName,
         lastName: updateData.lastName,
@@ -113,12 +115,13 @@ export async function updateMechanic(data: any) {
 }
 
 export async function deleteMechanic(id: string) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
 
     await prisma.mechanic.update({
-      where: { id, tenantId: session.user.tenantId },
+      where: { id, tenantId: tenantId },
       data: { deletedAt: new Date(), isActive: false }
     });
 
@@ -131,14 +134,13 @@ export async function deleteMechanic(id: string) {
 }
 
 export async function getMechanicById(id: string) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { mechanic: null, error: "Yetkisiz erişim" };
-    }
 
     const mechanic = await prisma.mechanic.findUnique({
-      where: { id, tenantId: session.user.tenantId },
+      where: { id, tenantId: tenantId },
     });
 
     if (!mechanic || mechanic.deletedAt) {
@@ -149,7 +151,7 @@ export async function getMechanicById(id: string) {
     const activeOrders = await prisma.serviceOrder.findMany({
       where: {
         assignedMechanicId: id,
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         status: { in: ["PENDING", "IN_PROGRESS"] },
       },
       include: {
@@ -162,7 +164,7 @@ export async function getMechanicById(id: string) {
     const completedOrders = await prisma.serviceOrder.findMany({
       where: {
         assignedMechanicId: id,
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         status: "COMPLETED",
       },
       orderBy: { receptionDate: "desc" },
@@ -192,17 +194,17 @@ export async function getMechanicById(id: string) {
     };
 
     return { mechanic: serialized };
-  } catch (error: any) {
+  } catch (error) {
     console.error("getMechanicById hatası:", error);
     return { mechanic: null, error: "Usta bilgileri alınamadı." };
   }
 }
 
 export async function getMechanicPerformance(mechanicId: string, period: "current" | "previous") {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-    const tenantId = session.user.tenantId;
 
     const now = new Date();
     let startDate: Date;
@@ -260,17 +262,17 @@ export async function getMechanicPerformance(mechanicId: string, period: "curren
       totalLaborAmount,
       avgDurationHours: Math.round(avgDurationHours * 10) / 10,
     };
-  } catch (err: any) {
+  } catch (err) {
     console.error("getMechanicPerformance hatası:", err);
     return { error: "Performans verileri alınamadı." };
   }
 }
 
 export async function getCommissionRules(mechanicId?: string) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-    const tenantId = session.user.tenantId;
 
     const rules = await prisma.commissionRule.findMany({
       where: {
@@ -289,7 +291,7 @@ export async function getCommissionRules(mechanicId?: string) {
         maxAmount: r.maxAmount ? Number(r.maxAmount) : null,
       })),
     };
-  } catch (err: any) {
+  } catch (err) {
     console.error("getCommissionRules hatası:", err);
     return { error: "Komisyon kuralları alınamadı." };
   }
@@ -301,11 +303,11 @@ export async function createCommissionRule(data: {
   value: number;
   minAmount?: number;
   maxAmount?: number;
-}): Promise<{ success?: string; error?: string }> {
+}) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-    const tenantId = session.user.tenantId;
 
     await prisma.commissionRule.create({
       data: {
@@ -321,17 +323,17 @@ export async function createCommissionRule(data: {
 
     revalidatePath("/dashboard/mechanics");
     return { success: "Komisyon kuralı oluşturuldu" };
-  } catch (err: any) {
+  } catch (err) {
     console.error("createCommissionRule hatası:", err);
     return { error: "Komisyon kuralı oluşturulamadı." };
   }
 }
 
 export async function calculateCommission(mechanicId: string, month: Date) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-    const tenantId = session.user.tenantId;
 
     const startDate = new Date(month.getFullYear(), month.getMonth(), 1);
     const endDate = new Date(month.getFullYear(), month.getMonth() + 1, 0, 23, 59, 59);
@@ -379,7 +381,7 @@ export async function calculateCommission(mechanicId: string, month: Date) {
       amount: Math.round(amount * 100) / 100,
       breakdown: [{ ruleType: rule.ruleType, value: Number(rule.value), totalLabor, result: amount }],
     };
-  } catch (err: any) {
+  } catch (err) {
     console.error("calculateCommission hatası:", err);
     return { error: "Komisyon hesaplanamadı." };
   }

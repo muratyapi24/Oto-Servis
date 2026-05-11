@@ -1,9 +1,10 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import { recordPaymentSchema, RecordPaymentInput, createInvoiceSchema, CreateInvoiceInput } from "@/lib/validations/finance";
 import dayjs from "dayjs";
 import { createParasutInvoice, createParasutPayment, upsertParasutContact } from "@/lib/parasut";
@@ -11,9 +12,9 @@ import { createParasutInvoice, createParasutPayment, upsertParasutContact } from
 /** Finans Dashboard - Ana İstatistikleri ve Fişleri Döndürür **/
 export async function getFinanceDashboard() {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-    const tenantId = session.user.tenantId;
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     // 1. Ödenmemiş Faturaları Çek (Gereken Listelemeler İçin)
     const unpaidInvoices = await prisma.invoice.findMany({
@@ -104,9 +105,12 @@ export async function getFinanceDashboard() {
       take: 5
     });
     const upcomingExpenses = upcomingExpensesRows.map(expense => ({
-       title: expense.notes || "Gider Faturası (Tedarikçi)",
+       id: expense.id,
+       title: expense.invoiceNumber || expense.notes || "Gider Faturası (Tedarikçi)",
        amount: Number(expense.totalAmount),
-       dueDate: expense.dueDate
+       paidAmount: Number(expense.paidAmount || 0),
+       dueDate: expense.dueDate,
+       supplierId: expense.supplierId
     }));
 
     return {
@@ -126,7 +130,7 @@ export async function getFinanceDashboard() {
       upcomingExpenses
     };
 
-  } catch (err: any) {
+  } catch (err) {
     Sentry.captureException(err);
     console.error("Finance Dashboard Error:", err);
     return { error: "Finans verileri alınırken bir hata oluştu." };
@@ -136,18 +140,22 @@ export async function getFinanceDashboard() {
 /** Yeni Fatura/Borçlandırma Kaydı **/
 export async function createInvoice(data: CreateInvoiceInput) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkilendirme hatası." };
-    
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
+
     const val = createInvoiceSchema.parse(data);
 
     // Kaba Taslak Fatura (Item vb detay girmeden doğrudan bakiye borçlandırma)
     const newInvoice = await prisma.$transaction(async (tx) => {
+       const { getNextInvoiceNumber } = await import('@/lib/sequence-utils');
+       const invoiceNumber = await getNextInvoiceNumber(tenantId, tx);
+
        const inv = await tx.invoice.create({
          data: {
-           tenantId: session.user.tenantId,
+           tenantId,
            customerId: val.customerId,
-           invoiceNumber: `INV-${Date.now()}`,
+           invoiceNumber,
            type: val.type as any,
            status: val.status as any,
            issueDate: new Date(val.issueDate),
@@ -174,7 +182,7 @@ export async function createInvoice(data: CreateInvoiceInput) {
 
     revalidatePath("/dashboard/finances");
     return { success: "Fatura başarıyla oluşturuldu.", invoiceId: newInvoice.id };
-  } catch (err: any) {
+  } catch (err) {
     Sentry.captureException(err);
     console.error("Create Invoice Error:", err);
     return { error: "Fatura oluşturulamadı." };
@@ -184,16 +192,17 @@ export async function createInvoice(data: CreateInvoiceInput) {
 /** Tahsilat/Kasa Hareketi (Ödeme Girişi - Çıkışı) **/
 export async function recordPayment(data: RecordPaymentInput) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkilendirme hatası." };
-    
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
+
     const val = recordPaymentSchema.parse(data);
 
     await prisma.$transaction(async (tx) => {
       // 1. Ödeme tablosuna işle
       await tx.payment.create({
         data: {
-          tenantId: session.user.tenantId,
+          tenantId,
           customerId: val.customerId ?? null,
           supplierId: val.supplierId ?? null,
           invoiceId: val.invoiceId ?? null,
@@ -244,6 +253,8 @@ export async function recordPayment(data: RecordPaymentInput) {
     });
 
     revalidatePath("/dashboard/finances");
+    revalidatePath("/dashboard/customers");
+    revalidatePath("/dashboard/suppliers");
     return { success: "Ödeme / Tahsilat başarıyla kaydedildi." };
   } catch(err: any){
     Sentry.captureException(err);
@@ -254,11 +265,9 @@ export async function recordPayment(data: RecordPaymentInput) {
 
 export async function getInvoiceById(id: string): Promise<{ invoice?: any; error?: string }> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { error: "Yetkisiz erişim" };
-    }
-    const tenantId = session.user.tenantId;
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const invoice = await prisma.invoice.findFirst({
       where: { id, tenantId, deletedAt: null },
@@ -301,7 +310,7 @@ export async function getInvoiceById(id: string): Promise<{ invoice?: any; error
     };
 
     return { invoice: serialized };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("getInvoiceById hatası:", error);
     return { error: "Fatura bilgileri alınamadı." };
@@ -317,9 +326,9 @@ export async function addPaymentToInvoice(data: {
   notes?: string;
 }): Promise<{ success?: string; error?: string }> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-    const tenantId = session.user.tenantId;
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const invoice = await prisma.invoice.findFirst({
       where: { id: data.invoiceId, tenantId, deletedAt: null },
@@ -370,7 +379,7 @@ export async function addPaymentToInvoice(data: {
 
     revalidatePath("/dashboard/finances");
     return { success: "Ödeme kaydedildi" };
-  } catch (err: any) {
+  } catch (err) {
     Sentry.captureException(err);
     console.error("addPaymentToInvoice hatası:", err);
     return { error: "Ödeme kaydedilemedi." };
@@ -380,21 +389,52 @@ export async function addPaymentToInvoice(data: {
 /** Faturayı Güncelle **/
 export async function updateInvoice(id: string, data: Partial<CreateInvoiceInput>) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
     
-    await prisma.invoice.update({
-      where: { id, tenantId: session.user.tenantId, deletedAt: null },
-      data: {
-        issueDate: data.issueDate ? new Date(data.issueDate) : undefined,
-        dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
-        status: data.status as any,
-        notes: data.notes
+    await prisma.$transaction(async (tx) => {
+      const existing = await tx.invoice.findFirst({
+        where: { id, tenantId, deletedAt: null }
+      });
+      if (!existing) throw new Error("Fatura bulunamadı");
+
+      // Bakiye kontrolü (Eski durum DRAFT/CANCELLED, yeni durum aktifse bakiyeyi artır; tam tersiyse azalt)
+      if (data.status && data.status !== existing.status) {
+        const wasInactive = existing.status === "DRAFT" || existing.status === "CANCELLED";
+        const isNowActive = data.status !== "DRAFT" && data.status !== "CANCELLED";
+
+        if (wasInactive && isNowActive) {
+          // Fatura aktifleşti -> Bakiyeye ekle (Satış ise müşteri borcu artar, Alış ise tedarikçi borcumuz azalır)
+          if (existing.customerId && existing.type === "SALES") {
+             await tx.customer.update({ where: { id: existing.customerId }, data: { balance: { increment: existing.totalAmount } } });
+          } else if (existing.supplierId && existing.type === "PURCHASE") {
+             await tx.supplier.update({ where: { id: existing.supplierId }, data: { balance: { decrement: existing.totalAmount } } });
+          }
+        } else if (!wasInactive && !isNowActive) {
+          // Fatura pasife düştü -> Bakiyeden düş
+          if (existing.customerId && existing.type === "SALES") {
+             await tx.customer.update({ where: { id: existing.customerId }, data: { balance: { decrement: existing.totalAmount } } });
+          } else if (existing.supplierId && existing.type === "PURCHASE") {
+             await tx.supplier.update({ where: { id: existing.supplierId }, data: { balance: { increment: existing.totalAmount } } });
+          }
+        }
       }
+
+      await tx.invoice.update({
+        where: { id },
+        data: {
+          issueDate: data.issueDate ? new Date(data.issueDate) : undefined,
+          dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
+          status: data.status as any,
+          notes: data.notes
+        }
+      });
     });
+
     revalidatePath("/dashboard/finances");
     return { success: "Fatura güncellendi." };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     return { error: "Fatura güncellenemedi." };
   }
@@ -403,15 +443,16 @@ export async function updateInvoice(id: string, data: Partial<CreateInvoiceInput
 /** Faturayı İptal Et (ve bakiyeleri geri al) **/
 export async function cancelInvoice(id: string) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     await prisma.$transaction(async (tx) => {
-      const inv = await tx.invoice.findFirst({ where: { id, tenantId: session.user.tenantId, deletedAt: null } });
+      const inv = await tx.invoice.findFirst({ where: { id, tenantId: tenantId, deletedAt: null } });
       if (!inv) throw new Error("Fatura bulunamadı.");
       if (inv.status === "CANCELLED") throw new Error("Zaten iptal edilmiş.");
 
-      // Bakiye işlemleri fatura DRAFT değilse geriye dönük işlenebilir.
+      // 1. Bakiye işlemleri — fatura DRAFT değilse geriye dönük işlenebilir.
       if (inv.status !== "DRAFT") {
         if (inv.customerId && inv.type === "SALES") {
           await tx.customer.update({
@@ -426,15 +467,91 @@ export async function cancelInvoice(id: string) {
         }
       }
 
+      // 2. Stok hareketlerini geri al (PURCHASE fatura iptali → stok düşür)
+      const stockMovements = await tx.stockMovement.findMany({
+        where: { invoiceId: inv.id }
+      });
+      for (const mv of stockMovements) {
+        const qty = Number(mv.quantity);
+        if (mv.type === "IN") {
+          // Giriş hareketi → stoğu geri düşür
+          await tx.part.update({
+            where: { id: mv.partId },
+            data: { currentStock: { decrement: qty } }
+          });
+          // Ters hareket kaydı oluştur
+          await tx.stockMovement.create({
+            data: {
+              tenantId,
+              partId: mv.partId,
+              quantity: qty,
+              type: "OUT",
+              reason: `İptal — ${inv.invoiceNumber}`,
+              invoiceId: inv.id,
+            }
+          });
+        } else if (mv.type === "OUT") {
+          // Çıkış hareketi → stoğu geri artır
+          await tx.part.update({
+            where: { id: mv.partId },
+            data: { currentStock: { increment: qty } }
+          });
+          await tx.stockMovement.create({
+            data: {
+              tenantId,
+              partId: mv.partId,
+              quantity: qty,
+              type: "IN",
+              reason: `İptal — ${inv.invoiceNumber}`,
+              invoiceId: inv.id,
+            }
+          });
+        }
+      }
+
+      // 3. Ödeme iadelerini işle — yapılmış ödemelerin bakiye etkisini geri al
+      const payments = await tx.payment.findMany({ where: { invoiceId: inv.id } });
+      for (const p of payments) {
+        const amount = Number(p.amount);
+        if (p.customerId) {
+          // Müşteriden tahsil edilmişti → bakiyeyi geri artır
+          if (p.paymentType === "INCOMING") {
+            await tx.customer.update({
+              where: { id: p.customerId },
+              data: { balance: { increment: amount } }
+            });
+          } else {
+            await tx.customer.update({
+              where: { id: p.customerId },
+              data: { balance: { decrement: amount } }
+            });
+          }
+        }
+        if (p.supplierId) {
+          // Tedarikçiye ödenmişti → bakiyeyi geri artır (borcumuz geri gelir)
+          if (p.paymentType === "OUTGOING") {
+            await tx.supplier.update({
+              where: { id: p.supplierId },
+              data: { balance: { increment: amount } }
+            });
+          } else {
+            await tx.supplier.update({
+              where: { id: p.supplierId },
+              data: { balance: { decrement: amount } }
+            });
+          }
+        }
+      }
+
       await tx.invoice.update({
         where: { id },
-        data: { status: "CANCELLED" }
+        data: { status: "CANCELLED", paidAmount: 0 }
       });
     });
 
     revalidatePath("/dashboard/finances");
     return { success: "Fatura iptal edildi." };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     return { error: "Fatura iptal edilemedi." };
   }
@@ -443,9 +560,9 @@ export async function cancelInvoice(id: string) {
 /** İş Emrinden Fatura Oluştur **/
 export async function generateInvoiceFromServiceOrder(serviceOrderId: string) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
-    const tenantId = session.user.tenantId;
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const so = await prisma.serviceOrder.findFirst({
       where: { id: serviceOrderId, tenantId, deletedAt: null },
@@ -458,12 +575,15 @@ export async function generateInvoiceFromServiceOrder(serviceOrderId: string) {
     if (existing) return { error: "Bu iş emrine ait fatura zaten var.", invoiceId: existing.id };
 
     const inv = await prisma.$transaction(async (tx) => {
+      const { getNextInvoiceNumber } = await import('@/lib/sequence-utils');
+      const invoiceNumber = await getNextInvoiceNumber(tenantId, tx);
+
       const newInv = await tx.invoice.create({
         data: {
           tenantId,
           customerId: so.customerId,
           serviceOrderId: so.id,
-          invoiceNumber: `INV-${Date.now()}`,
+          invoiceNumber,
           type: "SALES",
           status: "DRAFT",
           issueDate: new Date(),
@@ -478,7 +598,7 @@ export async function generateInvoiceFromServiceOrder(serviceOrderId: string) {
 
     revalidatePath("/dashboard/finances");
     return { success: "Fatura taslağı oluşturuldu.", invoiceId: inv.id };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     return { error: "Fatura oluşturulamadı." };
   }
@@ -487,9 +607,9 @@ export async function generateInvoiceFromServiceOrder(serviceOrderId: string) {
 /** Paraşüt'e Fatura Senkronizasyonu **/
 export async function syncInvoiceToParasut(invoiceId: string) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
-    const tenantId = session.user.tenantId;
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const integration = await prisma.accountingIntegration.findUnique({
       where: { tenantId }
@@ -544,7 +664,7 @@ export async function syncInvoiceToParasut(invoiceId: string) {
     }
 
     const { id: externalId } = await createParasutInvoice(parasutCreds, {
-      invoiceNumber: invoice.invoiceNumber ?? `INV${Date.now()}`,
+      invoiceNumber: invoice.invoiceNumber ?? `FAT-SYNC-${Date.now()}`,
       issueDate: invoice.issueDate.toISOString().split('T')[0]!,
       customerName: contactName,
       lines: lines
@@ -556,18 +676,18 @@ export async function syncInvoiceToParasut(invoiceId: string) {
     });
 
     return { success: "Fatura Paraşüt'e senkronize edildi." };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
-    return { error: "Paraşüt senkronizasyonu başarısız: " + error.message };
+    return { error: "Paraşüt senkronizasyonu başarısız: " + (error instanceof Error ? error.message : String(error)) };
   }
 }
 
 /** Aylık Gelir Gider Raporu **/
 export async function getMonthlyFinanceReport() {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-    const tenantId = session.user.tenantId;
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     // Son 6 ayın trendi (basitleştirilmiş)
     const sixMonthsAgo = dayjs().subtract(6, 'month').startOf('month').toDate();
@@ -604,7 +724,7 @@ export async function getMonthlyFinanceReport() {
     })).reverse();
 
     return { data };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     return { error: "Aylık rapor alınamadı." };
   }

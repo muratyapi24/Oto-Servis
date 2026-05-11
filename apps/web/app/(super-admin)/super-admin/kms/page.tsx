@@ -2,6 +2,7 @@ import Link from "next/link";
 import SuperAdminFooter from "@/components/super-admin/Footer";
 import { getKMSKeys } from "@/lib/actions/superadmin.actions";
 import KMSRotateButton from "./KMSRotateButton";
+import { MockPageGuard } from "@/components/super-admin/MockPageGuard";
 
 export const metadata = { title: "KMS Yönetimi | Super Admin" };
 
@@ -34,6 +35,7 @@ export default async function KMSPage(props: {
   };
 
   return (
+    <MockPageGuard title="KMS Anahtar Yönetimi" description="Şifreleme anahtarı rotasyonu ve güvenli anahtar yönetimi yakında aktif edilecektir.">
     <>
       <header className="h-12 bg-white flex shrink-0 items-center justify-between px-6 border-b border-outline/20 sticky top-0 z-40">
         <div className="flex items-center gap-2">
@@ -165,5 +167,6 @@ export default async function KMSPage(props: {
 
       <SuperAdminFooter />
     </>
+    </MockPageGuard>
   );
 }

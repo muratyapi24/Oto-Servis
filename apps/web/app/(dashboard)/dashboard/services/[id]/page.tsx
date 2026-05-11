@@ -24,6 +24,7 @@ import 'dayjs/locale/tr';
 import PhotoUploader from "@/components/dashboard/services/PhotoUploader";
 import QualityControlSection from "@/components/dashboard/services/QualityControlSection";
 import ServiceRatingSection from "@/components/dashboard/services/ServiceRatingSection";
+import { ServiceQRCode } from "@/components/dashboard/services/ServiceQRCode";
 
 // Wrapper — client bileşeni server sayfasına dahil etmek için
 function PhotoUploaderSection({ serviceOrderId }: { serviceOrderId: string }) {
@@ -65,7 +66,7 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
 
   const { order } = orderRes;
 
-  const mappedParts = dbParts.map(p => ({ id: p.id, name: `${p.name} - ${p.brand || ""}`, price: Number(p.sellingPrice) }));
+  const mappedParts = dbParts.map(p => ({ id: p.id, name: `${p.name} - ${p.brand || ""}`, price: Number(p.sellingPrice), currentStock: p.currentStock }));
   const mappedMechanics = dbMechanics.map(m => ({ id: m.id, name: `${m.firstName} ${m.lastName}`, price: Number(m.hourlyRate || 500) }));
 
   // Parts for ReturnDialog (with stock info)
@@ -263,6 +264,17 @@ export default async function ServiceOrderDetailPage({ params }: { params: Promi
 
         </div>
 
+      </div>
+
+      {/* QR Takip Kodu */}
+      <div className="px-6 max-w-5xl mx-auto mt-4">
+        <div className="max-w-xs">
+          <ServiceQRCode
+            serviceOrderId={order.id}
+            orderNumber={order.orderNumber}
+            plate={order.vehicle.plate}
+          />
+        </div>
       </div>
 
       <div className="p-6 max-w-5xl mx-auto mt-6">

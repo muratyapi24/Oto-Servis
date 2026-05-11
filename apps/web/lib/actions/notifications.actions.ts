@@ -1,33 +1,36 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 
 export async function getNotificationProviders() {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const providers = await prisma.notificationProvider.findMany({
-      where: { tenantId: session.user.tenantId },
+      where: { tenantId: tenantId },
       orderBy: { type: "asc" }
     });
 
     return { providers };
-  } catch (error: any) {
+  } catch (error) {
     console.error("[getNotificationProviders] hatası:", error);
     Sentry.captureException(error);
-    return { error: "Sağlayıcılar alınırken bir hata oluştu: " + error.message };
+    return { error: "Sağlayıcılar alınırken bir hata oluştu: " + (error instanceof Error ? error.message : String(error)) };
   }
 }
 
 export async function saveNotificationProvider(data: { type: string, provider: string, settings: any, isActive: boolean }) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-    
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
+
     // Yalnızca admin ve super admin
     if (session.user.role !== "TENANT_ADMIN" && session.user.role !== "SUPER_ADMIN") {
       return { error: "Bu işlem için yetkiniz yok" };
@@ -40,7 +43,7 @@ export async function saveNotificationProvider(data: { type: string, provider: s
     // Diğer bu tipten olanları devre dışı bırakalım.
     if (isActive) {
       await prisma.notificationProvider.updateMany({
-        where: { tenantId: session.user.tenantId, type },
+        where: { tenantId: tenantId, type },
         data: { isActive: false }
       });
     }
@@ -48,7 +51,7 @@ export async function saveNotificationProvider(data: { type: string, provider: s
     const upserted = await prisma.notificationProvider.upsert({
       where: {
         tenantId_type_provider: {
-          tenantId: session.user.tenantId,
+          tenantId: tenantId,
           type,
           provider
         }
@@ -58,7 +61,7 @@ export async function saveNotificationProvider(data: { type: string, provider: s
         isActive
       },
       create: {
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         type,
         provider,
         settings,
@@ -69,17 +72,18 @@ export async function saveNotificationProvider(data: { type: string, provider: s
     revalidatePath("/dashboard/settings/notifications");
     return { success: true, provider: upserted };
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("[saveNotificationProvider] hatası:", error);
     Sentry.captureException(error);
-    return { error: "Sağlayıcı kaydedilemedi: " + error.message };
+    return { error: "Sağlayıcı kaydedilemedi: " + (error instanceof Error ? error.message : String(error)) };
   }
 }
 
 export async function testSmsConnection(data: { to: string, provider: string, settings: any }) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
     
     // Test logic simülasyonu / gerçek implementasyonda axios/fetch yapılacak
     const { to, provider, settings } = data;
@@ -101,8 +105,8 @@ export async function testSmsConnection(data: { to: string, provider: string, se
     }
 
     return { error: "Bilinmeyen sağlayıcı tipi" };
-  } catch (error: any) {
+  } catch (error) {
     console.error("[testSmsConnection] hatası:", error);
-    return { error: "Bağlantı hatası: " + error.message };
+    return { error: "Bağlantı hatası: " + (error instanceof Error ? error.message : String(error)) };
   }
 }

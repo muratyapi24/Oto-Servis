@@ -1,0 +1,36 @@
+{
+  "project_name": "BST Otoservis",
+  "architecture": "Monorepo (Turborepo)",
+  "frameworks": {
+    "frontend": "Next.js 15 (App Router)",
+    "mobile": "Expo (React Native)",
+    "backend": "Next.js API Routes",
+    "database": "Prisma with PostgreSQL"
+  },
+  "dependencies": {
+    "auth": "NextAuth.js",
+    "styling": "Tailwind CSS",
+    "orm": "Prisma",
+    "validation": "Zod",
+    "background_jobs": "Inngest",
+    "notifications": "Twilio (SMS/WhatsApp), Resend (Email)",
+    "payments": "Stripe, Iyzico, PayTR"
+  },
+  "features": [
+    "Multi-tenancy (SaaS)",
+    "Customer & Vehicle Management",
+    "Service Order Lifecycle",
+    "Inventory & Stock Management",
+    "Finances & Invoicing (e-Invoice integration)",
+    "Appointment Scheduling",
+    "CRM & Communication",
+    "Super Admin Panel",
+    "Role-Based Access Control (RBAC)",
+    "Two-Factor Authentication (2FA)"
+  ],
+  "entry_points": {
+    "web": "apps/web/app/page.tsx",
+    "mobile": "apps/mobile/app/_layout.tsx",
+    "api": "apps/web/app/api/*"
+  }
+}

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import SuperAdminFooter from "@/components/super-admin/Footer";
 import { getBackupStatus } from "@/lib/actions/superadmin.actions";
+import { MockPageGuard } from "@/components/super-admin/MockPageGuard";
 
 export const metadata = { title: "Yedekleme ve Kurtarma | Super Admin" };
 
@@ -22,6 +23,7 @@ export default async function BackupRecoveryPage(props: {
   const lastBackupDate = new Date(data.lastBackup).toLocaleString("tr-TR");
 
   return (
+    <MockPageGuard title="Yedekleme ve Kurtarma" description="Otomatik yedekleme geçmişi ve kurtarma işlemleri yakında gerçek veriye bağlanacaktır. Şu anda demo verisi gösterilmektedir.">
     <>
       <header className="h-12 bg-white flex shrink-0 items-center justify-between px-6 border-b border-outline/20 sticky top-0 z-40">
         <div className="flex items-center gap-2">
@@ -266,5 +268,6 @@ export default async function BackupRecoveryPage(props: {
 
       <SuperAdminFooter />
     </>
+    </MockPageGuard>
   );
 }

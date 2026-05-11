@@ -15,19 +15,15 @@ export default async function CustomersPage() {
     return <PageError message={error} />;
   }
 
-  const totalBalance = customers.reduce((sum: number, c: any) => sum + (c.balance || 0), 0);
+  const totalReceivables = customers.reduce((sum: number, c: any) => c.balance > 0 ? sum + c.balance : sum, 0);
+  const totalVehicles = customers.reduce((acc: number, c: any) => acc + (c._count?.vehicles || 0), 0);
+  const recentCustomers = [...customers].sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 4);
 
   return (
     <PageShell
       title="Müşteri Yönetimi"
       subtitle="Aktif müşteri portföyünüzü, kurumsal firmaları ve araç geçmişlerini yönetin."
       sectionLabel="CRM"
-      actions={
-        <button className="flex items-center px-6 py-3 bg-primary text-white rounded-xl font-bold text-sm hover:shadow-lg transition-all transform active:scale-95 shadow-blue-900/20">
-          <span className="material-symbols-outlined mr-2">person_add</span>
-          + Yeni Müşteri
-        </button>
-      }
     >
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Left Side: CRM Table */}
@@ -54,7 +50,7 @@ export default async function CustomersPage() {
               <div className="bg-white p-5 rounded-2xl ambient-shadow flex flex-col justify-between">
                 <div>
                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Müşteri Alacağı</div>
-                  <div className="text-2xl font-black text-error leading-tight">₺ {(totalBalance).toLocaleString('tr-TR')}</div>
+                  <div className="text-2xl font-black text-error leading-tight">₺ {(totalReceivables).toLocaleString('tr-TR')}</div>
                 </div>
                 <div className="mt-4 flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase">
                   <span className="material-symbols-outlined text-xs">star</span> Açık Hesaplar
@@ -65,7 +61,7 @@ export default async function CustomersPage() {
                 <div>
                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Toplam Araç</div>
                   <div className="text-2xl font-black text-on-surface leading-tight">
-                    {customers.reduce((acc: number, c: any) => acc + (c._count?.vehicles || 0), 0)} Kayıt
+                    {totalVehicles} Kayıt
                   </div>
                 </div>
                 <div className="mt-4 flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase">
@@ -81,24 +77,22 @@ export default async function CustomersPage() {
                 Platform Günlüğü
               </h4>
               <div className="space-y-6 relative before:content-[''] before:absolute before:left-3 before:top-2 before:bottom-2 before:w-[2px] before:bg-surface-container-high">
-                <div className="relative pl-8">
-                  <div className="absolute left-0 top-1 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center z-10">
-                    <span className="material-symbols-outlined text-xs text-primary">verified_user</span>
+                
+                {recentCustomers.map((rc: any) => (
+                  <div key={rc.id} className="relative pl-8">
+                    <div className="absolute left-0 top-1 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center z-10">
+                      <span className="material-symbols-outlined text-xs text-primary">person_add</span>
+                    </div>
+                    <div className="text-xs font-black text-on-surface leading-none mb-1">
+                      {rc.type === 'INDIVIDUAL' ? `${rc.firstName} ${rc.lastName}` : rc.companyName}
+                    </div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      Yeni Müşteri Kaydı
+                    </div>
                   </div>
-                  <div className="text-xs font-black text-on-surface leading-none mb-1">Cari Hesap Kontrolü</div>
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Az Önce • Sistem</div>
-                </div>
-                <div className="relative pl-8">
-                  <div className="absolute left-0 top-1 w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center z-10">
-                    <span className="material-symbols-outlined text-xs text-slate-500">person_add</span>
-                  </div>
-                  <div className="text-xs font-black text-on-surface leading-none mb-1">Otomatik Yedekleme</div>
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">03:00 • Sistem Auto</div>
-                </div>
+                ))}
+
               </div>
-              <button className="w-full mt-8 py-2.5 text-xs font-bold text-slate-500 hover:text-primary border border-outline-variant/20 hover:border-primary hover:bg-blue-50 rounded-xl transition-all">
-                TÜM GEÇMİŞİ LİSTELE
-              </button>
             </div>
           </aside>
         )}

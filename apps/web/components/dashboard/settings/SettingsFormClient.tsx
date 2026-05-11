@@ -19,6 +19,7 @@ import {
   CheckCircle,
   Plus,
   CreditCard,
+  Zap,
 } from "lucide-react";
 import PaymentProviderSection from "./PaymentProviderSection";
 import Image from "next/image";
@@ -400,35 +401,7 @@ export default function SettingsFormClient({ initialData, metrics }: SettingsFor
         </div>
       </section>
 
-      {/* Abonelik Yönetimi */}
-      <section className="mt-12">
-        <div className="flex items-center justify-between mb-8 border-b border-slate-200 pb-4">
-          <h2 className="text-xl md:text-2xl font-black tracking-tight text-slate-900">Abonelik Planı</h2>
-        </div>
-        <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
-          <p className="text-sm text-slate-600">Abonelik planınızı yönetin, yükseltin veya iptal edin.</p>
-          <div className="flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={async () => {
-                const res = await fetch("/api/stripe/checkout", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ planId: "professional", billingCycle: "monthly" }),
-                });
-                const data = await res.json();
-                if (data.url) window.location.href = data.url;
-              }}
-              className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors shadow-sm"
-            >
-              Planı Yükselt
-            </button>
-            <a href="/super-admin/subscriptions" className="px-5 py-2.5 border border-slate-200 text-slate-700 rounded-xl text-sm font-bold hover:bg-slate-50 transition-colors">
-              Fatura Geçmişi
-            </a>
-          </div>
-        </div>
-      </section>
+
 
       {/* Entegrasyonlar Yönlendirme */}
       <section className="mt-12 space-y-4">
@@ -436,17 +409,32 @@ export default function SettingsFormClient({ initialData, metrics }: SettingsFor
           <h2 className="text-xl md:text-2xl font-black tracking-tight text-slate-900">Entegrasyonlar</h2>
         </div>
         
-        <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm flex items-center justify-between group hover:border-blue-200 transition-colors cursor-pointer" onClick={() => window.location.href = '/dashboard/settings/accounting'}>
+        <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm flex items-center justify-between group hover:border-blue-200 transition-colors cursor-pointer" onClick={() => window.location.href = '/dashboard/settings/parasut'}>
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
                <Settings2 className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-800 text-lg">Paraşüt & Muhasebe</h3>
-              <p className="text-sm text-slate-500 font-medium">E-Fatura, cari hesap bağlama ve otomatik fatura resmileştirme.</p>
+              <h3 className="font-bold text-slate-800 text-lg">Paraşüt & Bulut Muhasebe</h3>
+              <p className="text-sm text-slate-500 font-medium">Cari hesap bağlama ve otomatik fatura senkronizasyonu.</p>
             </div>
           </div>
           <button type="button" className="px-5 py-2 text-sm font-bold text-blue-700 bg-blue-50 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-colors">
+            Yönet
+          </button>
+        </div>
+
+        <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm flex items-center justify-between group hover:border-purple-200 transition-colors cursor-pointer" onClick={() => window.location.href = '/dashboard/settings/e-invoice'}>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center group-hover:bg-purple-600 group-hover:text-white transition-colors duration-300">
+               <Zap className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-800 text-lg">e-Fatura / e-Arşiv</h3>
+              <p className="text-sm text-slate-500 font-medium">GİB uyumlu elektronik fatura ve entegratör ayarları.</p>
+            </div>
+          </div>
+          <button type="button" className="px-5 py-2 text-sm font-bold text-purple-700 bg-purple-50 rounded-xl group-hover:bg-purple-600 group-hover:text-white transition-colors">
             Yönet
           </button>
         </div>

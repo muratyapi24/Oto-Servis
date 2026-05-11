@@ -18,6 +18,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
+import { getApiBaseUrl } from "@/lib/api";
 
 // ─── Zustand Store ────────────────────────────────────────────────────────────
 
@@ -62,7 +63,7 @@ async function getAuthToken(): Promise<string | null> {
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
+const BASE_URL = getApiBaseUrl();
 const SSE_ENDPOINT = `${BASE_URL}/api/sse/stock`;
 const RECONNECT_DELAY_MS = 5_000;
 

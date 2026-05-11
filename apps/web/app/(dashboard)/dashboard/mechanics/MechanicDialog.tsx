@@ -24,6 +24,9 @@ export function MechanicDialog() {
       experienceYears: 0,
       hourlyRate: 0,
       isActive: true,
+      role: "Usta",
+      shiftStart: "08:00",
+      shiftEnd: "18:00",
     },
   });
 
@@ -148,6 +151,27 @@ export function MechanicDialog() {
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₺</span>
                       <input type="number" step="0.01" {...form.register("hourlyRate", { valueAsNumber: true })} className="w-full pl-8 p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary" placeholder="0.00" />
                     </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Rol / Unvan *</label>
+                    <select {...form.register("role")} className="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary">
+                      <option value="Usta">Usta</option>
+                      <option value="Teknisyen">Teknisyen</option>
+                      <option value="Muhasebe">Muhasebe</option>
+                      <option value="Yönetici">Yönetici</option>
+                      <option value="Resepsiyon">Resepsiyon</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Vardiya Başlangıç</label>
+                    <input type="time" {...form.register("shiftStart")} className="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Vardiya Bitiş</label>
+                    <input type="time" {...form.register("shiftEnd")} className="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary" />
                   </div>
                 </div>
 

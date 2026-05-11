@@ -1,14 +1,18 @@
 "use server";
 
 import * as z from "zod";
+import { randomInt } from "crypto";
 import bcrypt from "bcryptjs";
+import { headers } from "next/headers";
 import { prisma } from "@repo/database";
 import { registerSchema, loginSchema, customerLoginSchema } from "@/lib/validations/auth";
 import { signIn } from "@/auth";
+import { inngest } from "@/lib/inngest/client";
+import { applyReferralCode } from "@/lib/actions/referral.actions";
 
 export async function registerTenant(
   values: z.infer<typeof registerSchema>,
-  meta?: { ipAddress?: string; userAgent?: string }
+  meta?: { ipAddress?: string; userAgent?: string; referralCode?: string }
 ) {
   try {
     const validatedData = registerSchema.safeParse(values);
@@ -84,20 +88,46 @@ export async function registerTenant(
       return { tenantId: tenant.id };
     });
 
-    // KVKK: Açık rıza kaydı — transaction dışında, tablo yoksa kayıt engellenmez
+    // KVKK: Sözleşme kabul kaydı — IP + userAgent + timestamp + versiyon
+    // IP/UA önce meta'dan, yoksa Next.js headers()'dan otomatik okunur
     try {
+      const headersList = await headers();
+      const ipAddress =
+        meta?.ipAddress ??
+        headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+        headersList.get("x-real-ip") ??
+        "unknown";
+      const userAgent =
+        meta?.userAgent ?? headersList.get("user-agent") ?? "unknown";
+
       await prisma.kvkkConsent.create({
         data: {
           tenantId: newTenantId,
           consentType: "REGISTRATION",
-          ipAddress: meta?.ipAddress ?? null,
-          userAgent: meta?.userAgent ?? null,
+          ipAddress,
+          userAgent,
           version: "1.0",
         },
       });
     } catch (kvkkError) {
       console.warn("KVKK consent kaydedilemedi (migration bekliyor olabilir):", kvkkError);
     }
+
+    // Referral kodu varsa uygula
+    if (meta?.referralCode) {
+      applyReferralCode(newTenantId, meta.referralCode).catch(() => {});
+    }
+
+    // Onboarding e-mail sekansını başlat (fire-and-forget)
+    inngest.send({
+      name: "onboarding/tenant.registered",
+      data: {
+        tenantId: newTenantId,
+        email,
+        firstName,
+        companyName,
+      },
+    }).catch(() => {}); // Inngest yoksa sessizce atla
 
     return { success: "Hesabınız başarıyla oluşturuldu! Lütfen giriş yapın." };
   } catch (error) {
@@ -124,11 +154,11 @@ export async function loginUser(values: z.infer<typeof loginSchema>) {
     });
 
     return { success: "Giriş başarılı.", role: user?.role };
-  } catch (error: any) {
-    if (error?.type === "CredentialsSignin") {
+  } catch (error) {
+    if ((error as Record<string, unknown>)?.type === "CredentialsSignin") {
       return { error: "E-posta veya şifre hatalı." };
     }
-    if (error?.digest?.includes("NEXT_REDIRECT")) {
+    if ((error as Record<string, unknown>)?.digest && String((error as Record<string, unknown>).digest).includes("NEXT_REDIRECT")) {
       throw error;
     }
     return { error: "Beklenmeyen bir hata oluştu." };
@@ -159,14 +189,132 @@ export async function superAdminLogin(values: z.infer<typeof loginSchema>) {
     });
 
     return { success: "Giriş başarılı.", role: user.role };
-  } catch (error: any) {
-    if (error?.type === "CredentialsSignin") {
+  } catch (error) {
+    if ((error as Record<string, unknown>)?.type === "CredentialsSignin") {
       return { error: "Girdiğiniz E-posta veya şifre hatalı." };
     }
-    if (error?.digest?.includes("NEXT_REDIRECT")) {
+    if ((error as Record<string, unknown>)?.digest && String((error as Record<string, unknown>).digest).includes("NEXT_REDIRECT")) {
       throw error;
     }
     return { error: "Beklenmeyen bir kimlik doğrulama hatası oluştu." };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// OTP Redis helper — @upstash/redis ile; env yoksa dev modunda in-memory çalışır
+// ---------------------------------------------------------------------------
+const OTP_TTL_SECONDS = 300; // 5 dakika
+const OTP_KEY_PREFIX = "customer_otp:";
+
+// Dev mode fallback using globalThis to survive Next.js fast refresh
+const devOtpStore = (globalThis as any).devOtpStore || new Map<string, { otp: string; expires: number }>();
+if (process.env.NODE_ENV !== "production") {
+  (globalThis as any).devOtpStore = devOtpStore;
+}
+
+async function storeOtp(plate: string, phone: string, otp: string): Promise<void> {
+  try {
+    if (!process.env.UPSTASH_REDIS_REST_URL) throw new Error("Redis not configured");
+    const { Redis } = await import("@upstash/redis");
+    const redis = Redis.fromEnv();
+    await redis.set(`${OTP_KEY_PREFIX}${plate}:${phone}`, otp, { ex: OTP_TTL_SECONDS });
+  } catch {
+    // Fallback to in-memory store for development
+    devOtpStore.set(`${OTP_KEY_PREFIX}${plate}:${phone}`, {
+      otp,
+      expires: Date.now() + OTP_TTL_SECONDS * 1000,
+    });
+    console.log(`[DEV OTP] Müşteri ${plate} / ${phone} için oluşturulan kod: ${otp}`);
+  }
+}
+
+async function getAndDeleteOtp(plate: string, phone: string): Promise<string | null> {
+  const key = `${OTP_KEY_PREFIX}${plate}:${phone}`;
+  try {
+    if (!process.env.UPSTASH_REDIS_REST_URL) throw new Error("Redis not configured");
+    const { Redis } = await import("@upstash/redis");
+    const redis = Redis.fromEnv();
+    const otp = await redis.getdel(key);
+    return typeof otp === "string" ? otp : null;
+  } catch {
+    // Fallback to in-memory store
+    const record = devOtpStore.get(key);
+    devOtpStore.delete(key);
+    if (record && record.expires > Date.now()) {
+      return record.otp;
+    }
+    return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// sendCustomerOTP — Plaka+telefon doğrulama, OTP üretme ve SMS gönderme
+// ---------------------------------------------------------------------------
+export async function sendCustomerOTP(plate: string, phone: string) {
+  try {
+    const queryPlate = plate.replace(/\s+/g, "").toUpperCase();
+    const queryPhone = phone.replace(/\s+/g, "");
+
+    const vehicles = await prisma.vehicle.findMany({
+      where: { customer: { phone: { contains: queryPhone } } },
+      include: { customer: true },
+    });
+
+    const vehicle = vehicles.find(
+      (v) => v.plate.replace(/\s+/g, "").toUpperCase() === queryPlate
+    );
+
+    if (!vehicle) {
+      return { error: "Bu plaka ve telefon numarası ile kayıtlı araç bulunamadı." };
+    }
+
+    const otp = String(randomInt(100000, 999999));
+    await storeOtp(queryPlate, queryPhone, otp);
+
+    const customerPhone = vehicle.customer.phone;
+    if (customerPhone) {
+      try {
+        const { sendSms } = await import("@/lib/notifications/sms");
+        await sendSms({
+          to: customerPhone.startsWith("+") ? customerPhone : `+90${customerPhone.replace(/^0/, "")}`,
+          body: `MS Oto Servis giriş kodunuz: ${otp}. Kod 5 dakika geçerlidir.`,
+          tenantId: vehicle.tenantId,
+        });
+      } catch {
+        // SMS gönderilemese bile OTP Redis'e kaydedildi; dev'de console'da görünür
+      }
+    }
+
+    return { success: true };
+  } catch {
+    return { error: "OTP gönderilemedi. Lütfen daha sonra tekrar deneyin." };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// verifyCustomerOTP — OTP doğrulama ve NextAuth oturumu açma
+// ---------------------------------------------------------------------------
+export async function verifyCustomerOTP(plate: string, phone: string, otp: string) {
+  try {
+    const queryPlate = plate.replace(/\s+/g, "").toUpperCase();
+    const queryPhone = phone.replace(/\s+/g, "");
+
+    const storedOtp = await getAndDeleteOtp(queryPlate, queryPhone);
+    if (!storedOtp) {
+      return { error: "OTP kodu süresi dolmuş veya geçersiz. Yeniden kod talep edin." };
+    }
+    if (storedOtp !== otp.trim()) {
+      return { error: "Girdiğiniz kod hatalı. Lütfen tekrar deneyin." };
+    }
+
+    await signIn("customer", { plate, phone, redirect: false });
+    return { success: "Giriş başarılı.", role: "CUSTOMER" };
+  } catch (error) {
+    if ((error as Record<string, unknown>)?.type === "CredentialsSignin") {
+      return { error: "Araç kaydı bulunamadı. Servis personeliyle iletişime geçin." };
+    }
+    if ((error as Record<string, unknown>)?.digest && String((error as Record<string, unknown>).digest).includes("NEXT_REDIRECT")) throw error;
+    return { error: "Giriş sırasında hata oluştu. Lütfen tekrar deneyin." };
   }
 }
 
@@ -187,11 +335,11 @@ export async function loginCustomer(values: z.infer<typeof customerLoginSchema>)
     });
 
     return { success: "Giriş başarılı.", role: "CUSTOMER" };
-  } catch (error: any) {
-    if (error?.type === "CredentialsSignin") {
+  } catch (error) {
+    if ((error as Record<string, unknown>)?.type === "CredentialsSignin") {
       return { error: "Veritabanında bu plaka ve telefon numarası ile eşleşen bir araç kaydı bulunamadı." };
     }
-    if (error?.digest?.includes("NEXT_REDIRECT")) {
+    if ((error as Record<string, unknown>)?.digest && String((error as Record<string, unknown>).digest).includes("NEXT_REDIRECT")) {
       throw error; // Let Next.js handle redirect if redirect:true were used, but we use redirect:false.
     }
     return { error: "Beklenmeyen bir kimlik doğrulama hatası oluştu." };

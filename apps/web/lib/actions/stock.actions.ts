@@ -1,8 +1,9 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 
 interface PurchaseItem {
   partId: string;
@@ -11,18 +12,44 @@ interface PurchaseItem {
   taxRate: number;
 }
 
+/** Yeni parça bilgisi — fatura satırında inline oluşturulacak */
+interface NewPartItem {
+  isNew: true;
+  categoryId: string;
+  partNumber: string;
+  name: string;
+  brand?: string;
+  unit: string;
+  purchasePrice: number;
+  sellingPrice: number;
+  taxRate: number;
+  quantity: number;
+  location?: string;
+  minStockLevel?: number;
+}
+
+/** Mevcut parça referansı */
+interface ExistingPartItem {
+  isNew?: false;
+  partId: string;
+  quantity: number;
+  purchasePrice: number;
+  taxRate: number;
+}
+
+type PurchaseLineItem = NewPartItem | ExistingPartItem;
+
 export async function createPurchaseInvoice(data: {
   supplierId: string;
   invoiceNumber: string;
   issueDate: Date;
-  items: PurchaseItem[];
+  items: PurchaseLineItem[];
   notes?: string;
 }) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-
-    const tenantId = session.user.tenantId;
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     // İşlem başlat (Transaction)
     const result = await prisma.$transaction(async (tx) => {
@@ -30,7 +57,7 @@ export async function createPurchaseInvoice(data: {
       let totalTax = 0;
       let subTotal = 0;
 
-      // 1. Faturayı oluştur (DRAFT olarak başla, sonra SENT/PAID yapılabilir)
+      // 1. Faturayı oluştur
       const invoice = await tx.invoice.create({
         data: {
           tenantId,
@@ -38,16 +65,21 @@ export async function createPurchaseInvoice(data: {
           invoiceNumber: data.invoiceNumber,
           issueDate: data.issueDate,
           type: "PURCHASE",
-          status: "SENT", // Alım faturası girildiği an borç işlenir
+          status: "SENT",
           notes: data.notes,
-          // Geçici değerler, aşağıda güncellenecek
           subTotal: 0,
           taxAmount: 0,
           totalAmount: 0,
         },
       });
 
-      // 2. Her bir kalem için işlemleri yap
+      // 2. Tedarikçi adını al (yeni parçalar için supplierName)
+      const supplier = await tx.supplier.findUnique({
+        where: { id: data.supplierId },
+        select: { name: true },
+      });
+
+      // 3. Her bir kalem için işlemleri yap
       for (const item of data.items) {
         const lineSubTotal = item.quantity * item.purchasePrice;
         const lineTax = (lineSubTotal * item.taxRate) / 100;
@@ -57,20 +89,64 @@ export async function createPurchaseInvoice(data: {
         totalTax += lineTax;
         totalAmount += lineTotal;
 
-        // a. Parçanın stok miktarını ve alış fiyatını güncelle
-        await tx.part.update({
-          where: { id: item.partId, tenantId },
-          data: {
-            currentStock: { increment: item.quantity },
-            purchasePrice: item.purchasePrice, // Son alış fiyatı
-          },
-        });
+        let partId: string;
 
-        // b. Stok Hareketi kaydı oluştur
+        if (item.isNew) {
+          // ── YENİ PARÇA: Stok kartı oluştur ──
+          const newItem = item as NewPartItem;
+
+          // Aynı partNumber veya name kontrolü
+          const exists = await tx.part.findFirst({
+            where: {
+              tenantId,
+              OR: [
+                { partNumber: newItem.partNumber },
+                { name: newItem.name }
+              ]
+            },
+          });
+          if (exists) {
+            throw new Error(`"${newItem.partNumber}" barkodlu veya "${newItem.name}" isimli parça sistemde zaten kayıtlı.`);
+          }
+
+          const newPart = await tx.part.create({
+            data: {
+              tenantId,
+              categoryId: newItem.categoryId,
+              partNumber: newItem.partNumber,
+              name: newItem.name,
+              brand: newItem.brand || null,
+              unit: newItem.unit,
+              purchasePrice: newItem.purchasePrice,
+              sellingPrice: newItem.sellingPrice,
+              taxRate: newItem.taxRate,
+              currentStock: newItem.quantity,
+              minStockLevel: newItem.minStockLevel || 5,
+              location: newItem.location || null,
+              supplierName: supplier?.name || null,
+              isActive: true,
+            },
+          });
+          partId = newPart.id;
+        } else {
+          // ── MEVCUT PARÇA: Stok güncelle ──
+          const existingItem = item as ExistingPartItem;
+          partId = existingItem.partId;
+
+          await tx.part.update({
+            where: { id: partId, tenantId },
+            data: {
+              currentStock: { increment: item.quantity },
+              purchasePrice: item.purchasePrice,
+            },
+          });
+        }
+
+        // Stok Hareketi kaydı
         await tx.stockMovement.create({
           data: {
             tenantId,
-            partId: item.partId,
+            partId,
             quantity: item.quantity,
             type: "IN",
             reason: `Alım Faturası: ${data.invoiceNumber}`,
@@ -79,7 +155,7 @@ export async function createPurchaseInvoice(data: {
         });
       }
 
-      // 3. Fatura toplamlarını güncelle
+      // 4. Fatura toplamlarını güncelle
       const updatedInvoice = await tx.invoice.update({
         where: { id: invoice.id },
         data: {
@@ -89,7 +165,7 @@ export async function createPurchaseInvoice(data: {
         },
       });
 
-      // 4. Tedarikçi bakiyesini güncelle (Borç artışı)
+      // 5. Tedarikçi bakiyesini güncelle
       await tx.supplier.update({
         where: { id: data.supplierId, tenantId },
         data: {
@@ -101,24 +177,25 @@ export async function createPurchaseInvoice(data: {
     });
 
     revalidatePath("/dashboard/inventory");
-    revalidatePath("/dashboard/finance");
+    revalidatePath("/dashboard/finances");
     revalidatePath("/dashboard/suppliers");
 
     return { success: "Stok girişi başarıyla yapıldı", invoice: result };
-  } catch (err) {
+  } catch (err: any) {
     console.error("Stok girişi hatası:", err);
-    return { error: "İşlem sırasında bir hata oluştu" };
+    return { error: err?.message || "İşlem sırasında bir hata oluştu" };
   }
 }
 
 export async function getPurchaseInvoices() {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz" };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const invoicesResult = await prisma.invoice.findMany({
       where: {
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         type: "PURCHASE",
       },
       include: {

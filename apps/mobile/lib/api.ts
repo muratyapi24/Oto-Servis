@@ -5,7 +5,23 @@
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
+// Production'da EXPO_PUBLIC_API_URL ZORUNLU
+export function getApiBaseUrl(): string {
+  const url = process.env.EXPO_PUBLIC_API_URL;
+  if (!url) {
+    if (__DEV__) {
+      console.warn("[API] EXPO_PUBLIC_API_URL tanımlanmamış, localhost kullanılıyor");
+      return "http://localhost:3000";
+    }
+    throw new Error(
+      "EXPO_PUBLIC_API_URL ortam değişkeni tanımlanmamış. " +
+      "Production build'de bu değer zorunludur."
+    );
+  }
+  return url;
+}
+
+const BASE_URL = getApiBaseUrl();
 
 async function getAuthHeaders(): Promise<Record<string, string>> {
   const token = await AsyncStorage.getItem("auth_token");
@@ -122,13 +138,40 @@ export const api = {
     }),
 
   firmaBarkodAra: (barcode: string) =>
-    request(`/api/mobile/firma/stok/barkod?q=${encodeURIComponent(barcode)}`),
+    request<{ part: { id: string; name: string; partNumber: string | null; currentStock: number; sellingPrice: number; unit: string } | null }>(
+      `/api/mobile/firma/stok?barcode=${encodeURIComponent(barcode)}`
+    ),
 
   firmaFaturaDetay: (id: string) =>
     request(`/api/mobile/firma/fatura/${id}`),
 
   firmaFaturaPdf: (id: string) =>
     request(`/api/invoices/${id}/pdf`),
+
+  // ─── Firma Bildirimler & Hizmetler ──────────────────────────────────────────
+  firmaBildirimler: () =>
+    request<{ notifications: Array<{
+      id: string; title: string; message: string;
+      isRead: boolean; link?: string | null; createdAt: string;
+    }> }>("/api/mobile/firma/bildirimler"),
+
+  firmaBildirimOku: (id: string) =>
+    request<{ success: boolean }>(`/api/mobile/firma/bildirimler/${id}/oku`, { method: "PATCH" }),
+
+  firmaTumBildirimOku: () =>
+    request<{ success: boolean }>("/api/mobile/firma/bildirimler", { method: "PATCH" }),
+
+  firmaHizmetler: () =>
+    request<{ services: Array<{
+      id: string; name: string; price: number;
+      category?: string; unit?: string;
+    }> }>("/api/mobile/firma/hizmetler"),
+
+  firmaMesajlar: () =>
+    request<{ threads: Array<{
+      id: string; customerName: string; vehiclePlate: string;
+      lastMessage: string; unread: number; updatedAt: string;
+    }> }>("/api/mobile/firma/mesajlar"),
 
   // ─── Arama & Auth ────────────────────────────────────────────────────────────
   search: (q: string, type = "all") =>
@@ -139,4 +182,35 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ email, password }),
     }),
+
+  // ─── Müşteri OTP Auth ────────────────────────────────────────────────────────
+  musteriOtpGonder: (plate: string, phone: string) =>
+    request<{ success: boolean; message?: string; error?: string }>(
+      "/api/mobile/musteri/otp",
+      {
+        method: "POST",
+        body: JSON.stringify({ action: "send", plate, phone }),
+      }
+    ),
+
+  musteriOtpDogrula: (plate: string, phone: string, otp: string) =>
+    request<{
+      success: boolean;
+      token?: string;
+      customer?: {
+        id: string;
+        vehicleId: string;
+        plate: string;
+        brand: string;
+        model: string;
+        name: string;
+      };
+      error?: string;
+    }>(
+      "/api/mobile/musteri/otp",
+      {
+        method: "POST",
+        body: JSON.stringify({ action: "verify", plate, phone, otp }),
+      }
+    ),
 };

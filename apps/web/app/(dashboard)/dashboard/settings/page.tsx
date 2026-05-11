@@ -22,7 +22,7 @@ export default async function SettingsPage() {
   return (
     <PageShell
       title="Firma Profili & Ayarlar"
-      subtitle="Firma bilgilerinizi güncelleyin, entegrasyon ayarlarınızı ve abonelik planınızı yönetin."
+      subtitle="Firma bilgilerinizi güncelleyin ve entegrasyon ayarlarınızı yönetin."
       sectionLabel="Yönetim"
     >
       <SettingsFormClient initialData={initialData} metrics={metrics} />

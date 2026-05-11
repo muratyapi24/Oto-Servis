@@ -1,8 +1,9 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import * as Sentry from "@sentry/nextjs";
 import { bulkCampaignSchema, type BulkCampaignInput } from "@/lib/validations/notification";
 import { inngest } from "@/lib/inngest/client";
@@ -22,17 +23,15 @@ export async function createBulkCampaign(
   data: BulkCampaignInput
 ): Promise<ActionResult<{ campaignId: string }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
     // 6.3 Yalnızca TENANT_ADMIN rolüne izin ver
     if (session.user.role !== "TENANT_ADMIN") {
       return { success: false, error: "Bu işlem için yönetici yetkisi gereklidir." };
     }
 
-    const tenantId = session.user.tenantId;
     const validatedData = bulkCampaignSchema.parse(data);
 
     const campaign = await prisma.bulkNotificationCampaign.create({
@@ -64,12 +63,10 @@ export async function getBulkCampaigns(): Promise<
   ActionResult<{ campaigns: unknown[] }>
 > {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const campaigns = await prisma.bulkNotificationCampaign.findMany({
       where: { tenantId },
@@ -95,12 +92,10 @@ export async function getBulkCampaignById(
   campaignId: string
 ): Promise<ActionResult<{ campaign: unknown }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const campaign = await prisma.bulkNotificationCampaign.findFirst({
       where: { id: campaignId, tenantId },
@@ -129,12 +124,10 @@ export async function previewBulkCampaign(
   segmentParams?: Record<string, unknown>
 ): Promise<ActionResult<{ count: number; sampleCustomers: unknown[] }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
     const customers = await getSegmentCustomers(tenantId, segmentType, segmentParams);
 
     return {
@@ -162,16 +155,14 @@ export async function startBulkCampaign(
   campaignId: string
 ): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
     if (session.user.role !== "TENANT_ADMIN") {
       return { success: false, error: "Bu işlem için yönetici yetkisi gereklidir." };
     }
 
-    const tenantId = session.user.tenantId;
 
     const campaign = await prisma.bulkNotificationCampaign.findFirst({
       where: { id: campaignId, tenantId, status: "DRAFT" },

@@ -1,4 +1,5 @@
 import { getInventoryDashboard } from "@/lib/actions/inventory.actions";
+import { getSuppliers } from "@/lib/actions/supplier.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
 import InventoryBoardClient from "@/components/dashboard/inventory/InventoryBoardClient";
 import StockMovementsTab from "@/components/dashboard/inventory/StockMovementsTab";
@@ -8,18 +9,24 @@ export const metadata = {
 };
 
 export default async function InventoryPage() {
-  const dashResponse = await getInventoryDashboard();
+  const [dashResponse, supplierResponse] = await Promise.all([
+    getInventoryDashboard(),
+    getSuppliers(),
+  ]);
 
   if (dashResponse.error) {
     return <PageError message={dashResponse.error} />;
   }
+
+  const suppliers = ("suppliers" in supplierResponse ? supplierResponse.suppliers : []) || [];
 
   const data = {
     metrics: dashResponse.metrics || { totalPartsTypes: 0, totalItems: 0, totalStockValue: 0, lowStockCount: 0 },
     lowStockItems: dashResponse.lowStockItems || [],
     allParts: dashResponse.allParts || [],
     categories: dashResponse.categories || [],
-    recentMovements: dashResponse.recentMovements || []
+    recentMovements: dashResponse.recentMovements || [],
+    suppliers: suppliers.map((s: any) => ({ id: s.id, name: s.name })),
   };
 
   return (

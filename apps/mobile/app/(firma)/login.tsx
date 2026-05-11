@@ -6,6 +6,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import * as LocalAuthentication from "expo-local-authentication";
+import { getApiBaseUrl } from "@/lib/api";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -45,7 +46,7 @@ export default function LoginScreen() {
 
     setLoading(true);
     try {
-      const apiUrl = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
+      const apiUrl = getApiBaseUrl();
       const res = await fetch(`${apiUrl}/api/auth/callback/credentials`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

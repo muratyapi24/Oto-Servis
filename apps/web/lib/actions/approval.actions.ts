@@ -14,7 +14,7 @@ export async function generateApprovalToken(serviceOrderId: string): Promise<{ t
     });
 
     return { token };
-  } catch (err: any) {
+  } catch (err) {
     console.error("generateApprovalToken hatası:", err);
     return { error: "Token üretilemedi." };
   }
@@ -69,7 +69,7 @@ export async function validateApprovalToken(token: string): Promise<{
         })),
       },
     };
-  } catch (err: any) {
+  } catch (err) {
     console.error("validateApprovalToken hatası:", err);
     return { error: "Token doğrulanamadı." };
   }
@@ -98,7 +98,7 @@ export async function approveServiceOrder(token: string): Promise<{ success?: st
     });
 
     return { success: "Servis emri onaylandı. Ekibimiz çalışmaya başlayacak." };
-  } catch (err: any) {
+  } catch (err) {
     console.error("approveServiceOrder hatası:", err);
     return { error: "Onay işlemi gerçekleştirilemedi." };
   }
@@ -132,7 +132,7 @@ export async function rejectServiceOrder(token: string, reason: string): Promise
     });
 
     return { success: "Servis emri reddedildi. Servis ekibimiz bilgilendirildi." };
-  } catch (err: any) {
+  } catch (err) {
     console.error("rejectServiceOrder hatası:", err);
     return { error: "Red işlemi gerçekleştirilemedi." };
   }

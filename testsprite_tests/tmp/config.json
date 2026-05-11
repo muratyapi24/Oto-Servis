@@ -1,0 +1,18 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3000",
+  "executionArgs": {
+    "projectName": "Bst_Otoservis",
+    "projectPath": "d:\\Projeler\\Bst_Otoservis",
+    "testIds": [],
+    "additionalInstruction": "Firma platformunda kapsamlı E2E alım faturası entegrasyon testi: 1. Prisma kullanarak test verileri hazırla: Tedarikçi ID sakla, 3 farklı parça kaydı ekle (Parça A: 50, Parça B: 75, Parça C: 100 stok). 2. stock.actions.ts createPurchaseInvoice üzerinden fatura oluştur. Fatura tutarını, KDV'yi ve stok artışını, tedarikçi bakiye yansımasını doğrula. 3. payment.actions.ts kullanarak fatura tutarının %40'ı kadar ödeme yap. Bakiyenin düştüğünü ve faturanın Kısmi Ödendi durumunda olduğunu doğrula. 4. finance.actions.ts cancelInvoice ile faturayı iptal et. İptal sonrası stokların geri yüklendiğini, bakiyenin sıfırlandığını ve tahsilatın iade edildiğini doğrula. 5. Tüm transaction'ların tutarlı olduğunu ve log kayıtlarının oluştuğunu doğrula. Page Object Model pattern, ayrı test veri JSON'ı ve detaylı assertion logları ile Jest/TS E2E testi olarak yazılmalıdır.",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "sk-user--N7RiJCV8TMnvhwSxEfXc4mKd2yjg-jLx_Y9Vbhm0qnJVI26XLyEHxtaX9TnGMge95lPUiwdIwOjl8I_Czqh17pSgObRyZg-OkUUSbKssPeTrOoxpQZp10-pwwo4FMgfFe0"
+    }
+  },
+  "serverPort": 11555,
+  "proxy": "http://7f42302b-6804-47e8-88a6-b0577329f7c9:E5fUBDqOkniqWgkZrtkMsLY6z1c3hHo0@tun.testsprite.com:8080"
+}

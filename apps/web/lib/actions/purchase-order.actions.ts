@@ -1,8 +1,9 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import { Resend } from "resend";
 import * as Sentry from "@sentry/nextjs";
 import {
@@ -51,12 +52,10 @@ export async function createPurchaseOrder(
   data: CreatePurchaseOrderInput
 ): Promise<ActionResult<{ poId: string; poNumber: string }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
-    const tenantId = session.user.tenantId;
     const validatedData = createPurchaseOrderSchema.parse(data);
 
     // Tedarikçi tenant'a ait mi kontrol et
@@ -133,7 +132,7 @@ export async function createPurchaseOrder(
       success: true,
       data: { poId: purchaseOrder.id, poNumber: purchaseOrder.poNumber },
     };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("PO oluşturma hatası:", error);
     return { success: false, error: "Satın alma siparişi oluşturulamadı." };
@@ -147,12 +146,10 @@ export async function sendPurchaseOrder(
   poId: string
 ): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
-    const tenantId = session.user.tenantId;
 
     const po = await prisma.purchaseOrder.findFirst({
       where: { id: poId, tenantId, deletedAt: null },
@@ -250,7 +247,7 @@ export async function sendPurchaseOrder(
     revalidatePath("/dashboard/inventory/purchase-orders");
     revalidatePath(`/dashboard/inventory/purchase-orders/${poId}`);
     return { success: true };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("PO gönderme hatası:", error);
     return { success: false, error: "Sipariş gönderilemedi." };
@@ -265,12 +262,10 @@ export async function receivePurchaseOrder(
   receiveData: ReceiveItemsInput
 ): Promise<ActionResult<{ status: string; receivedCount: number }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
-    const tenantId = session.user.tenantId;
     const validatedData = receiveItemsSchema.parse(receiveData);
 
     const po = await prisma.purchaseOrder.findFirst({
@@ -435,7 +430,7 @@ export async function receivePurchaseOrder(
       success: true,
       data: { status: result.newStatus, receivedCount },
     };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("Teslim alım hatası:", error);
     return { success: false, error: "Teslim alım işlemi gerçekleştirilemedi." };
@@ -450,12 +445,10 @@ export async function cancelPurchaseOrder(
   reason?: string
 ): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
-    const tenantId = session.user.tenantId;
 
     const po = await prisma.purchaseOrder.findFirst({
       where: { id: poId, tenantId, deletedAt: null },
@@ -492,7 +485,7 @@ export async function cancelPurchaseOrder(
     revalidatePath("/dashboard/inventory/purchase-orders");
     revalidatePath(`/dashboard/inventory/purchase-orders/${poId}`);
     return { success: true };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("PO iptal hatası:", error);
     return { success: false, error: "Sipariş iptal edilemedi." };
@@ -515,12 +508,10 @@ export async function getPurchaseOrders(
   filters?: POFilters
 ): Promise<ActionResult<{ orders: any[]; total: number }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
     const page = filters?.page ?? 1;
     const pageSize = filters?.pageSize ?? 20;
     const skip = (page - 1) * pageSize;
@@ -574,7 +565,7 @@ export async function getPurchaseOrders(
         total,
       },
     };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("PO listesi hatası:", error);
     return { success: false, error: "Satın alma siparişleri listelenemedi." };
@@ -588,12 +579,10 @@ export async function getPurchaseOrderById(
   poId: string
 ): Promise<ActionResult<{ order: any }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const order = await prisma.purchaseOrder.findFirst({
       where: { id: poId, tenantId, deletedAt: null },
@@ -629,7 +618,7 @@ export async function getPurchaseOrderById(
       success: true,
       data: { order: JSON.parse(JSON.stringify(order)) },
     };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("PO detay hatası:", error);
     return { success: false, error: "Sipariş detayı alınamadı." };

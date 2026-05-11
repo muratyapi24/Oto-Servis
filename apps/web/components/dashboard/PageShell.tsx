@@ -1,4 +1,8 @@
 import Link from "next/link";
+import {
+  DASHBOARD_TYPOGRAPHY,
+  dashboardPageContainerClass,
+} from "@/lib/dashboard-ui-standards";
 
 /**
  * PageShell — Dashboard modülleri için ortak sayfa kapsayıcısı.
@@ -39,20 +43,20 @@ export default function PageShell({
 }: PageShellProps) {
   return (
     <>
-      <div className={`p-8 space-y-8 max-w-7xl mx-auto w-full ${className}`}>
+      <div className={dashboardPageContainerClass(className)}>
         {/* Welcome / Section Header */}
         <section className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div className="space-y-2">
             {sectionLabel && (
-              <h2 className="text-slate-500 font-bold text-sm tracking-widest uppercase">
+              <h2 className={DASHBOARD_TYPOGRAPHY.sectionLabel}>
                 {sectionLabel}
               </h2>
             )}
-            <h1 className="text-4xl font-bold text-on-surface tracking-tight">
+            <h1 className={DASHBOARD_TYPOGRAPHY.pageTitle}>
               {title}
             </h1>
             {subtitle && (
-              <p className="text-slate-600 font-medium">{subtitle}</p>
+              <p className={DASHBOARD_TYPOGRAPHY.pageSubtitle}>{subtitle}</p>
             )}
           </div>
           {actions && <div className="flex space-x-3 flex-shrink-0">{actions}</div>}

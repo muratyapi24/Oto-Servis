@@ -1,14 +1,14 @@
 "use server";
 
-import { auth } from "@/auth";
+import { guardTenant } from "@/lib/guards";
 import { prisma } from "@repo/database";
 import dayjs from "dayjs";
 
 export async function getAnalyticsDashboard() {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Oturum bulunamadı." };
-    const tenantId = session.user.tenantId;
 
     const now = dayjs();
     const startOfMonth = now.startOf("month").toDate();
@@ -187,10 +187,10 @@ export async function getAnalyticsDashboard() {
 
 // Müşteri Yaşam Boyu Değeri (CLV) analizi — üst 10 müşteri
 export async function getCustomerLifetimeValue() {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Oturum bulunamadı." };
-    const tenantId = session.user.tenantId;
 
     const results = await prisma.$queryRawUnsafe<
       Array<{
@@ -239,10 +239,10 @@ export async function getCustomerLifetimeValue() {
 
 // Sonraki ay gelir tahmini — son 3 ayın ağırlıklı ortalaması (3-2-1 ağırlık)
 export async function forecastNextMonthRevenue() {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Oturum bulunamadı." };
-    const tenantId = session.user.tenantId;
 
     const now = dayjs();
     const revenues: number[] = [];
@@ -271,10 +271,10 @@ export async function forecastNextMonthRevenue() {
 
 // Araç marka bazında servis dağılımı
 export async function getVehicleBrandDistribution() {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Oturum bulunamadı." };
-    const tenantId = session.user.tenantId;
 
     const results = await prisma.serviceOrder.groupBy({
       by: ["vehicleId"],

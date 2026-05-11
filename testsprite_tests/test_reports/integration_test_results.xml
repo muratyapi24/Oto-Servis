@@ -1,0 +1,277 @@
+<testsuites id="" name="" tests="3" failures="0" skipped="0" errors="3" time="64.213511">
+<testsuite name="supplier_invoice_integration.test.ts" timestamp="2026-05-05T15:36:53.103Z" hostname="chromium" tests="3" failures="0" skipped="0" time="54.707" errors="3">
+<testcase name="Firma Platformu Entegrasyon Testleri › Test 1: Giriş ve Ortam Hazırlığı" classname="supplier_invoice_integration.test.ts" time="17.604">
+<system-out>
+<![CDATA[
+=== TEST RAPORU ===
+Test Suite: Firma Platformu Entegrasyon Testleri
+Başlangıç: 05.05.2026 18:36:55
+Bitiş: 05.05.2026 18:37:13
+Toplam Test: 3
+Başarılı: 2
+Başarısız: 1
+Atlanan: 0
+
+=== BAŞARISIZ TESTLER ===
+- Ortam Hazırlığı: page.click: Timeout 10000ms exceeded.
+Call log:
+[2m  - waiting for locator('button:has-text("Stok Kartı Aç")')[22m
+[2m    - locator resolved to <button class="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors shadow-sm">…</button>[22m
+[2m  - attempting click action[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is visible, enabled and stable[22m
+[2m    - scrolling into view if needed[22m
+[2m    - done scrolling[22m
+[2m    - <label class="block text-sm font-medium text-gray-700 mb-1">Açıklama / Not</label> from <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">…</div> subtree intercepts pointer events[22m
+[2m  - retrying click action[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is visible, enabled and stable[22m
+[2m    - scrolling into view if needed[22m
+[2m    - done scrolling[22m
+[2m    - <label class="block text-sm font-medium text-gray-700 mb-1">Ürün Adı *</label> from <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">…</div> subtree intercepts pointer events[22m
+[2m  - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is visible, enabled and stable[22m
+[2m      - scrolling into view if needed[22m
+[2m      - done scrolling[22m
+[2m      - <label class="block text-sm font-medium text-gray-700 mb-1">Ürün Adı *</label> from <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">…</div> subtree intercepts pointer events[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is not stable[22m
+[2m  4 × retrying click action[22m
+[2m      - waiting 500ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is visible, enabled and stable[22m
+[2m      - scrolling into view if needed[22m
+[2m      - done scrolling[22m
+[2m      - <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">…</div> intercepts pointer events[22m
+[2m    - retrying click action[22m
+[2m      - waiting 500ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is visible, enabled and stable[22m
+[2m      - scrolling into view if needed[22m
+[2m      - done scrolling[22m
+[2m      - <label class="block text-sm font-medium text-gray-700 mb-1">Ürün Adı *</label> from <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">…</div> subtree intercepts pointer events[22m
+[2m    - retrying click action[22m
+[2m      - waiting 500ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is visible, enabled and stable[22m
+[2m      - scrolling into view if needed[22m
+[2m      - done scrolling[22m
+[2m      - <label class="block text-sm font-medium text-gray-700 mb-1">Ürün Adı *</label> from <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">…</div> subtree intercepts pointer events[22m
+[2m    - retrying click action[22m
+[2m      - waiting 500ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is visible, enabled and stable[22m
+[2m      - scrolling into view if needed[22m
+[2m      - done scrolling[22m
+[2m      - <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">…</div> intercepts pointer events[22m
+[2m  - retrying click action[22m
+[2m    - waiting 500ms[22m
+
+
+[[ATTACHMENT|..\..\test-results\supplier_invoice_integrati-8f613--1-Giriş-ve-Ortam-Hazırlığı-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|..\..\test-results\supplier_invoice_integrati-8f613--1-Giriş-ve-Ortam-Hazırlığı-chromium\error-context.md]]
+
+[[ATTACHMENT|..\..\test-results\supplier_invoice_integrati-8f613--1-Giriş-ve-Ortam-Hazırlığı-chromium\error-context.md]]
+]]>
+</system-out>
+<error message="page.click: Timeout 10000ms exceeded." type="TimeoutError">
+<![CDATA[  [chromium] › supplier_invoice_integration.test.ts:31:7 › Firma Platformu Entegrasyon Testleri › Test 1: Giriş ve Ortam Hazırlığı 
+
+    TimeoutError: page.click: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for locator('button:has-text("Stok Kartı Aç")')
+        - locator resolved to <button class="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors shadow-sm">…</button>
+      - attempting click action
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <label class="block text-sm font-medium text-gray-700 mb-1">Açıklama / Not</label> from <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">…</div> subtree intercepts pointer events
+      - retrying click action
+        - waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <label class="block text-sm font-medium text-gray-700 mb-1">Ürün Adı *</label> from <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">…</div> subtree intercepts pointer events
+      - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <label class="block text-sm font-medium text-gray-700 mb-1">Ürün Adı *</label> from <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">…</div> subtree intercepts pointer events
+        - retrying click action
+          - waiting 100ms
+        - waiting for element to be visible, enabled and stable
+        - element is not stable
+      4 × retrying click action
+          - waiting 500ms
+          - waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">…</div> intercepts pointer events
+        - retrying click action
+          - waiting 500ms
+          - waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <label class="block text-sm font-medium text-gray-700 mb-1">Ürün Adı *</label> from <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">…</div> subtree intercepts pointer events
+        - retrying click action
+          - waiting 500ms
+          - waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <label class="block text-sm font-medium text-gray-700 mb-1">Ürün Adı *</label> from <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">…</div> subtree intercepts pointer events
+        - retrying click action
+          - waiting 500ms
+          - waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">…</div> intercepts pointer events
+      - retrying click action
+        - waiting 500ms
+
+
+       at ..\page_objects\index.ts:56
+
+      54 |
+      55 |   async createPart(partData: any) {
+    > 56 |     await this.page.click('button:has-text("Stok Kartı Aç")');
+         |                     ^
+      57 |     
+      58 |     // Kategori seçimi
+      59 |     const categorySelect = this.page.locator('select[name="categoryId"]');
+        at StockPage.createPart (D:\Projeler\Bst_Otoservis\testsprite_tests\page_objects\index.ts:56:21)
+        at D:\Projeler\Bst_Otoservis\testsprite_tests\integration\supplier_invoice_integration.test.ts:46:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\supplier_invoice_integrati-8f613--1-Giriş-ve-Ortam-Hazırlığı-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\supplier_invoice_integrati-8f613--1-Giriş-ve-Ortam-Hazırlığı-chromium\error-context.md
+
+    Error Context: ..\..\test-results\supplier_invoice_integrati-8f613--1-Giriş-ve-Ortam-Hazırlığı-chromium\error-context.md
+]]>
+</error>
+</testcase>
+<testcase name="Firma Platformu Entegrasyon Testleri › Test 2: Fatura Oluşturma" classname="supplier_invoice_integration.test.ts" time="22.187">
+<system-out>
+<![CDATA[
+=== TEST RAPORU ===
+Test Suite: Firma Platformu Entegrasyon Testleri
+Başlangıç: 05.05.2026 18:37:15
+Bitiş: 05.05.2026 18:37:38
+Toplam Test: 1
+Başarılı: 0
+Başarısız: 1
+Atlanan: 0
+
+=== BAŞARISIZ TESTLER ===
+- Fatura Testi: page.click: Timeout 10000ms exceeded.
+Call log:
+[2m  - waiting for locator('button:has-text("Stok Alımı Yap")')[22m
+
+
+[[ATTACHMENT|..\..\test-results\supplier_invoice_integrati-964b2-eri-Test-2-Fatura-Oluşturma-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|..\..\test-results\supplier_invoice_integrati-964b2-eri-Test-2-Fatura-Oluşturma-chromium\error-context.md]]
+
+[[ATTACHMENT|..\..\test-results\supplier_invoice_integrati-964b2-eri-Test-2-Fatura-Oluşturma-chromium\error-context.md]]
+]]>
+</system-out>
+<error message="page.click: Timeout 10000ms exceeded." type="TimeoutError">
+<![CDATA[  [chromium] › supplier_invoice_integration.test.ts:56:7 › Firma Platformu Entegrasyon Testleri › Test 2: Fatura Oluşturma 
+
+    TimeoutError: page.click: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for locator('button:has-text("Stok Alımı Yap")')
+
+
+       at ..\page_objects\index.ts:87
+
+      85 |
+      86 |   async createPurchaseInvoice(invoiceData: any) {
+    > 87 |     await this.page.click('button:has-text("Stok Alımı Yap")');
+         |                     ^
+      88 |     
+      89 |     // Tedarikçi seçimi
+      90 |     await this.page.selectOption('select', { label: invoiceData.supplierName });
+        at InvoicePage.createPurchaseInvoice (D:\Projeler\Bst_Otoservis\testsprite_tests\page_objects\index.ts:87:21)
+        at D:\Projeler\Bst_Otoservis\testsprite_tests\integration\supplier_invoice_integration.test.ts:69:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\supplier_invoice_integrati-964b2-eri-Test-2-Fatura-Oluşturma-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\supplier_invoice_integrati-964b2-eri-Test-2-Fatura-Oluşturma-chromium\error-context.md
+
+    Error Context: ..\..\test-results\supplier_invoice_integrati-964b2-eri-Test-2-Fatura-Oluşturma-chromium\error-context.md
+]]>
+</error>
+</testcase>
+<testcase name="Firma Platformu Entegrasyon Testleri › Test 3: Kısmi Ödeme" classname="supplier_invoice_integration.test.ts" time="14.916">
+<system-out>
+<![CDATA[
+=== TEST RAPORU ===
+Test Suite: Firma Platformu Entegrasyon Testleri
+Başlangıç: 05.05.2026 18:37:40
+Bitiş: 05.05.2026 18:37:56
+Toplam Test: 1
+Başarılı: 0
+Başarısız: 1
+Atlanan: 0
+
+=== BAŞARISIZ TESTLER ===
+- Ödeme Testi: page.selectOption: Timeout 10000ms exceeded.
+Call log:
+[2m  - waiting for locator('select[name="supplierId"]')[22m
+
+
+[[ATTACHMENT|..\..\test-results\supplier_invoice_integrati-a2658-Testleri-Test-3-Kısmi-Ödeme-chromium\test-failed-1.png]]
+
+[[ATTACHMENT|..\..\test-results\supplier_invoice_integrati-a2658-Testleri-Test-3-Kısmi-Ödeme-chromium\error-context.md]]
+
+[[ATTACHMENT|..\..\test-results\supplier_invoice_integrati-a2658-Testleri-Test-3-Kısmi-Ödeme-chromium\error-context.md]]
+]]>
+</system-out>
+<error message="page.selectOption: Timeout 10000ms exceeded." type="TimeoutError">
+<![CDATA[  [chromium] › supplier_invoice_integration.test.ts:78:7 › Firma Platformu Entegrasyon Testleri › Test 3: Kısmi Ödeme 
+
+    TimeoutError: page.selectOption: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for locator('select[name="supplierId"]')
+
+
+       at ..\page_objects\index.ts:121
+
+      119 |   async makePartialPayment(supplierName: string, amount: number, notes: string) {
+      120 |     // Tedarikçi seçimi
+    > 121 |     await this.page.selectOption('select[name="supplierId"]', { label: supplierName });
+          |                     ^
+      122 |     
+      123 |     await this.page.fill('input[name="amount"]', amount.toString());
+      124 |     await this.page.fill('textarea[name="notes"]', notes);
+        at PaymentPage.makePartialPayment (D:\Projeler\Bst_Otoservis\testsprite_tests\page_objects\index.ts:121:21)
+        at D:\Projeler\Bst_Otoservis\testsprite_tests\integration\supplier_invoice_integration.test.ts:83:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\test-results\supplier_invoice_integrati-a2658-Testleri-Test-3-Kısmi-Ödeme-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\test-results\supplier_invoice_integrati-a2658-Testleri-Test-3-Kısmi-Ödeme-chromium\error-context.md
+
+    Error Context: ..\..\test-results\supplier_invoice_integrati-a2658-Testleri-Test-3-Kısmi-Ödeme-chromium\error-context.md
+]]>
+</error>
+</testcase>
+</testsuite>
+</testsuites>

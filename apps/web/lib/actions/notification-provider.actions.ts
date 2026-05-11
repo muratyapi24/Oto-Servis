@@ -1,8 +1,9 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import * as Sentry from "@sentry/nextjs";
 import { sendWhatsApp } from "@/lib/notifications/whatsapp";
 import { sendSms } from "@/lib/notifications/sms";
@@ -47,12 +48,10 @@ export async function getNotificationProviders(): Promise<
   ActionResult<{ providers: unknown[] }>
 > {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const providers = await prisma.notificationProvider.findMany({
       where: { tenantId },
@@ -85,12 +84,10 @@ export async function createNotificationProvider(data: {
   settings: Record<string, unknown>;
 }): Promise<ActionResult<{ providerId: string }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const provider = await prisma.notificationProvider.create({
       data: {
@@ -122,12 +119,10 @@ export async function updateNotificationProvider(
   }
 ): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     await prisma.notificationProvider.updateMany({
       where: { id: providerId, tenantId },
@@ -153,12 +148,10 @@ export async function toggleNotificationProvider(
   providerId: string
 ): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const provider = await prisma.notificationProvider.findFirst({
       where: { id: providerId, tenantId },
@@ -190,12 +183,10 @@ export async function testNotificationProvider(
   testPhone?: string
 ): Promise<ActionResult<{ connected: boolean }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const provider = await prisma.notificationProvider.findFirst({
       where: { id: providerId, tenantId },

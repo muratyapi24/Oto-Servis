@@ -1,6 +1,4 @@
-// @ts-nocheck
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 import NextAuth from "next-auth";
 import { authConfig } from "./auth.config";
 import * as Sentry from "@sentry/nextjs";
@@ -8,7 +6,7 @@ import { checkRateLimit } from "./lib/rate-limit";
 
 const { auth } = NextAuth(authConfig);
 
-export default auth(async (req: NextRequest & { auth?: any }) => {
+export default auth(async (req) => {
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     req.headers.get("x-real-ip") ??
@@ -16,7 +14,7 @@ export default auth(async (req: NextRequest & { auth?: any }) => {
 
   const pathname = req.nextUrl.pathname;
 
-  // Rate limit kontrolü (sadece API rotaları için)
+  // Rate limit kontrolü (sadece API ve login rotaları için)
   if (pathname.startsWith("/api/") || pathname.startsWith("/login")) {
     const rateLimitResult = await checkRateLimit(ip, pathname);
 
@@ -43,27 +41,23 @@ export default auth(async (req: NextRequest & { auth?: any }) => {
   }
 
   // Subscription Guard — Dashboard rotalarında tenant durumunu kontrol et
-  // Not: Edge Runtime'da Prisma doğrudan kullanılamaz, 
-  // bu yüzden basit bir cookie/header tabanlı kontrol yapıyoruz.
-  // Asıl detaylı kontroller server component ve server action katmanında yapılır.
+  // Not: Edge Runtime'da Prisma doğrudan kullanılamaz;
+  // asıl detaylı kontroller server component ve server action katmanında yapılır.
   if (
     session?.user &&
     tenantId &&
     pathname.startsWith("/dashboard") &&
     !pathname.startsWith("/dashboard/subscription-blocked")
   ) {
-    // Session'daki tenant status bilgisi (auth callback'te set edilmiş olmalı)
-    const tenantStatus = (session.user as any)?.tenantStatus;
-    const subscriptionStatus = (session.user as any)?.subscriptionStatus;
+    const tenantStatus = session.user.tenantStatus;
+    const subscriptionStatus = session.user.subscriptionStatus;
 
-    // SUSPENDED veya DELETED tenant → engelle
     if (tenantStatus === "SUSPENDED" || tenantStatus === "DELETED") {
       const blockedUrl = new URL("/dashboard/subscription-blocked", req.url);
       blockedUrl.searchParams.set("reason", tenantStatus.toLowerCase());
       return NextResponse.redirect(blockedUrl);
     }
 
-    // EXPIRED veya CANCELLED subscription → engelle (ayarlar sayfası hariç)
     if (
       (subscriptionStatus === "EXPIRED" || subscriptionStatus === "CANCELLED") &&
       !pathname.startsWith("/dashboard/settings")
@@ -81,7 +75,7 @@ export default auth(async (req: NextRequest & { auth?: any }) => {
     const preferredLocale = acceptLanguage.startsWith("en") ? "en" : "tr";
     const response = NextResponse.next();
     response.cookies.set("locale", preferredLocale, {
-      maxAge: 60 * 60 * 24 * 365, // 1 yıl
+      maxAge: 60 * 60 * 24 * 365,
       path: "/",
       sameSite: "lax",
     });
@@ -90,6 +84,5 @@ export default auth(async (req: NextRequest & { auth?: any }) => {
 });
 
 export const config = {
-  // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
   matcher: ['/((?!_next/static|_next/image|.*\\.png$).*)'],
 };

@@ -2,7 +2,7 @@
 
 import * as Sentry from "@sentry/nextjs";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
+import { guardTenantRole } from "@/lib/guards";
 
 /** Tüm Faturaları Listele (Filtreleme dahil) */
 export async function getAllInvoices(filters?: {
@@ -10,10 +10,10 @@ export async function getAllInvoices(filters?: {
   type?: string;
   search?: string;
 }) {
+  const g = await guardTenantRole(["TENANT_ADMIN", "ACCOUNTANT"]);
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-    const tenantId = session.user.tenantId;
 
     const where: any = { tenantId, deletedAt: null };
 
@@ -57,8 +57,8 @@ export async function getAllInvoices(filters?: {
     }));
 
     return { invoices: serialized };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
-    return { error: "Faturalar alınamadı: " + error.message };
+    return { error: "Faturalar alınamadı: " + (error instanceof Error ? error.message : String(error)) };
   }
 }

@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import withDragAndDrop, { EventInteractionArgs } from 'react-big-calendar/lib/addons/dragAndDrop';
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -90,7 +90,7 @@ export function CalendarView({ appointments, customers, vehicles }: CalendarView
 
   // Randevu süresini sürükleyerek (boyutunu) değiştirme
   const onEventResize = useCallback(
-    async ({ event, start, end }: any) => {
+    async ({ event: _event, start: _start, end: _end }: any) => {
        // Opsiyonel: Şimdilik sadece drop destekliyoruz, süre değişimi de aktif.
     },
     []

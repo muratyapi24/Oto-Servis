@@ -72,7 +72,7 @@ export function renderTemplate(
 ): string {
   return template.replace(/\{\{([^}]+)\}\}/g, (match, varName) => {
     const key = varName.trim();
-    if (key in variables && variables[key] !== undefined) {
+    if (Object.prototype.hasOwnProperty.call(variables, key) && variables[key] !== undefined) {
       return variables[key];
     }
     // Eksik değişken — uyarı log ve placeholder bırak

@@ -109,11 +109,11 @@ export async function POST(req: NextRequest) {
       success: "Araç başarıyla kaydedildi.",
       vehicleId: vehicle.id,
     });
-  } catch (err: any) {
+  } catch (err) {
     console.error("Araç kayıt hatası:", err);
 
     // Prisma unique constraint violation
-    if (err.code === "P2002") {
+    if ((err as Record<string, unknown>).code === "P2002") {
       return NextResponse.json({ error: "Bu plaka numarası zaten kayıtlı." }, { status: 409 });
     }
 

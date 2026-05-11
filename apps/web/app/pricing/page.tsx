@@ -4,6 +4,8 @@ import LandingNavbar from "@/components/landing/LandingNavbar";
 import LandingFooter from "@/components/landing/LandingFooter";
 import PricingClient from "./PricingClient";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Fiyatlandırma - ÖNCÜ OTO SERVİS PROGRAMI",
   description:
@@ -34,47 +36,50 @@ interface SubscriptionPlanData {
 }
 
 async function getPricingData() {
-  const [plans, features] = await Promise.all([
-    prisma.subscriptionPlan.findMany({
-      where: { isActive: true },
-      orderBy: { sortOrder: "asc" },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        description: true,
-        priceMonthly: true,
-        priceYearly: true,
-        trialDays: true,
-        features: true,
-        sortOrder: true,
-      },
-    }),
-    prisma.planFeature.findMany({
-      where: { isActive: true },
-      orderBy: { sortOrder: "asc" },
-      select: {
-        id: true,
-        category: true,
-        featureName: true,
-        starterValue: true,
-        professionalValue: true,
-        enterpriseValue: true,
-        sortOrder: true,
-      },
-    }),
-  ]);
+  try {
+    const [plans, features] = await Promise.all([
+      prisma.subscriptionPlan.findMany({
+        where: { isActive: true },
+        orderBy: { sortOrder: "asc" },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          description: true,
+          priceMonthly: true,
+          priceYearly: true,
+          trialDays: true,
+          features: true,
+          sortOrder: true,
+        },
+      }),
+      prisma.planFeature.findMany({
+        where: { isActive: true },
+        orderBy: { sortOrder: "asc" },
+        select: {
+          id: true,
+          category: true,
+          featureName: true,
+          starterValue: true,
+          professionalValue: true,
+          enterpriseValue: true,
+          sortOrder: true,
+        },
+      }),
+    ]);
 
-  // Özellikleri kategorilere göre grupla
-  const groupedFeatures: Record<string, PlanFeatureRow[]> = {};
-  for (const feature of features) {
-    if (!groupedFeatures[feature.category]) {
-      groupedFeatures[feature.category] = [];
+    const groupedFeatures: Record<string, PlanFeatureRow[]> = {};
+    for (const feature of features) {
+      if (!groupedFeatures[feature.category]) {
+        groupedFeatures[feature.category] = [];
+      }
+      groupedFeatures[feature.category]!.push(feature);
     }
-    groupedFeatures[feature.category]!.push(feature);
-  }
 
-  return { plans: plans as SubscriptionPlanData[], groupedFeatures };
+    return { plans: plans as SubscriptionPlanData[], groupedFeatures };
+  } catch {
+    return { plans: [] as SubscriptionPlanData[], groupedFeatures: {} };
+  }
 }
 
 export default async function PricingPage() {

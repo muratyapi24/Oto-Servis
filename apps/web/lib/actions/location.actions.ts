@@ -2,14 +2,16 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
+import { guardTenantRole, guardTenant } from "@/lib/guards";
+import { checkFeature, checkLimit } from "@/lib/subscription-guard";
 
 export async function getLocations() {
-  const session = await auth();
-  if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+  const g = await guardTenant();
+  if ("error" in g) return g;
+  const { tenantId } = g;
 
   const locations = await prisma.location.findMany({
-    where: { tenantId: session.user.tenantId },
+    where: { tenantId },
     orderBy: [{ isDefault: "desc" }, { name: "asc" }],
     include: {
       _count: {
@@ -28,13 +30,24 @@ export async function createLocation(data: {
   phone?: string;
   email?: string;
   isDefault?: boolean;
-}) {
-  const session = await auth();
-  if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+}): Promise<{ error?: string; success?: string; locationId?: string }> {
+  const g = await guardTenantRole(["TENANT_ADMIN"]);
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
 
-  const tenantId = session.user.tenantId;
+  // Çoklu şube özelliği kontrolü (tek şube planlarında limit var)
+  const existing = await prisma.location.count({ where: { tenantId, isActive: true } });
+  if (existing >= 1) {
+    const featureCheck = await checkFeature(tenantId, "multiLocation");
+    if (!featureCheck.allowed) {
+      return { error: featureCheck.message ?? "Planınız tek lokasyon destekliyor. Çoklu şube için planınızı yükseltin." };
+    }
+  }
+  const limitCheck = await checkLimit(tenantId, "maxLocations");
+  if (!limitCheck.allowed) {
+    return { error: limitCheck.message ?? "Lokasyon limitinize ulaştınız." };
+  }
 
-  // Eğer yeni lokasyon varsayılan olacaksa diğerlerini güncelle
   if (data.isDefault) {
     await prisma.location.updateMany({
       where: { tenantId },
@@ -70,10 +83,9 @@ export async function updateLocation(
     isDefault?: boolean;
   }
 ) {
-  const session = await auth();
-  if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-
-  const tenantId = session.user.tenantId;
+  const g = await guardTenantRole(["TENANT_ADMIN"]);
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
 
   if (data.isDefault) {
     await prisma.location.updateMany({
@@ -92,29 +104,28 @@ export async function updateLocation(
 }
 
 export async function deleteLocation(id: string) {
-  const session = await auth();
-  if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+  const g = await guardTenantRole(["TENANT_ADMIN"]);
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
 
-  // Varsayılan lokasyon silinemez
   const location = await prisma.location.findFirst({
-    where: { id, tenantId: session.user.tenantId },
+    where: { id, tenantId },
   });
 
   if (location?.isDefault) {
     return { error: "Varsayılan lokasyon silinemez" };
   }
 
-  await prisma.location.delete({ where: { id, tenantId: session.user.tenantId } });
+  await prisma.location.delete({ where: { id, tenantId } });
 
   revalidatePath("/dashboard/locations");
   return { success: "Lokasyon silindi" };
 }
 
 export async function getConsolidatedReport() {
-  const session = await auth();
-  if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-
-  const tenantId = session.user.tenantId;
+  const g = await guardTenantRole(["TENANT_ADMIN", "ACCOUNTANT"]);
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
 
   const locations = await prisma.location.findMany({
     where: { tenantId, isActive: true },
@@ -125,7 +136,6 @@ export async function getConsolidatedReport() {
     },
   });
 
-  // Her lokasyon için gelir hesapla
   const locationReports = await Promise.all(
     locations.map(async (loc) => {
       const revenue = await prisma.payment.aggregate({

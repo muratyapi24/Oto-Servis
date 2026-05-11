@@ -27,7 +27,7 @@ export default async function AnalyticsPage() {
   // ServiceRating metrikleri — son 30 gün
   let ratingAverage = 0;
   let ratingTotal = 0;
-  let ratingDistribution: Record<string, number> = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 };
+  const ratingDistribution: Record<string, number> = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 };
 
   if (session?.user?.tenantId) {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);

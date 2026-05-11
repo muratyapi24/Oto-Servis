@@ -58,10 +58,10 @@ export function CategoryDialog({ categories = [] }: { categories?: any[] }) {
     <>
       <button 
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+        className="flex items-center gap-2 whitespace-nowrap bg-slate-100 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-200 transition-all"
       >
         <Tags className="w-4 h-4" />
-        <span className="text-sm font-medium">Yeni Kategori Ekle</span>
+        <span>Yeni Kategori Ekle</span>
       </button>
 
       {open && (

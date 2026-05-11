@@ -1,23 +1,26 @@
 "use server";
 
+import { guardTenant, guardTenantRole } from "@/lib/guards";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import { updateTenantSchema, UpdateTenantInput } from "@/lib/validations/tenant";
 
 export async function getTenantProfile() {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+
+    if ("error" in g) return g as never;
+
+    const { tenantId } = g;
 
     const tenant = await prisma.tenant.findUnique({
-      where: { id: session.user.tenantId }
+      where: { id: tenantId }
     });
 
     if (!tenant) return { error: "Firma kaydı bulunamadı." };
 
     return { tenant };
-  } catch (err: any) {
+  } catch (err) {
     console.error("getTenantProfile Hatası:", err);
     return { error: "Firma bilgileri yüklenemedi." };
   }
@@ -25,15 +28,18 @@ export async function getTenantProfile() {
 
 export async function updateTenantProfile(data: UpdateTenantInput) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+
+    if ("error" in g) return g as never;
+
+    const { tenantId } = g;
 
     const val = updateTenantSchema.parse(data);
 
     // Kimi boş/undefined stringleri null'a çevirebilir veya aynen saklayabiliriz.
     // Prisma null ya da valid tip sever:
     const updated = await prisma.tenant.update({
-      where: { id: session.user.tenantId },
+      where: { id: tenantId },
       data: {
         name: val.name,
         email: val.email || null,
@@ -55,7 +61,7 @@ export async function updateTenantProfile(data: UpdateTenantInput) {
     revalidatePath("/dashboard"); // Sidebar'daki logo veya ana isme yansıması için
 
     return { success: "Firma profiliniz başarıyla güncellendi.", tenant: updated };
-  } catch (err: any) {
+  } catch (err) {
     console.error("updateTenantProfile Hatası:", err);
     return { error: "Ayarlar güncellenirken bir hata oluştu." };
   }
@@ -66,21 +72,19 @@ export async function updatePaymentProviderSettings(data: {
   provider: "IYZICO" | "PAYTR" | "NONE";
   credentials: Record<string, string>;
 }) {
+  const g = await guardTenantRole(["TENANT_ADMIN"]);
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId || session.user.role !== "TENANT_ADMIN") {
-      return { error: "Yetkisiz erişim." };
-    }
-
     const tenant = await prisma.tenant.findUnique({
-      where: { id: session.user.tenantId },
+      where: { id: tenantId },
       select: { settings: true },
     });
 
     const existingSettings = (tenant?.settings as Record<string, unknown>) ?? {};
 
     await prisma.tenant.update({
-      where: { id: session.user.tenantId },
+      where: { id: tenantId },
       data: {
         settings: {
           ...existingSettings,
@@ -92,7 +96,7 @@ export async function updatePaymentProviderSettings(data: {
 
     revalidatePath("/dashboard/settings");
     return { success: true };
-  } catch (err: any) {
+  } catch (err) {
     console.error("updatePaymentProviderSettings Hatası:", err);
     return { error: "Ödeme sağlayıcısı kaydedilemedi." };
   }
@@ -104,10 +108,11 @@ export async function updatePaymentProviderSettings(data: {
  */
 export async function getTenantAnalytics() {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
 
-    const tenantId = session.user.tenantId;
+    if ("error" in g) return g as never;
+
+    const { tenantId } = g;
 
     // 1. Kayıtlı Uzman Personel Sayısı (Basitçe platform ustaları)
     const staffCount = await prisma.user.count({
@@ -121,24 +126,21 @@ export async function getTenantAnalytics() {
 
     let monthlyVolume = 0;
     try {
-       // ServiceOrder varsayımı ile tabloda arama yapıyoruz. Eğer model ismi farklıysa (orn: order) burası hata vermemesi için try-catch içinde mock ile kurtaralım.
-       // @ts-ignore
-       monthlyVolume = await prisma.serviceOrder?.count({
-          where: { tenantId, createdAt: { gte: startOfMonth } }
-       }) || 124; // Mock fallback
+      monthlyVolume = await prisma.serviceOrder.count({
+        where: { tenantId, createdAt: { gte: startOfMonth } },
+      });
     } catch {
-       monthlyVolume = 124;
+      monthlyVolume = 0;
     }
 
-    // 3. Onaylanmış İş Kalemi (InventoryMovement faturası)
+    // 3. Stok Çıkış Hareketi Sayısı (StockMovement OUT)
     let approvedItems = 0;
     try {
-      // @ts-ignore
-      approvedItems = await prisma.inventoryMovement?.count({
-         where: { tenantId, type: "OUT" }
-      }) || 4350;
+      approvedItems = await prisma.stockMovement.count({
+        where: { tenantId, type: "OUT" },
+      });
     } catch {
-      approvedItems = 4350;
+      approvedItems = 0;
     }
 
     // 4. Hizmet Puanı & Rating şimdilik statik (Firma yorum db tablosu kurulduğunda eklenebilir)
@@ -153,7 +155,7 @@ export async function getTenantAnalytics() {
       }
     };
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("Tenant Analytics Hatası:", error);
     // Hata anında arayüzün kilitlenmemesi için mock data dönülür
     return {

@@ -3,7 +3,6 @@
  * Google Authenticator uyumlu — otplib kullanır
  */
 
-// @ts-ignore
 const otplib = require("otplib");
 const authenticator = otplib.authenticator || (otplib.default && otplib.default.authenticator) || otplib;
 import { randomBytes, createHash } from "crypto";

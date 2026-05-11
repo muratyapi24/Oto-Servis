@@ -2,6 +2,7 @@ import Link from "next/link";
 import SuperAdminFooter from "@/components/super-admin/Footer";
 import { getAutomationWorkflows } from "@/lib/actions/superadmin.actions";
 import WorkflowToggle from "./WorkflowToggle";
+import { MockPageGuard } from "@/components/super-admin/MockPageGuard";
 
 export const metadata = { title: "Otomasyon İş Akışı | Super Admin" };
 
@@ -29,6 +30,7 @@ export default async function AutomationPage(props: {
   ];
 
   return (
+    <MockPageGuard title="Otomasyon İş Akışı" description="Otomatik tetikleyiciler ve iş akışı geçmişi yakında gerçek veriye bağlanacaktır.">
     <>
       <header className="h-12 bg-white flex shrink-0 items-center justify-between px-6 border-b border-outline/20 sticky top-0 z-40">
         <div className="flex items-center gap-2">
@@ -179,5 +181,6 @@ export default async function AutomationPage(props: {
 
       <SuperAdminFooter />
     </>
+    </MockPageGuard>
   );
 }

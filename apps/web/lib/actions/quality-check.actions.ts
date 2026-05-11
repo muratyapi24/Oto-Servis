@@ -1,8 +1,9 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import { z } from "zod";
 
 const qualityCheckSchema = z.object({
@@ -14,8 +15,9 @@ export async function updateQualityCheck(
   data: { qualityCheckNotes: string }
 ): Promise<{ success?: string; error?: string }> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
     const validated = qualityCheckSchema.safeParse(data);
     if (!validated.success) {
@@ -24,7 +26,7 @@ export async function updateQualityCheck(
 
     // Servis emrinin bu tenant'a ait olduğunu doğrula
     const order = await prisma.serviceOrder.findUnique({
-      where: { id: serviceOrderId, tenantId: session.user.tenantId },
+      where: { id: serviceOrderId, tenantId: tenantId },
       select: { id: true, status: true },
     });
 

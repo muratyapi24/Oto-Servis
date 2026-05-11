@@ -9,6 +9,9 @@ export const createMechanicSchema = z.object({
   experienceYears: z.number().int().min(0, "Deneyim yılı negatif olamaz").optional().or(z.nan()),
   hourlyRate: z.number().min(0, "Saatlik ücret negatif olamaz").optional().or(z.nan()),
   isActive: z.boolean().default(true),
+  role: z.string().min(2, "Rol seçmelisiniz").default("Usta"),
+  shiftStart: z.string().optional().nullable(),
+  shiftEnd: z.string().optional().nullable(),
 });
 
 export type CreateMechanicInput = z.infer<typeof createMechanicSchema>;

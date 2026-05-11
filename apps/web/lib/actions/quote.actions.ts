@@ -1,7 +1,8 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 import {
   createQuoteSchema, addQuoteItemSchema, updateQuoteStatusSchema,
@@ -30,9 +31,9 @@ function serializeQuote(q: any) {
 
 export async function getQuotes(): Promise<{ quotes?: any[]; error?: string }> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erisim" };
-    const tenantId = session.user.tenantId;
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const quotes = await prisma.quote.findMany({
       where: { tenantId, deletedAt: null },
@@ -51,7 +52,7 @@ export async function getQuotes(): Promise<{ quotes?: any[]; error?: string }> {
     });
 
     return { quotes: serialized };
-  } catch (err: any) {
+  } catch (err) {
     console.error("getQuotes error:", err);
     return { error: "Teklifler alinamadi." };
   }
@@ -59,9 +60,9 @@ export async function getQuotes(): Promise<{ quotes?: any[]; error?: string }> {
 
 export async function getQuoteById(id: string): Promise<{ quote?: any; error?: string }> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erisim" };
-    const tenantId = session.user.tenantId;
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const quote = await prisma.quote.findFirst({
       where: { id, tenantId, deletedAt: null },
@@ -79,7 +80,7 @@ export async function getQuoteById(id: string): Promise<{ quote?: any; error?: s
     const finalStatus = isExpired ? "EXPIRED" : quote.status;
 
     return { quote: serializeQuote({ ...quote, status: finalStatus }) };
-  } catch (err: any) {
+  } catch (err) {
     console.error("getQuoteById error:", err);
     return { error: "Teklif bilgileri alinamadi." };
   }
@@ -87,9 +88,9 @@ export async function getQuoteById(id: string): Promise<{ quote?: any; error?: s
 
 export async function createQuote(data: CreateQuoteInput): Promise<{ success?: string; quoteId?: string; error?: string }> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erisim" };
-    const tenantId = session.user.tenantId;
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
     const parsed = createQuoteSchema.safeParse(data);
     if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Gecersiz veri" };
 
@@ -106,9 +107,9 @@ export async function createQuote(data: CreateQuoteInput): Promise<{ success?: s
 
     revalidatePath("/dashboard/quotes");
     return { success: "Teklif olusturuldu", quoteId: quote.id };
-  } catch (err: any) {
-    console.error("createQuote error:", err?.message ?? err);
-    const msg = err?.message ?? "";
+  } catch (err) {
+    console.error("createQuote error:", (err instanceof Error ? err.message : String(err)) ?? err);
+    const msg = (err instanceof Error ? err.message : String(err)) ?? "";
     if (msg.includes("Foreign key constraint") || msg.includes("foreign key")) {
       return { error: "Seçilen müşteri veya araç bu hesaba ait değil. Lütfen tekrar seçin." };
     }
@@ -118,9 +119,9 @@ export async function createQuote(data: CreateQuoteInput): Promise<{ success?: s
 
 export async function addQuoteItem(data: AddQuoteItemInput): Promise<{ success?: string; error?: string }> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erisim" };
-    const tenantId = session.user.tenantId;
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
     const parsed = addQuoteItemSchema.safeParse(data);
     if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Gecersiz veri" };
 
@@ -156,7 +157,7 @@ export async function addQuoteItem(data: AddQuoteItemInput): Promise<{ success?:
 
     revalidatePath(`/dashboard/quotes/${quoteId}`);
     return { success: "Kalem eklendi" };
-  } catch (err: any) {
+  } catch (err) {
     console.error("addQuoteItem error:", err);
     return { error: "Kalem eklenemedi." };
   }
@@ -164,9 +165,9 @@ export async function addQuoteItem(data: AddQuoteItemInput): Promise<{ success?:
 
 export async function updateQuoteStatus(data: UpdateQuoteStatusInput): Promise<{ success?: string; error?: string }> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erisim" };
-    const tenantId = session.user.tenantId;
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
     const parsed = updateQuoteStatusSchema.safeParse(data);
     if (!parsed.success) return { error: parsed.error.errors[0]?.message ?? "Gecersiz veri" };
 
@@ -188,7 +189,7 @@ export async function updateQuoteStatus(data: UpdateQuoteStatusInput): Promise<{
 
     revalidatePath("/dashboard/quotes");
     return { success: "Teklif durumu guncellendi" };
-  } catch (err: any) {
+  } catch (err) {
     console.error("updateQuoteStatus error:", err);
     return { error: "Durum guncellenemedi." };
   }
@@ -196,9 +197,9 @@ export async function updateQuoteStatus(data: UpdateQuoteStatusInput): Promise<{
 
 export async function convertQuoteToServiceOrder(quoteId: string): Promise<{ success?: string; serviceOrderId?: string; error?: string }> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erisim" };
-    const tenantId = session.user.tenantId;
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const quote = await prisma.quote.findFirst({
       where: { id: quoteId, tenantId, deletedAt: null },
@@ -206,7 +207,16 @@ export async function convertQuoteToServiceOrder(quoteId: string): Promise<{ suc
     });
 
     if (!quote) return { error: "Teklif bulunamadi" };
-    if (quote.status === "ACCEPTED") return { error: "Bu teklif zaten servis emrine donusturulmus" };
+    
+    // Check if a service order was already created from this quote
+    const existingOrder = await prisma.serviceOrder.findFirst({
+      where: {
+        tenantId,
+        complaintDescription: `Teklif #${quote.quoteNumber} uzerinden olusturuldu`,
+        deletedAt: null
+      }
+    });
+    if (existingOrder) return { success: "Mevcut servis emri bulundu", serviceOrderId: existingOrder.id };
     if (!quote.vehicleId) return { error: "Teklif bir araca bagli degil" };
 
     const now = new Date();
@@ -253,7 +263,7 @@ export async function convertQuoteToServiceOrder(quoteId: string): Promise<{ suc
     revalidatePath("/dashboard/quotes");
     revalidatePath("/dashboard/services");
     return { success: "Servis emri olusturuldu", serviceOrderId: serviceOrder.id };
-  } catch (err: any) {
+  } catch (err) {
     console.error("convertQuoteToServiceOrder error:", err);
     return { error: "Servis emrine donusturulemedi." };
   }
@@ -262,9 +272,9 @@ export async function convertQuoteToServiceOrder(quoteId: string): Promise<{ suc
 /** Teklifi SMS ile müşteriye gönder */
 export async function sendQuoteViaSms(quoteId: string): Promise<{ success?: string; error?: string }> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-    const tenantId = session.user.tenantId;
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const quote = await prisma.quote.findFirst({
       where: { id: quoteId, tenantId, deletedAt: null },
@@ -313,26 +323,27 @@ export async function sendQuoteViaSms(quoteId: string): Promise<{ success?: stri
     } else {
       return { error: result.error || "SMS gönderilemedi" };
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error("sendQuoteViaSms error:", error);
-    return { error: "Teklif SMS olarak gönderilemedi: " + error.message };
+    return { error: "Teklif SMS olarak gönderilemedi: " + (error instanceof Error ? error.message : String(error)) };
   }
 }
 
 /** Teklifi Sil (Soft Delete) */
 export async function deleteQuote(quoteId: string): Promise<{ success?: string; error?: string }> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     await prisma.quote.update({
-      where: { id: quoteId, tenantId: session.user.tenantId },
+      where: { id: quoteId, tenantId: tenantId },
       data: { deletedAt: new Date() }
     });
 
     revalidatePath("/dashboard/quotes");
     return { success: "Teklif silindi." };
-  } catch (error: any) {
+  } catch (error) {
     console.error("deleteQuote error:", error);
     return { error: "Teklif silinemedi." };
   }
@@ -341,9 +352,9 @@ export async function deleteQuote(quoteId: string): Promise<{ success?: string; 
 /** Kalem item silme */
 export async function deleteQuoteItem(itemId: string, quoteId: string): Promise<{ success?: string; error?: string }> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-    const tenantId = session.user.tenantId;
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     await prisma.$transaction(async (tx) => {
       await tx.quoteItem.delete({ where: { id: itemId } });
@@ -361,7 +372,7 @@ export async function deleteQuoteItem(itemId: string, quoteId: string): Promise<
 
     revalidatePath(`/dashboard/quotes/${quoteId}`);
     return { success: "Kalem silindi" };
-  } catch (error: any) {
+  } catch (error) {
     console.error("deleteQuoteItem error:", error);
     return { error: "Kalem silinemedi." };
   }

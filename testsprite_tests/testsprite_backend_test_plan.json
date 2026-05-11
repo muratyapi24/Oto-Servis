@@ -1,0 +1,37 @@
+[
+  {
+    "id": "TC_BE_001",
+    "title": "Tenant Isolation Verification",
+    "description": "Ensure that data from one tenant is not accessible by another.",
+    "priority": "High",
+    "steps": [
+      "Login as Tenant A",
+      "Fetch customers",
+      "Login as Tenant B",
+      "Verify Tenant A customers are not visible"
+    ],
+    "expected_result": "Tenants only see their own data."
+  },
+  {
+    "id": "TC_BE_002",
+    "title": "API Rate Limiting",
+    "description": "Verify that API endpoints are rate-limited to prevent abuse.",
+    "priority": "Medium",
+    "steps": [
+      "Send 100 requests to /api/health in 1 second",
+      "Verify 429 Too Many Requests response"
+    ],
+    "expected_result": "Rate limiting is active."
+  },
+  {
+    "id": "TC_BE_003",
+    "title": "Prisma Schema Integrity",
+    "description": "Verify that all required fields in schema.prisma are enforced.",
+    "priority": "Medium",
+    "steps": [
+      "Attempt to create a Tenant without a name",
+      "Verify database error"
+    ],
+    "expected_result": "Constraint violation error."
+  }
+]

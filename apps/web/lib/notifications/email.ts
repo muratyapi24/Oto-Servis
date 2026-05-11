@@ -68,17 +68,17 @@ export async function sendEmail(options: SendEmailOptions): Promise<{ success: b
     }
     return { success: true };
   } catch (err: any) {
-    console.error("[EMAIL] Gönderim hatası:", err.message);
+    console.error("[EMAIL] Gönderim hatası:", (err instanceof Error ? err.message : String(err)));
     if (notificationId) {
       await prisma.notification.update({
         where: { id: notificationId },
         data: {
           status: "FAILED",
           retryCount: { increment: 1 },
-          metadata: { error: err.message },
+          metadata: { error: (err instanceof Error ? err.message : String(err)) },
         },
       });
     }
-    return { success: false, error: err.message };
+    return { success: false, error: (err instanceof Error ? err.message : String(err)) };
   }
 }

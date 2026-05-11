@@ -1,8 +1,9 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import * as Sentry from "@sentry/nextjs";
 import { inngest } from "@/lib/inngest/client";
 import { CreatePartCategoryInput, createPartCategorySchema, CreatePartInput, createPartSchema, UpdatePartCategoryInput, updatePartCategorySchema, UpdatePartInput, updatePartSchema } from "@/lib/validations/inventory";
@@ -13,17 +14,16 @@ import { publishStockUpdate } from "@/lib/sse";
 
 export async function createPartCategory(data: CreatePartCategoryInput) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const validatedData = createPartCategorySchema.parse(data);
 
     // Aynı isme sahip kategori kontrolü
     const exists = await prisma.partCategory.findFirst({
       where: {
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         name: { equals: validatedData.name, mode: "insensitive" }
       }
     });
@@ -34,7 +34,7 @@ export async function createPartCategory(data: CreatePartCategoryInput) {
 
     const newCategory = await prisma.partCategory.create({
       data: {
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         name: validatedData.name,
         description: validatedData.description || null,
         isActive: validatedData.isActive,
@@ -43,7 +43,7 @@ export async function createPartCategory(data: CreatePartCategoryInput) {
 
     revalidatePath("/dashboard/inventory");
     return { success: "Kategori oluşturuldu", categoryId: newCategory.id };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Kategori kaydı hatası:", error);
     return { error: "Kategori oluşturulamadı." };
   }
@@ -51,13 +51,12 @@ export async function createPartCategory(data: CreatePartCategoryInput) {
 
 export async function getPartCategories() {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      throw new Error("Yetkisiz erişim");
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const categories = await prisma.partCategory.findMany({
-      where: { tenantId: session.user.tenantId },
+      where: { tenantId: tenantId },
       orderBy: { name: "asc" },
       include: {
         _count: { select: { parts: true } }
@@ -65,7 +64,7 @@ export async function getPartCategories() {
     });
 
     return { categories };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Kategoriler getirilemedi:", error);
     return { error: "Kategori listesi alınamadı." };
   }
@@ -75,17 +74,16 @@ export async function getPartCategories() {
 
 export async function createPart(data: CreatePartInput) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const validatedData = createPartSchema.parse(data);
 
     // Aynı barkodlu/parça numaralı parça kontrolü
     const exists = await prisma.part.findFirst({
       where: {
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         partNumber: validatedData.partNumber
       }
     });
@@ -96,7 +94,7 @@ export async function createPart(data: CreatePartInput) {
 
     const newPart = await prisma.part.create({
       data: {
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         categoryId: validatedData.categoryId,
         partNumber: validatedData.partNumber,
         name: validatedData.name,
@@ -115,9 +113,9 @@ export async function createPart(data: CreatePartInput) {
     });
 
     revalidatePath("/dashboard/inventory");
-    await invalidateCache(`inventory:parts:${session.user.tenantId}:*`);
+    await invalidateCache(`inventory:parts:${tenantId}:*`);
     return { success: "Parça / Stok Kartı başarıyla oluşturuldu", partId: newPart.id };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Parça kaydı hatası:", error);
     return { error: "Parça kaydedilirken bir hata oluştu." };
   }
@@ -125,12 +123,10 @@ export async function createPart(data: CreatePartInput) {
 
 export async function getParts() {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      throw new Error("Yetkisiz erişim");
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
     const cacheKey = CacheKeys.inventoryParts(tenantId);
 
     const serializedParts = await getCached(cacheKey, CacheTTL.inventoryParts, async () => {
@@ -148,7 +144,7 @@ export async function getParts() {
     });
 
     return { parts: serializedParts };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Parçalar getirilemedi:", error);
     return { error: "Stok listesi alınamadı." };
   }
@@ -157,10 +153,10 @@ export async function getParts() {
 // Envanter/Stok Metrikleri ve Dashboard Analitiği
 export async function getInventoryDashboard() {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     // Tüm Parçalar
     const allParts = await prisma.part.findMany({
@@ -228,7 +224,7 @@ export async function getInventoryDashboard() {
       categories,
       recentMovements
     };
-  } catch (err: any) {
+  } catch (err) {
     console.error("Inventory Dashboard Error:", err);
     return { error: "Stok analiz verileri alınırken bir hata oluştu." };
   }
@@ -236,13 +232,14 @@ export async function getInventoryDashboard() {
 
 export async function updatePart(data: UpdatePartInput) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const validatedData = updatePartSchema.parse(data);
 
     await prisma.part.update({
-      where: { id: validatedData.id, tenantId: session.user.tenantId },
+      where: { id: validatedData.id, tenantId: tenantId },
       data: {
         categoryId: validatedData.categoryId,
         partNumber: validatedData.partNumber,
@@ -263,7 +260,7 @@ export async function updatePart(data: UpdatePartInput) {
 
     revalidatePath("/dashboard/inventory");
     return { success: "Parça başarıyla güncellendi." };
-  } catch (err: any) {
+  } catch (err) {
     Sentry.captureException(err);
     return { error: "Parça güncellenemedi." };
   }
@@ -271,17 +268,18 @@ export async function updatePart(data: UpdatePartInput) {
 
 export async function deletePart(id: string) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     await prisma.part.update({
-      where: { id, tenantId: session.user.tenantId },
+      where: { id, tenantId: tenantId },
       data: { deletedAt: new Date() }
     });
 
     revalidatePath("/dashboard/inventory");
     return { success: "Parça başarıyla silindi." };
-  } catch (err: any) {
+  } catch (err) {
     Sentry.captureException(err);
     return { error: "Parça silinemedi." };
   }
@@ -289,13 +287,14 @@ export async function deletePart(id: string) {
 
 export async function updatePartCategory(data: UpdatePartCategoryInput) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const val = updatePartCategorySchema.parse(data);
 
     await prisma.partCategory.update({
-      where: { id: val.id, tenantId: session.user.tenantId },
+      where: { id: val.id, tenantId: tenantId },
       data: {
         name: val.name,
         description: val.description,
@@ -305,7 +304,7 @@ export async function updatePartCategory(data: UpdatePartCategoryInput) {
 
     revalidatePath("/dashboard/inventory");
     return { success: "Kategori güncellendi." };
-  } catch (err: any) {
+  } catch (err) {
     Sentry.captureException(err);
     return { error: "Kategori güncellenemedi." };
   }
@@ -313,12 +312,13 @@ export async function updatePartCategory(data: UpdatePartCategoryInput) {
 
 export async function deletePartCategory(id: string) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     // Check if parts exist
     const partCount = await prisma.part.count({
-      where: { categoryId: id, tenantId: session.user.tenantId, deletedAt: null }
+      where: { categoryId: id, tenantId: tenantId, deletedAt: null }
     });
 
     if (partCount > 0) {
@@ -326,12 +326,12 @@ export async function deletePartCategory(id: string) {
     }
 
     await prisma.partCategory.delete({
-      where: { id, tenantId: session.user.tenantId }
+      where: { id, tenantId: tenantId }
     });
 
     revalidatePath("/dashboard/inventory");
     return { success: "Kategori silindi." };
-  } catch (err: any) {
+  } catch (err) {
     Sentry.captureException(err);
     return { error: "Kategori silinemedi." };
   }
@@ -339,11 +339,12 @@ export async function deletePartCategory(id: string) {
 
 export async function adjustStock(id: string, newQuantity: number, reason: string) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const part = await prisma.part.findFirst({
-      where: { id, tenantId: session.user.tenantId, deletedAt: null }
+      where: { id, tenantId: tenantId, deletedAt: null }
     });
 
     if (!part) return { error: "Parça bulunamadı." };
@@ -359,7 +360,7 @@ export async function adjustStock(id: string, newQuantity: number, reason: strin
 
       const created = await tx.stockMovement.create({
         data: {
-          tenantId: session.user.tenantId!,
+          tenantId: tenantId!,
           partId: id,
           type: "ADJUST",
           quantity: diff, // Can be negative or positive
@@ -375,7 +376,7 @@ export async function adjustStock(id: string, newQuantity: number, reason: strin
       name: "stock/movement.created",
       data: {
         movementId: movement.id,
-        tenantId: session.user.tenantId!,
+        tenantId: tenantId!,
         partId: id,
       },
     });
@@ -386,7 +387,7 @@ export async function adjustStock(id: string, newQuantity: number, reason: strin
       select: { partNumber: true, name: true, currentStock: true, locationId: true },
     });
     if (updatedPart) {
-      publishStockUpdate(session.user.tenantId!, {
+      publishStockUpdate(tenantId!, {
         partId: id,
         partNumber: updatedPart.partNumber,
         partName: updatedPart.name,
@@ -398,7 +399,7 @@ export async function adjustStock(id: string, newQuantity: number, reason: strin
 
     revalidatePath("/dashboard/inventory");
     return { success: "Stok başarıyla güncellendi." };
-  } catch (err: any) {
+  } catch (err) {
     Sentry.captureException(err);
     return { error: "Stok düzeltilemedi." };
   }
@@ -406,11 +407,12 @@ export async function adjustStock(id: string, newQuantity: number, reason: strin
 
 export async function getStockAlerts() {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const parts = await prisma.part.findMany({
-      where: { tenantId: session.user.tenantId, deletedAt: null },
+      where: { tenantId: tenantId, deletedAt: null },
       select: { id: true, name: true, partNumber: true, currentStock: true, minStockLevel: true }
     });
 
@@ -424,9 +426,9 @@ export async function getStockAlerts() {
 /** Düşük stoklu parçalar hakkında SMS bildirimi gönder (Teknisyen/Yöneticiye) **/
 export async function sendLowStockAlert() {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-    const tenantId = session.user.tenantId;
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     // Kritik stok seviyesindeki parçaları bul
     const lowParts = await prisma.part.findMany({
@@ -472,9 +474,9 @@ export async function sendLowStockAlert() {
     } else {
       return { error: result.error || "SMS gönderilemedi" };
     }
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
-    return { error: "Stok uyarı bildirimi gönderilemedi: " + error.message };
+    return { error: "Stok uyarı bildirimi gönderilemedi: " + (error instanceof Error ? error.message : String(error)) };
   }
 }
 
@@ -484,14 +486,15 @@ export async function sendLowStockAlert() {
 
 export async function findPartByBarcode(barcode: string) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     if (!barcode?.trim()) return { error: "Barkod boş olamaz." };
 
     const part = await prisma.part.findFirst({
       where: {
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         deletedAt: null,
         partNumber: { equals: barcode.trim(), mode: "insensitive" },
       },
@@ -514,7 +517,7 @@ export async function findPartByBarcode(barcode: string) {
           : null,
       },
     };
-  } catch (err: any) {
+  } catch (err) {
     Sentry.captureException(err);
     return { error: "Barkod araması başarısız." };
   }
@@ -530,15 +533,16 @@ export async function quickStockEntry(
   reason?: string
 ) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     if (!Number.isInteger(quantity) || quantity <= 0) {
       return { error: "Miktar pozitif bir tam sayı olmalıdır." };
     }
 
     const part = await prisma.part.findFirst({
-      where: { id: partId, tenantId: session.user.tenantId, deletedAt: null },
+      where: { id: partId, tenantId: tenantId, deletedAt: null },
     });
 
     if (!part) return { error: "Parça bulunamadı." };
@@ -551,7 +555,7 @@ export async function quickStockEntry(
 
       const created = await tx.stockMovement.create({
         data: {
-          tenantId: session.user.tenantId!,
+          tenantId: tenantId!,
           partId,
           type: "IN",
           quantity,
@@ -567,7 +571,7 @@ export async function quickStockEntry(
       name: "stock/movement.created",
       data: {
         movementId: movement.id,
-        tenantId: session.user.tenantId!,
+        tenantId: tenantId!,
         partId,
       },
     });
@@ -578,7 +582,7 @@ export async function quickStockEntry(
       select: { partNumber: true, name: true, currentStock: true, locationId: true },
     });
     if (updatedPart) {
-      publishStockUpdate(session.user.tenantId!, {
+      publishStockUpdate(tenantId!, {
         partId,
         partNumber: updatedPart.partNumber,
         partName: updatedPart.name,
@@ -590,7 +594,7 @@ export async function quickStockEntry(
 
     revalidatePath("/dashboard/inventory");
     return { success: true, data: { movementId: movement.id } };
-  } catch (err: any) {
+  } catch (err) {
     Sentry.captureException(err);
     return { error: "Stok girişi yapılamadı." };
   }
@@ -608,8 +612,9 @@ export interface ServiceReturnInput {
 
 export async function returnPartFromService(data: ServiceReturnInput) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const { partId, quantity, serviceOrderId } = data;
 
@@ -618,7 +623,7 @@ export async function returnPartFromService(data: ServiceReturnInput) {
     }
 
     const part = await prisma.part.findFirst({
-      where: { id: partId, tenantId: session.user.tenantId, deletedAt: null },
+      where: { id: partId, tenantId: tenantId, deletedAt: null },
     });
 
     if (!part) return { error: "Parça bulunamadı." };
@@ -631,7 +636,7 @@ export async function returnPartFromService(data: ServiceReturnInput) {
 
       const created = await tx.stockMovement.create({
         data: {
-          tenantId: session.user.tenantId!,
+          tenantId: tenantId!,
           partId,
           type: "IN",
           quantity,
@@ -648,7 +653,7 @@ export async function returnPartFromService(data: ServiceReturnInput) {
       name: "stock/movement.created",
       data: {
         movementId: movement.id,
-        tenantId: session.user.tenantId!,
+        tenantId: tenantId!,
         partId,
       },
     });
@@ -659,7 +664,7 @@ export async function returnPartFromService(data: ServiceReturnInput) {
       select: { partNumber: true, name: true, currentStock: true, locationId: true },
     });
     if (updatedPart) {
-      publishStockUpdate(session.user.tenantId!, {
+      publishStockUpdate(tenantId!, {
         partId,
         partNumber: updatedPart.partNumber,
         partName: updatedPart.name,
@@ -671,7 +676,7 @@ export async function returnPartFromService(data: ServiceReturnInput) {
 
     revalidatePath("/dashboard/inventory");
     return { success: true, data: { movementId: movement.id } };
-  } catch (err: any) {
+  } catch (err) {
     Sentry.captureException(err);
     return { error: "Servis iadesi gerçekleştirilemedi." };
   }
@@ -690,8 +695,9 @@ export interface SupplierReturnInput {
 
 export async function returnPartToSupplier(data: SupplierReturnInput) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const { partId, quantity, supplierId, supplierName } = data;
 
@@ -700,7 +706,7 @@ export async function returnPartToSupplier(data: SupplierReturnInput) {
     }
 
     const part = await prisma.part.findFirst({
-      where: { id: partId, tenantId: session.user.tenantId, deletedAt: null },
+      where: { id: partId, tenantId: tenantId, deletedAt: null },
     });
 
     if (!part) return { error: "Parça bulunamadı." };
@@ -713,7 +719,7 @@ export async function returnPartToSupplier(data: SupplierReturnInput) {
     }
 
     const supplier = await prisma.supplier.findFirst({
-      where: { id: supplierId, tenantId: session.user.tenantId },
+      where: { id: supplierId, tenantId: tenantId },
     });
 
     if (!supplier) return { error: "Tedarikçi bulunamadı." };
@@ -726,7 +732,7 @@ export async function returnPartToSupplier(data: SupplierReturnInput) {
 
       const created = await tx.stockMovement.create({
         data: {
-          tenantId: session.user.tenantId!,
+          tenantId: tenantId!,
           partId,
           type: "OUT",
           quantity,
@@ -749,7 +755,7 @@ export async function returnPartToSupplier(data: SupplierReturnInput) {
       name: "stock/movement.created",
       data: {
         movementId: movement.id,
-        tenantId: session.user.tenantId!,
+        tenantId: tenantId!,
         partId,
       },
     });
@@ -760,7 +766,7 @@ export async function returnPartToSupplier(data: SupplierReturnInput) {
       select: { partNumber: true, name: true, currentStock: true, locationId: true },
     });
     if (updatedPart) {
-      publishStockUpdate(session.user.tenantId!, {
+      publishStockUpdate(tenantId!, {
         partId,
         partNumber: updatedPart.partNumber,
         partName: updatedPart.name,
@@ -772,7 +778,7 @@ export async function returnPartToSupplier(data: SupplierReturnInput) {
 
     revalidatePath("/dashboard/inventory");
     return { success: true, data: { movementId: movement.id } };
-  } catch (err: any) {
+  } catch (err) {
     Sentry.captureException(err);
     return { error: "Tedarikçi iadesi gerçekleştirilemedi." };
   }
@@ -789,10 +795,10 @@ export interface StockValueReportFilters {
 
 export async function getStockValueReport(filters?: StockValueReportFilters) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const parts = await prisma.part.findMany({
       where: {
@@ -876,7 +882,7 @@ export async function getStockValueReport(filters?: StockValueReportFilters) {
         },
       },
     };
-  } catch (err: any) {
+  } catch (err) {
     Sentry.captureException(err);
     return { error: "Stok değer raporu alınamadı." };
   }
@@ -898,10 +904,10 @@ export interface MovementReportFilters {
 
 export async function getStockMovementReport(filters: MovementReportFilters) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
     const page = filters.page ?? 1;
     const pageSize = Math.min(filters.pageSize ?? 50, 200);
     const skip = (page - 1) * pageSize;
@@ -962,7 +968,7 @@ export async function getStockMovementReport(filters: MovementReportFilters) {
         },
       },
     };
-  } catch (err: any) {
+  } catch (err) {
     Sentry.captureException(err);
     return { error: "Hareket geçmişi raporu alınamadı." };
   }
@@ -979,10 +985,10 @@ export interface DateRange {
 
 export async function getTopUsedParts(dateRange: DateRange, limit = 20) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
     const safeLimit = Math.min(Math.max(limit, 1), 100);
 
     // OUT hareketlerini partId bazında grupla ve topla
@@ -1035,7 +1041,7 @@ export async function getTopUsedParts(dateRange: DateRange, limit = 20) {
       .filter(Boolean);
 
     return { success: true, data: { parts: result } };
-  } catch (err: any) {
+  } catch (err) {
     Sentry.captureException(err);
     return { error: "En çok kullanılan parçalar raporu alınamadı." };
   }
@@ -1047,10 +1053,10 @@ export async function getTopUsedParts(dateRange: DateRange, limit = 20) {
 
 export async function getCriticalStockReport() {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const parts = await prisma.part.findMany({
       where: {
@@ -1101,7 +1107,7 @@ export async function getCriticalStockReport() {
         },
       },
     };
-  } catch (err: any) {
+  } catch (err) {
     Sentry.captureException(err);
     return { error: "Kritik stok raporu alınamadı." };
   }

@@ -1,17 +1,3 @@
-import NextAuth, { DefaultSession } from "next-auth";
-
-declare module "next-auth" {
-  /**
-   * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
-   */
-  interface Session {
-    user: {
-      /** The user's role. */
-      role: "SUPER_ADMIN" | "TENANT_ADMIN" | "MECHANIC" | "RECEPTIONIST" | "ACCOUNTANT";
-    } & DefaultSession["user"];
-  }
-
-  interface User {
-    role: "SUPER_ADMIN" | "TENANT_ADMIN" | "MECHANIC" | "RECEPTIONIST" | "ACCOUNTANT";
-  }
-}
+// Intentionally empty — next-auth module augmentation lives in types/next-auth.d.ts
+// tsconfig paths explicitly maps "next-auth" → node_modules/next-auth
+// so this file no longer shadows the npm package.

@@ -17,24 +17,45 @@ export default async function MechanicsPage() {
 
   const activeStaff = mechanics.filter((m: any) => m.isActive).length;
   const totalStaff = mechanics.length;
+  const activeMechanics = mechanics.filter((m: any) => m.isActive);
 
+  // Vardiya hesaplamaları — gerçek veriden
+  const morningShift = activeMechanics.filter((m: any) => {
+    if (!m.shiftStart) return false;
+    const hour = parseInt(m.shiftStart.split(":")[0], 10);
+    return hour < 12;
+  });
+  const eveningShift = activeMechanics.filter((m: any) => {
+    if (!m.shiftStart) return false;
+    const hour = parseInt(m.shiftStart.split(":")[0], 10);
+    return hour >= 12;
+  });
+  const noShiftAssigned = activeMechanics.filter(
+    (m: any) => !m.shiftStart || !m.shiftEnd
+  ).length;
+
+  // İş yükü hesaplama: aktif servis emirleri / toplam günlük hedef
+  const totalActiveOrders = activeMechanics.reduce((sum: number, m: any) => sum + (m._count?.serviceOrders ?? 0), 0);
+  const totalDailyTarget = activeMechanics.reduce((sum: number, m: any) => sum + (m.dailyTarget ?? 3), 0);
+  const workloadPercent = totalDailyTarget > 0 ? Math.min(Math.round((totalActiveOrders / totalDailyTarget) * 100), 100) : 0;
+
+  // Verimlilik hesaplama (deneyim yılına dayalı)
   const calcEfficiency = (years: number) => Math.min((years || 1) * 5 + 75 + Math.random() * 5, 99).toFixed(1);
 
   const leaderboard = [...mechanics].sort((a: any, b: any) => {
     return Number(calcEfficiency(b.experienceYears)) - Number(calcEfficiency(a.experienceYears));
   }).slice(0, 3);
 
+  // Sabah/Akşam vardiya saatleri (ilk bulunan vardiyadan al veya varsayılan)
+  const mShiftStart = morningShift[0]?.shiftStart ?? "08:00";
+  const mShiftEnd = morningShift[0]?.shiftEnd ?? "16:00";
+  const eShiftStart = eveningShift[0]?.shiftStart ?? "16:00";
+  const eShiftEnd = eveningShift[0]?.shiftEnd ?? "00:00";
+
   return (
     <PageShell
       title="Personel & Usta Yönetimi"
       subtitle="Çalışan kadronuzu, vardiya planlamasını ve performans metriklerini izleyin."
-      sectionLabel="İnsan Kaynakları"
-      actions={
-        <button className="flex items-center px-6 py-3 bg-primary text-white rounded-xl font-bold text-sm hover:shadow-lg transition-all transform active:scale-95 shadow-blue-900/20">
-          <span className="material-symbols-outlined mr-2">person_add</span>
-          + Yeni Personel
-        </button>
-      }
     >
       {/* Metric Bento Grid */}
       <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -67,7 +88,7 @@ export default async function MechanicsPage() {
             </div>
             <span className="text-xs font-bold text-on-secondary-container bg-secondary-fixed/50 px-2 py-1 rounded">OPTİMAL</span>
           </div>
-          <p className="text-3xl font-black text-on-surface">76%</p>
+          <p className="text-3xl font-black text-on-surface">{workloadPercent}%</p>
           <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-1">Ort. İş Yükü</p>
         </div>
 
@@ -78,8 +99,8 @@ export default async function MechanicsPage() {
             </div>
             <span className="text-xs font-bold text-white bg-white/10 px-2 py-1 rounded">PLANLAMA</span>
           </div>
-          <p className="text-3xl font-black text-white">5</p>
-          <p className="text-[11px] font-bold text-white/70 uppercase tracking-wider mt-1">Açık Vardiya</p>
+          <p className="text-3xl font-black text-white">{noShiftAssigned}</p>
+          <p className="text-[11px] font-bold text-white/70 uppercase tracking-wider mt-1">Atanmamış Vardiya</p>
         </div>
       </section>
 
@@ -105,20 +126,26 @@ export default async function MechanicsPage() {
               <div className="flex items-center justify-between p-4 bg-black/20 rounded-2xl backdrop-blur-sm border border-white/10">
                 <div>
                   <p className="text-[11px] font-black text-blue-200 uppercase tracking-widest">Sabah Ekibi</p>
-                  <p className="text-[11px] font-medium text-blue-100/70 mt-0.5">08:00 - 16:00</p>
+                  <p className="text-[11px] font-medium text-blue-100/70 mt-0.5">{mShiftStart} - {mShiftEnd}</p>
                 </div>
-                <span className="text-xs font-black bg-white text-primary-container px-3 py-1 rounded-lg">8 Personel</span>
+                <span className="text-xs font-black bg-white text-primary-container px-3 py-1 rounded-lg">{morningShift.length} Personel</span>
               </div>
               <div className="flex items-center justify-between p-4 bg-black/20 rounded-2xl backdrop-blur-sm border border-white/10">
                 <div>
                   <p className="text-[11px] font-black text-blue-200 uppercase tracking-widest">Akşam Ekibi</p>
-                  <p className="text-[11px] font-medium text-blue-100/70 mt-0.5">16:00 - 00:00</p>
+                  <p className="text-[11px] font-medium text-blue-100/70 mt-0.5">{eShiftStart} - {eShiftEnd}</p>
                 </div>
-                <span className="text-xs font-black bg-white/20 text-white px-3 py-1 rounded-lg">6 Personel</span>
+                <span className="text-xs font-black bg-white/20 text-white px-3 py-1 rounded-lg">{eveningShift.length} Personel</span>
               </div>
-              <button className="w-full mt-2 py-3 border border-white/30 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-white hover:text-primary-container transition-all">
+              {noShiftAssigned > 0 && (
+                <div className="flex items-center justify-between p-3 bg-orange-500/20 rounded-2xl border border-orange-300/20">
+                  <p className="text-[11px] font-bold text-orange-200">⚠ Vardiyası atanmamış</p>
+                  <span className="text-xs font-black bg-orange-400/30 text-orange-100 px-3 py-1 rounded-lg">{noShiftAssigned} Kişi</span>
+                </div>
+              )}
+              <a href="#vardiya-takvimi" className="block w-full mt-2 py-3 border border-white/30 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-white hover:text-primary-container transition-all text-center">
                 Vardiyaları Yönet
-              </button>
+              </a>
             </div>
           </div>
 
@@ -172,7 +199,9 @@ export default async function MechanicsPage() {
         </div>
       </div>
       {/* Vardiya Takvimi */}
-      <ShiftCalendarView mechanics={mechanics as any[]} />
+      <div id="vardiya-takvimi">
+        <ShiftCalendarView mechanics={mechanics as any[]} />
+      </div>
     </PageShell>
   );
 }

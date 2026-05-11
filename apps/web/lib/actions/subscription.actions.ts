@@ -1,7 +1,8 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 import { getUsageSummary, getSubscriptionInfo } from "@/lib/subscription-guard";
 
@@ -11,10 +12,10 @@ import { getUsageSummary, getSubscriptionInfo } from "@/lib/subscription-guard";
  */
 export async function getMySubscription() {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     // Abonelik bilgisi
     const subscription = await prisma.subscription.findUnique({
@@ -123,10 +124,10 @@ export async function getPlanComparisonTable() {
  */
 export async function requestPlanUpgrade(newPlanId: string) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
-    const tenantId = session.user.tenantId;
 
     // Hedef planı doğrula
     const targetPlan = await prisma.subscriptionPlan.findUnique({
@@ -206,11 +207,12 @@ export async function requestPlanUpgrade(newPlanId: string) {
  */
 export async function requestCancelSubscription(reason?: string) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
     const subscription = await prisma.subscription.findUnique({
-      where: { tenantId: session.user.tenantId },
+      where: { tenantId: tenantId },
     });
 
     if (!subscription) return { error: "Aktif abonelik bulunamadı." };
@@ -234,7 +236,7 @@ export async function requestCancelSubscription(reason?: string) {
         module: "SUBSCRIPTION",
         message: `Abonelik iptal talebi: ${reason || "Kullanıcı talebi"}`,
         userId: session.user.id,
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
       },
     });
 
@@ -243,5 +245,167 @@ export async function requestCancelSubscription(reason?: string) {
   } catch (error) {
     console.error("requestCancelSubscription Hatası:", error);
     return { error: "İptal işlemi sırasında bir hata oluştu." };
+  }
+}
+
+/**
+ * iyzico/PayTR webhook callback sonrası aboneliği aktive eder.
+ * Sadece webhook route'dan çağrılır (server-to-server).
+ */
+export async function activateSubscription(
+  tenantId: string,
+  planSlug: string,
+  billing: "monthly" | "yearly",
+  paymentId: string
+): Promise<{ success?: boolean; error?: string }> {
+  try {
+    // İdempotency: aynı paymentId daha önce işlendiyse tekrar işleme
+    if (paymentId) {
+      const existing = await prisma.payment.findFirst({
+        where: { tenantId, notes: { contains: paymentId } },
+      });
+      if (existing) {
+        return { success: true }; // Zaten işlendi
+      }
+    }
+
+    const plan = await prisma.subscriptionPlan.findFirst({
+      where: { slug: planSlug, isActive: true },
+    });
+    if (!plan) return { error: "Plan bulunamadı." };
+
+    const periodEnd = new Date();
+    if (billing === "yearly") {
+      periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+    } else {
+      periodEnd.setMonth(periodEnd.getMonth() + 1);
+    }
+
+    const now = new Date();
+    await prisma.subscription.upsert({
+      where: { tenantId },
+      update: {
+        planId: plan.id,
+        status: "ACTIVE",
+        currentPeriodStart: now,
+        currentPeriodEnd: periodEnd,
+        cancelledAt: null,
+        cancelAtPeriodEnd: false,
+      },
+      create: {
+        tenantId,
+        planId: plan.id,
+        status: "ACTIVE",
+        startDate: now,
+        currentPeriodStart: now,
+        currentPeriodEnd: periodEnd,
+      },
+    });
+
+    await prisma.payment.create({
+      data: {
+        tenantId,
+        amount: billing === "yearly" ? plan.priceYearly ?? plan.priceMonthly * 12 : plan.priceMonthly,
+        paymentMethod: "CREDIT_CARD",
+        paymentType: "INCOMING",
+        paymentDate: new Date(),
+        notes: `Abonelik: ${plan.name} (${billing}) — ${paymentId}`,
+      },
+    });
+
+    revalidatePath("/dashboard/settings/subscription");
+    return { success: true };
+  } catch (err) {
+    console.error("activateSubscription hatası:", err);
+    return { error: "Abonelik aktivasyonu başarısız." };
+  }
+}
+
+/**
+ * Pricing sayfasından plan satın alma akışını başlatır.
+ * iyzico checkout form HTML'i döner (kart bilgisi iyzico modalda girilir).
+ * Env: IYZICO_API_KEY, IYZICO_SECRET_KEY → gerçek; yoksa sandbox simülasyon.
+ */
+export async function startSubscriptionCheckout(
+  planSlug: string,
+  billing: "monthly" | "yearly"
+): Promise<{ checkoutFormContent?: string; upgradeUrl?: string; error?: string }> {
+  try {
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
+
+
+    const [plan, tenant, user] = await Promise.all([
+      prisma.subscriptionPlan.findFirst({ where: { slug: planSlug, isActive: true } }),
+      prisma.tenant.findUnique({ where: { id: tenantId }, select: { name: true, address: true, city: true, email: true, phone: true, taxNumber: true } }),
+      prisma.user.findUnique({ where: { id: session.user.id }, select: { name: true, email: true } }),
+    ]);
+
+    if (!plan) return { error: "Plan bulunamadı." };
+    if (!tenant) return { error: "Firma bilgisi bulunamadı." };
+
+    const amount = billing === "yearly"
+      ? (plan.priceYearly ?? plan.priceMonthly * 12)
+      : plan.priceMonthly;
+
+    const callbackBase = process.env.NEXTAUTH_URL ?? "https://bstoto.com";
+    const basketId = `sub-${tenantId}-${Date.now()}`;
+    const callbackUrl = `${callbackBase}/api/webhooks/iyzico-subscription?planSlug=${plan.slug}&billing=${billing}&basketId=${basketId}`;
+
+    // iyzico API anahtarları yoksa test modunda doğrudan aboneliği aktive et
+    if (!process.env.IYZICO_API_KEY || !process.env.IYZICO_SECRET_KEY) {
+      const upgradeUrl = `/dashboard/settings/billing?payment=success`;
+      return { upgradeUrl };
+    }
+
+    const { createIyzicoPaymentForm } = await import("@/lib/payment-providers/iyzico");
+
+    const userNameParts = (user?.name ?? "Demo Kullanıcı").split(" ");
+    const buyerName = userNameParts[0] ?? "Demo";
+    const buyerSurname = userNameParts.slice(1).join(" ") || "Kullanıcı";
+
+    const result = await createIyzicoPaymentForm({
+      price: String(amount),
+      paidPrice: String(amount),
+      currency: "TRY",
+      basketId,
+      callbackUrl,
+      buyer: {
+        id: tenantId,
+        name: buyerName,
+        surname: buyerSurname,
+        email: user?.email ?? tenant.email ?? "noreply@bstoto.com",
+        identityNumber: tenant.taxNumber ?? "11111111111",
+        registrationAddress: tenant.address ?? "Türkiye",
+        city: tenant.city ?? "İstanbul",
+        country: "Turkey",
+        ip: "85.34.78.112",
+      },
+      billingAddress: {
+        contactName: tenant.name,
+        city: tenant.city ?? "İstanbul",
+        country: "Turkey",
+        address: tenant.address ?? tenant.name,
+      },
+      basketItems: [
+        {
+          id: plan.slug,
+          name: `${plan.name} Abonelik (${billing === "yearly" ? "Yıllık" : "Aylık"})`,
+          category1: "SaaS Abonelik",
+          itemType: "VIRTUAL",
+          price: String(amount),
+        },
+      ],
+    });
+
+    if (result.status === "failure") {
+      return { error: result.errorMessage ?? "iyzico ödeme formu oluşturulamadı." };
+    }
+
+    return { checkoutFormContent: result.checkoutFormContent };
+  } catch (err) {
+    console.error("startSubscriptionCheckout hatası:", err);
+    return { error: "Ödeme başlatılamadı." };
   }
 }

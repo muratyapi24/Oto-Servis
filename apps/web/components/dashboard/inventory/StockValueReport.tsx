@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Download, FileText, TrendingUp, Package, DollarSign, ChevronDown, ChevronRight } from "lucide-react";
 import { exportElementToPdf } from "@/lib/pdf-utils";
 import { exportToCsv } from "@/lib/csv-utils";
@@ -187,10 +187,9 @@ export default function StockValueReport({ categories, summary }: StockValueRepo
                   {categories.map((cat) => {
                     const isExpanded = expandedCategories.has(cat.categoryId);
                     return (
-                      <>
+                      <React.Fragment key={cat.categoryId}>
                         {/* Kategori Satırı */}
                         <tr
-                          key={cat.categoryId}
                           className="border-b border-slate-50 bg-slate-50/50 hover:bg-slate-100/50 cursor-pointer transition-colors"
                           onClick={() => toggleCategory(cat.categoryId)}
                         >
@@ -219,7 +218,7 @@ export default function StockValueReport({ categories, summary }: StockValueRepo
                               <td className="px-4 py-2.5 text-right text-slate-600">{formatCurrency(part.stockValue)}</td>
                             </tr>
                           ))}
-                      </>
+                      </React.Fragment>
                     );
                   })}
                   {/* Genel Toplam */}

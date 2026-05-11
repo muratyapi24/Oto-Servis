@@ -10,11 +10,12 @@ interface Props {
   onClose: () => void;
   customers: any[];
   parts: any[];
+  categories: any[];
 }
 
 const inputCls = "w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500";
 
-export default function QuoteFormModal({ isOpen, onClose, customers, parts }: Props) {
+export default function QuoteFormModal({ isOpen, onClose, customers, parts, categories }: Props) {
   const router = useRouter();
   const [step, setStep] = useState<"header" | "items">("header");
   const [quoteId, setQuoteId] = useState<string | null>(null);
@@ -30,12 +31,15 @@ export default function QuoteFormModal({ isOpen, onClose, customers, parts }: Pr
   // Item fields
   const [items, setItems] = useState<any[]>([]);
   const [itemType, setItemType] = useState<"PART" | "LABOR" | "OTHER">("LABOR");
-  const [itemName, setItemName] = useState("");
+  const [itemCategoryId, setItemCategoryId] = useState("");
   const [itemPartId, setItemPartId] = useState("");
+  const [itemName, setItemName] = useState("");
   const [itemQty, setItemQty] = useState("1");
   const [itemPrice, setItemPrice] = useState("");
   const [itemTax, setItemTax] = useState("20");
   const [itemDiscount, setItemDiscount] = useState("0");
+
+  const filteredParts = parts.filter(p => !itemCategoryId || p.categoryId === itemCategoryId);
 
   const selectedCustomer = customers.find((c) => c.id === customerId);
   const customerVehicles = selectedCustomer?.vehicles ?? [];
@@ -76,7 +80,7 @@ export default function QuoteFormModal({ isOpen, onClose, customers, parts }: Pr
     if (res.error) { setError(res.error); return; }
     const calc = calcLine(qty, price, parseFloat(itemTax) || 20, parseFloat(itemDiscount) || 0);
     setItems(prev => [...prev, { name: itemName, itemType, qty, price, ...calc }]);
-    setItemName(""); setItemPrice(""); setItemQty("1"); setItemPartId(""); setItemDiscount("0");
+    setItemName(""); setItemPrice(""); setItemQty("1"); setItemPartId(""); setItemCategoryId(""); setItemDiscount("0");
   }
 
   function handleFinish() {
@@ -141,35 +145,93 @@ export default function QuoteFormModal({ isOpen, onClose, customers, parts }: Pr
           {step === "items" && (
             <div className="space-y-5">
               {/* Kalem ekleme formu */}
-              <div className="bg-gray-50 rounded-xl p-4 space-y-3 border border-gray-200">
-                <h3 className="text-sm font-bold text-gray-700">Kalem Ekle</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Tür</label>
-                    <select value={itemType} onChange={e => setItemType(e.target.value as any)} className={inputCls}>
+              <div className="bg-gray-50 rounded-xl p-5 space-y-4 border border-gray-200 shadow-sm">
+                <h3 className="text-sm font-bold text-gray-800 border-b pb-2 mb-2 flex items-center gap-2">
+                  <Plus className="w-4 h-4 text-blue-600" /> Kalem Ekle
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="sm:col-span-2 md:col-span-1">
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Tür</label>
+                    <select value={itemType} onChange={e => {
+                      setItemType(e.target.value as any);
+                      setItemPartId("");
+                      setItemCategoryId("");
+                      setItemName("");
+                      setItemPrice("");
+                    }} className={inputCls}>
                       <option value="LABOR">İşçilik</option>
                       <option value="PART">Yedek Parça</option>
                       <option value="OTHER">Diğer</option>
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">İsim *</label>
-                    <input value={itemName} onChange={e => setItemName(e.target.value)} className={inputCls} placeholder="Kalem adı" />
+
+                  {itemType === "PART" && (
+                    <>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-700 mb-1">Kategori (Opsiyonel)</label>
+                        <select 
+                          value={itemCategoryId} 
+                          onChange={e => {
+                            setItemCategoryId(e.target.value);
+                            setItemPartId("");
+                          }} 
+                          className={inputCls}
+                        >
+                          <option value="">Tüm Kategoriler</option>
+                          {categories.map((cat: any) => (
+                            <option key={cat.id} value={cat.id}>{cat.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label className="block text-xs font-bold text-gray-700 mb-1">Stoktan Parça Seçimi *</label>
+                        <select 
+                          value={itemPartId} 
+                          onChange={e => {
+                            const val = e.target.value;
+                            setItemPartId(val);
+                            const p = parts.find(x => x.id === val);
+                            if (p) {
+                              setItemName(p.name);
+                              setItemPrice(p.sellingPrice?.toString() || "0");
+                              setItemTax(p.taxRate?.toString() || "20");
+                            }
+                          }} 
+                          className={inputCls}
+                        >
+                          <option value="">-- Parça Seçiniz --</option>
+                          {filteredParts.map((p: any) => (
+                            <option key={p.id} value={p.id}>{p.name} (Satış: ₺{p.sellingPrice})</option>
+                          ))}
+                        </select>
+                      </div>
+                    </>
+                  )}
+
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Kalem / İşlem Adı *</label>
+                    <input 
+                      value={itemName} 
+                      onChange={e => setItemName(e.target.value)} 
+                      className={inputCls} 
+                      placeholder={itemType === "PART" ? "Parça adı (Otomatik dolar)" : "Kalem adı"} 
+                      disabled={itemType === "PART" && !!itemPartId} // Eğer parça seçiliyse ismi değiştirmesin
+                    />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Miktar *</label>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Miktar *</label>
                     <input type="number" step="0.01" min="0.01" value={itemQty} onChange={e => setItemQty(e.target.value)} className={inputCls} />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Birim Fiyat (₺) *</label>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Birim Fiyat (₺) *</label>
                     <input type="number" step="0.01" min="0" value={itemPrice} onChange={e => setItemPrice(e.target.value)} className={inputCls} placeholder="0.00" />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">KDV %</label>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">KDV %</label>
                     <input type="number" min="0" max="100" value={itemTax} onChange={e => setItemTax(e.target.value)} className={inputCls} />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">İndirim (₺)</label>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">İndirim (₺)</label>
                     <input type="number" min="0" step="0.01" value={itemDiscount} onChange={e => setItemDiscount(e.target.value)} className={inputCls} />
                   </div>
                 </div>
@@ -178,9 +240,11 @@ export default function QuoteFormModal({ isOpen, onClose, customers, parts }: Pr
                     {(() => { const c = calcLine(parseFloat(itemQty)||0, parseFloat(itemPrice)||0, parseFloat(itemTax)||20, parseFloat(itemDiscount)||0); return `Satır Toplamı: ₺${c.totalPrice.toFixed(2)} (KDV: ₺${c.taxAmount.toFixed(2)})`; })()}
                   </div>
                 )}
-                <button type="button" onClick={handleAddItem} disabled={submitting} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 disabled:opacity-70">
-                  <Plus className="w-4 h-4" /> Kalem Ekle
-                </button>
+                <div className="pt-2 flex justify-end">
+                  <button type="button" onClick={handleAddItem} disabled={submitting} className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 disabled:opacity-70 shadow-sm transition-colors">
+                    <Plus className="w-4 h-4" /> Kalem Ekle
+                  </button>
+                </div>
               </div>
 
               {/* Eklenen kalemler */}

@@ -126,7 +126,7 @@ export const parasutSyncFunction = inngest.createFunction(
 
         success = true;
       } catch (err) {
-        errorMessage = err instanceof Error ? err.message : "Bilinmeyen hata";
+        errorMessage = err instanceof Error ? (err instanceof Error ? err.message : String(err)) : "Bilinmeyen hata";
         Sentry.captureException(err, {
           tags: { module: "parasut-sync" },
           extra: { invoiceId, tenantId, operation },
@@ -167,7 +167,7 @@ export const parasutSyncFunction = inngest.createFunction(
         });
         success = true;
       } catch (err) {
-        errorMessage = err instanceof Error ? err.message : "Bilinmeyen hata";
+        errorMessage = err instanceof Error ? (err instanceof Error ? err.message : String(err)) : "Bilinmeyen hata";
         Sentry.captureException(err, {
           tags: { module: "parasut-sync-cancel" },
           extra: { invoiceId, tenantId },
@@ -213,7 +213,7 @@ export const parasutSyncFunction = inngest.createFunction(
         });
         success = true;
       } catch (err) {
-        errorMessage = err instanceof Error ? err.message : "Bilinmeyen hata";
+        errorMessage = err instanceof Error ? (err instanceof Error ? err.message : String(err)) : "Bilinmeyen hata";
         Sentry.captureException(err, {
           tags: { module: "parasut-sync-payment" },
           extra: { paymentId, tenantId },

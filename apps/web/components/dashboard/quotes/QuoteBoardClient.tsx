@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import "dayjs/locale/tr";
-import { FileText, Plus, Search, CheckCircle2, Clock, XCircle, Send, AlertCircle } from "lucide-react";
+import { FileText, Plus, Search, CheckCircle2, Clock, XCircle, Send, AlertCircle, Eye, Trash2, Settings, Loader2 } from "lucide-react";
 import QuoteFormModal from "./QuoteFormModal";
-import { updateQuoteStatus } from "@/lib/actions/quote.actions";
+import { updateQuoteStatus, deleteQuote, convertQuoteToServiceOrder } from "@/lib/actions/quote.actions";
 
 const STATUS_MAP: Record<string, { label: string; className: string }> = {
   DRAFT:    { label: "Taslak",     className: "bg-gray-100 text-gray-700" },
@@ -20,13 +21,17 @@ interface Props {
   quotes: any[];
   customers: any[];
   parts: any[];
+  categories: any[];
 }
 
-export default function QuoteBoardClient({ quotes, customers, parts }: Props) {
+export default function QuoteBoardClient({ quotes, customers, parts, categories }: Props) {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [modalOpen, setModalOpen] = useState(false);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [converting, setConverting] = useState<string | null>(null);
 
   const filtered = quotes.filter((q) => {
     const customerName = q.customer?.type === "CORPORATE"
@@ -41,6 +46,24 @@ export default function QuoteBoardClient({ quotes, customers, parts }: Props) {
     setUpdating(quoteId);
     await updateQuoteStatus({ quoteId, status: "SENT" });
     setUpdating(null);
+  }
+
+  async function handleDelete(quoteId: string) {
+    if (!confirm("Bu teklifi silmek istediğinize emin misiniz?")) return;
+    setDeleting(quoteId);
+    await deleteQuote(quoteId);
+    setDeleting(null);
+  }
+
+  async function handleGoToServiceOrder(quoteId: string) {
+    setConverting(quoteId);
+    const res = await convertQuoteToServiceOrder(quoteId);
+    if (res.serviceOrderId) {
+      router.push(`/dashboard/services/${res.serviceOrderId}`);
+    } else if (res.error) {
+      alert(res.error);
+    }
+    setConverting(null);
   }
 
   return (
@@ -104,12 +127,31 @@ export default function QuoteBoardClient({ quotes, customers, parts }: Props) {
                     <td className="px-5 py-3 text-right font-mono font-bold text-gray-800">
                       ₺{q.totalAmount.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
                     </td>
-                    <td className="px-5 py-3 text-right">
-                      {q.status === "DRAFT" && (
-                        <button onClick={() => handleSend(q.id)} disabled={updating === q.id} className="flex items-center gap-1 ml-auto px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors disabled:opacity-50">
-                          <Send className="w-3 h-3" /> {updating === q.id ? "..." : "Gönder"}
+                    <td className="px-5 py-3">
+                      <div className="flex items-center justify-end gap-2">
+                        {q.status === "ACCEPTED" && (
+                          <button
+                            onClick={() => handleGoToServiceOrder(q.id)}
+                            disabled={converting === q.id}
+                            className="flex items-center gap-1 px-2.5 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg text-[11px] font-bold border border-indigo-100 hover:bg-indigo-100 transition-colors cursor-pointer disabled:opacity-50"
+                            title="Servis emrine git"
+                          >
+                            {converting === q.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Settings className="w-3 h-3" />}
+                            Servis Emri
+                          </button>
+                        )}
+                        {q.status === "DRAFT" && (
+                          <button onClick={() => handleSend(q.id)} disabled={updating === q.id} className="flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors disabled:opacity-50" title="Müşteriye Gönder">
+                            <Send className="w-3 h-3" />
+                          </button>
+                        )}
+                        <Link href={`/dashboard/quotes/${q.id}`} className="flex items-center gap-1 px-2.5 py-1.5 bg-gray-50 text-gray-700 rounded-lg text-xs font-bold hover:bg-gray-200 transition-colors" title="Görüntüle / Düzenle">
+                          <Eye className="w-3 h-3" />
+                        </Link>
+                        <button onClick={() => handleDelete(q.id)} disabled={deleting === q.id} className="flex items-center gap-1 px-2.5 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-bold hover:bg-red-100 transition-colors disabled:opacity-50" title="Sil">
+                          <Trash2 className="w-3 h-3" />
                         </button>
-                      )}
+                      </div>
                     </td>
                   </tr>
                 );
@@ -119,7 +161,8 @@ export default function QuoteBoardClient({ quotes, customers, parts }: Props) {
         </div>
       )}
 
-      <QuoteFormModal isOpen={modalOpen} onClose={() => setModalOpen(false)} customers={customers} parts={parts} />
+      <QuoteFormModal isOpen={modalOpen} onClose={() => setModalOpen(false)} customers={customers} parts={parts} categories={categories} />
     </div>
   );
 }
+

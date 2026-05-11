@@ -59,7 +59,7 @@ export async function getMusteriMesajlari() {
       })
     );
 
-    return { success: true, customer, conversations };
+    return JSON.parse(JSON.stringify({ success: true, customer, conversations }));
   } catch (error) {
     console.error("Mesajlar veri çekme hatası:", error);
     return { error: "Mesajlar yüklenirken hata oluştu.", conversations: [] };
@@ -99,7 +99,7 @@ export async function getConversationMessages(serviceOrderId: string) {
       }
     });
 
-    return { success: true, messages, order };
+    return JSON.parse(JSON.stringify({ success: true, messages, order }));
   } catch (error) {
     console.error("Mesaj detay hatası:", error);
     return { error: "Mesajlar yüklenirken hata oluştu." };
@@ -147,7 +147,7 @@ export async function sendMusteriMesaj(serviceOrderId: string, content: string) 
       }
     });
 
-    return { success: true, message };
+    return JSON.parse(JSON.stringify({ success: true, message }));
   } catch (error) {
     console.error("Mesaj gönderme hatası:", error);
     return { error: "Mesaj gönderilemedi." };

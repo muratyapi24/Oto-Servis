@@ -81,9 +81,9 @@ export async function getSignedUrl(key: string, expiresIn = 3600): Promise<strin
 
   try {
     // @aws-sdk/s3-request-presigner dinamik olarak yüklenir
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+     
     const { S3Client, GetObjectCommand } = await import("@aws-sdk/client-s3");
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+     
     const presignerModule = await import("@aws-sdk/s3-request-presigner" as string);
     const awsGetSignedUrl = presignerModule.getSignedUrl as (
       client: InstanceType<typeof S3Client>,

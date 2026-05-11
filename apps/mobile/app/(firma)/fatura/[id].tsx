@@ -169,7 +169,7 @@ export default function FaturaDetayScreen() {
             <View style={styles.tableDivider} />
             {items.map((item: any, idx: number) => (
               <View key={item.id ?? idx} style={styles.tableRow}>
-                <View style={[styles.tableCell, styles.tableDesc]}>
+                <View style={styles.tableDescView}>
                   <Text style={{ fontSize: 13, color: Colors.onSurface, fontWeight: "500" }} numberOfLines={2}>
                     {item.name}
                   </Text>
@@ -332,6 +332,7 @@ const styles = StyleSheet.create({
     color: Colors.onSurface,
   },
   tableDesc: { flex: 1, fontWeight: "500" },
+  tableDescView: { flex: 1 },
   tableQty: { width: 40, textAlign: "center", color: Colors.outline },
   tablePrice: { width: 80, textAlign: "right", fontWeight: "600" },
   tableDivider: {

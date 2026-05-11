@@ -2,186 +2,284 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { motion } from "framer-motion";
-import { Car, Phone, Hash, ArrowRight, AlertCircle, ShieldCheck } from "lucide-react";
-import { customerLoginSchema, type CustomerLoginInput } from "@/lib/validations/auth";
-import { loginCustomer } from "@/lib/actions/auth.actions";
+import { motion, AnimatePresence } from "framer-motion";
+import { Car, Phone, ShieldCheck, AlertCircle, ArrowRight, RefreshCw, KeyRound } from "lucide-react";
+import { sendCustomerOTP, verifyCustomerOTP } from "@/lib/actions/auth.actions";
 
 export default function MusteriGirisPage() {
-  const router = useRouter();
-  const [errorInfo, setErrorInfo] = useState<string | null>(null);
+  const [step, setStep] = useState<"form" | "otp">("form");
+  const [plate, setPlate] = useState("");
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [resendCountdown, setResendCountdown] = useState(0);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<CustomerLoginInput>({
-    resolver: zodResolver(customerLoginSchema),
-    defaultValues: { plate: "", phone: "", rememberMe: true },
-  });
+  function startResendTimer() {
+    setResendCountdown(60);
+    const interval = setInterval(() => {
+      setResendCountdown((prev) => {
+        if (prev <= 1) { clearInterval(interval); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
+  }
 
-  const onSubmit = async (data: CustomerLoginInput) => {
-    setErrorInfo(null);
+  async function handleSendOTP(e: React.FormEvent) {
+    e.preventDefault();
+    if (!plate.trim() || !phone.trim()) return;
+
+    // Plaka formatı doğrulaması (Boşlukları kaldırarak kontrol et)
+    const cleanPlate = plate.replace(/\s+/g, '').toUpperCase();
+    const plateRegex = /^(0[1-9]|[1-7][0-9]|8[01])[A-ZÇĞIİÖŞÜ]{1,3}\d{2,4}$/;
+    if (!plateRegex.test(cleanPlate)) {
+      setError("Geçersiz plaka formatı. Lütfen geçerli bir Türkiye plakası girin (Örn: 34ABC123).");
+      return;
+    }
+
+    // Telefon formatı doğrulaması (Başında 0 veya 0 olmadan, toplam 10 veya 11 hane, 5 ile başlamalı)
+    const cleanPhone = phone.replace(/\s+/g, '');
+    const phoneRegex = /^(05|5)[0-9]{9}$/;
+    if (!phoneRegex.test(cleanPhone)) {
+      setError("Geçersiz telefon numarası. Lütfen 10 veya 11 haneli geçerli bir numara girin (Örn: 05321234567).");
+      return;
+    }
+
+    setError(null);
+    setLoading(true);
     try {
-      const result = await loginCustomer(data);
-      if (result && result.error) {
-        setErrorInfo(result.error);
-      } else if (result && result.success) {
-        // Successful login! Redirect to muster panel
+      const result = await sendCustomerOTP(plate, phone);
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setStep("otp");
+        startResendTimer();
+      }
+    } catch {
+      setError("Bağlantı hatası. Lütfen daha sonra tekrar deneyin.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleVerifyOTP(e: React.FormEvent) {
+    e.preventDefault();
+    if (!otp.trim()) return;
+    setError(null);
+    setLoading(true);
+    try {
+      const result = await verifyCustomerOTP(plate, phone, otp);
+      if (result.error) {
+        setError(result.error);
+      } else if (result.success) {
         window.location.href = "/m/musteri/panel";
       }
-    } catch (e) {
-      console.error(e);
-      setErrorInfo("Bağlantı hatası. Lütfen daha sonra tekrar deneyiniz.");
+    } catch {
+      setError("Bağlantı hatası. Lütfen daha sonra tekrar deneyin.");
+    } finally {
+      setLoading(false);
     }
-  };
+  }
+
+  async function handleResend() {
+    if (resendCountdown > 0) return;
+    setError(null);
+    setLoading(true);
+    try {
+      const result = await sendCustomerOTP(plate, phone);
+      if (result.error) {
+        setError(result.error);
+      } else {
+        startResendTimer();
+      }
+    } catch {
+      setError("Bağlantı hatası.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="min-h-screen flex" id="customer-login-page">
-      {/* Left - Visual (Hidden on mobile) */}
+      {/* Left - Visual */}
       <div className="hidden lg:flex flex-1 items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-primary-dark relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
-          <div
-            style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.4) 1px, transparent 0)`,
-              backgroundSize: "32px 32px",
-              width: "100%",
-              height: "100%",
-            }}
-          />
+          <div style={{ backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.4) 1px, transparent 0)`, backgroundSize: "32px 32px", width: "100%", height: "100%" }} />
         </div>
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-secondary-container/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-20 w-64 h-64 bg-primary-fixed/20 rounded-full blur-3xl text-primary" />
-
+        <div className="absolute bottom-20 right-20 w-64 h-64 bg-primary-fixed/20 rounded-full blur-3xl" />
         <div className="relative text-center text-white px-12 max-w-lg z-10">
           <div className="inline-flex items-center justify-center p-4 rounded-3xl bg-white/10 backdrop-blur-md mb-8 border border-white/20 shadow-2xl">
             <ShieldCheck className="h-16 w-16 text-tertiary-fixed" />
           </div>
-          <h2 className="text-4xl font-extrabold mb-5 tracking-tight">
-            Aracınız Güvende
-          </h2>
+          <h2 className="text-4xl font-extrabold mb-5 tracking-tight">Aracınız Güvende</h2>
           <p className="text-blue-100/80 text-lg leading-relaxed font-medium">
             Servisimizdeki aracınızın durumunu, onarım aşamalarını ve maliyetleri anlık olarak Müşteri Portalından takip edebilirsiniz.
           </p>
         </div>
       </div>
 
-      {/* Right - Form (Full width on mobile) */}
+      {/* Right - Form */}
       <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-20 py-12 bg-surface">
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="w-full max-w-md mx-auto"
-        >
-          {/* Mobile Logo */}
-          <div className="flex items-center gap-3 mb-10 group lg:hidden justify-center">
+        <div className="w-full max-w-md mx-auto">
+          {/* Mobile logo */}
+          <div className="flex items-center gap-3 mb-10 lg:hidden justify-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/30">
               <Car className="h-6 w-6" />
             </div>
-            <span className="text-xl font-extrabold text-blue-900 tracking-tight">
-              MS Oto Servis
-            </span>
+            <span className="text-xl font-extrabold text-blue-900 tracking-tight">MS Oto Servis</span>
           </div>
 
           <div className="mb-8">
             <span className="text-xs font-bold uppercase tracking-widest text-secondary mb-2 block">Müşteri Portalı</span>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-on-surface tracking-tight mb-2">
-              Araç Takibi
+              {step === "form" ? "Araç Takibi" : "Kod Doğrulama"}
             </h1>
             <p className="text-on-surface-variant">
-              Aracınızın durumunu görmek için bilgilerinizi girin. Şifreye gerek yok!
+              {step === "form"
+                ? "Aracınızın durumunu görmek için bilgilerinizi girin. Şifreye gerek yok!"
+                : `Telefon numaranıza gönderilen 6 haneli kodu girin.`}
             </p>
           </div>
 
-          {errorInfo && (
+          {error && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-4 mb-8 text-sm text-error bg-error-container/50 rounded-2xl flex items-start gap-3 border border-error/20"
+              className="p-4 mb-6 text-sm text-error bg-error-container/50 rounded-2xl flex items-start gap-3 border border-error/20"
             >
               <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
-              <span className="font-medium leading-relaxed">{errorInfo}</span>
+              <span className="font-medium leading-relaxed">{error}</span>
             </motion.div>
           )}
 
-          <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
-            {/* Plate Number */}
-            <div className="space-y-1.5">
-              <label
-                htmlFor="login-plate"
-                className="block text-sm font-bold text-on-surface"
+          <AnimatePresence mode="wait">
+            {step === "form" ? (
+              <motion.form
+                key="form"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-5"
+                onSubmit={handleSendOTP}
               >
-                Araç Plakası
-              </label>
-              <div className="relative group">
-                <div className="absolute left-0 top-0 bottom-0 w-12 bg-blue-600 rounded-l-xl flex items-center justify-center border border-blue-600 z-10">
-                  <span className="text-white font-bold text-xs">TR</span>
+                {/* Plate */}
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-bold text-on-surface">Araç Plakası</label>
+                  <div className="relative group">
+                    <div className="absolute left-0 top-0 bottom-0 w-12 bg-blue-600 rounded-l-xl flex items-center justify-center z-10">
+                      <span className="text-white font-bold text-xs">TR</span>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="34 ABC 123"
+                      value={plate}
+                      onChange={(e) => setPlate(e.target.value.toUpperCase())}
+                      className="w-full pl-16 pr-4 py-3.5 rounded-xl border border-outline-variant/40 bg-white text-on-surface placeholder:text-outline-variant font-bold text-lg uppercase focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary"
+                      required
+                    />
+                  </div>
                 </div>
-                <input
-                  type="text"
-                  id="login-plate"
-                  placeholder="34 ABC 123"
-                  className={`w-full pl-16 pr-4 py-3.5 rounded-xl border bg-white text-on-surface placeholder:text-outline-variant font-bold text-lg uppercase transition-all focus:outline-none focus:ring-4 focus:ring-primary/10 ${errors.plate ? 'border-error/50 focus:border-error' : 'border-outline-variant/40 focus:border-primary hover:border-outline'}`}
-                  {...register("plate")}
-                  onChange={(e) => {
-                    e.target.value = e.target.value.toUpperCase();
-                  }}
-                />
-              </div>
-              {errors.plate && (
-                <p className="text-error text-xs font-medium ml-1">{errors.plate.message}</p>
-              )}
-            </div>
 
-            {/* Phone Number */}
-            <div className="space-y-1.5 pt-2">
-              <label
-                htmlFor="login-phone"
-                className="block text-sm font-bold text-on-surface"
+                {/* Phone */}
+                <div className="space-y-1.5 pt-2">
+                  <label className="block text-sm font-bold text-on-surface">Kayıtlı Cep Telefonu</label>
+                  <div className="relative">
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-outline" />
+                    <input
+                      type="tel"
+                      placeholder="05XX XXX XX XX"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-outline-variant/40 bg-white text-on-surface placeholder:text-outline-variant font-medium text-lg focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary"
+                      required
+                    />
+                  </div>
+                  <p className="text-xs text-on-surface-variant ml-1">Başında sıfır (0) ile veya olmadan girebilirsiniz.</p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="group flex items-center justify-center gap-2 w-full mt-10 py-4 text-base font-bold text-white bg-primary rounded-xl shadow-lg shadow-primary/20 hover:bg-primary-container disabled:opacity-70 disabled:cursor-not-allowed active:scale-[0.98] transition-all"
+                >
+                  {loading ? "Kontrol ediliyor..." : "SMS Kodu Gönder"}
+                  {!loading && <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />}
+                </button>
+              </motion.form>
+            ) : (
+              <motion.form
+                key="otp"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-5"
+                onSubmit={handleVerifyOTP}
               >
-                Kayıtlı Cep Telefonu
-              </label>
-              <div className="relative">
-                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-outline transition-colors group-focus-within:text-primary" />
-                <input
-                  type="tel"
-                  id="login-phone"
-                  placeholder="05XX XXX XX XX"
-                  {...register("phone")}
-                  className={`w-full pl-12 pr-4 py-3.5 rounded-xl border bg-white text-on-surface placeholder:text-outline-variant font-medium text-lg transition-all focus:outline-none focus:ring-4 focus:ring-primary/10 ${errors.phone ? 'border-error/50 focus:border-error' : 'border-outline-variant/40 focus:border-primary hover:border-outline'}`}
-                />
-              </div>
-              <p className="text-xs text-on-surface-variant ml-1 mt-1 font-medium">Başında sıfır (0) ile veya olmadan girebilirsiniz.</p>
-              {errors.phone && (
-                <p className="text-error text-xs font-medium ml-1">{errors.phone.message}</p>
-              )}
-            </div>
+                {/* OTP info badge */}
+                <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-xl border border-primary/15">
+                  <KeyRound className="h-5 w-5 text-primary shrink-0" />
+                  <span className="text-sm text-on-surface-variant">
+                    <strong>{phone}</strong> numarasına 6 haneli kod gönderildi.
+                  </span>
+                </div>
 
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="group flex items-center justify-center gap-2 w-full mt-10 py-4 text-base font-bold tracking-wide text-white bg-primary rounded-xl shadow-lg shadow-primary/20 transition-all hover:bg-primary-container disabled:opacity-70 disabled:cursor-not-allowed active:scale-[0.98]"
-            >
-              {isSubmitting ? "Sorgulanıyor..." : "Aracımı Bul ve Giriş Yap"}
-              {!isSubmitting && <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />}
-            </button>
-          </form>
+                {/* OTP input */}
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-bold text-on-surface">Doğrulama Kodu</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="\d{6}"
+                    maxLength={6}
+                    placeholder="● ● ● ● ● ●"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                    className="w-full text-center tracking-[0.5em] py-4 text-2xl font-bold rounded-xl border border-outline-variant/40 bg-white text-on-surface focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary"
+                    required
+                  />
+                </div>
 
-          {/* Divider */}
+                <button
+                  type="submit"
+                  disabled={loading || otp.length < 6}
+                  className="group flex items-center justify-center gap-2 w-full py-4 text-base font-bold text-white bg-primary rounded-xl shadow-lg shadow-primary/20 hover:bg-primary-container disabled:opacity-70 disabled:cursor-not-allowed active:scale-[0.98] transition-all"
+                >
+                  {loading ? "Doğrulanıyor..." : "Doğrula ve Giriş Yap"}
+                  {!loading && <ShieldCheck className="h-5 w-5" />}
+                </button>
+
+                {/* Resend + back */}
+                <div className="flex items-center justify-between pt-2">
+                  <button
+                    type="button"
+                    onClick={() => { setStep("form"); setOtp(""); setError(null); }}
+                    className="text-sm text-on-surface-variant hover:text-on-surface transition-colors"
+                  >
+                    ← Geri dön
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={resendCountdown > 0 || loading}
+                    className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 disabled:text-on-surface-variant disabled:cursor-not-allowed transition-colors"
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    {resendCountdown > 0 ? `Tekrar gönder (${resendCountdown}s)` : "Tekrar gönder"}
+                  </button>
+                </div>
+              </motion.form>
+            )}
+          </AnimatePresence>
+
           <div className="mt-12 text-center">
-            <Link
-              href="/login"
-              className="text-sm font-medium text-slate-500 hover:text-primary transition-colors inline-block"
-            >
+            <Link href="/login" className="text-sm font-medium text-slate-500 hover:text-primary transition-colors inline-block">
               Firma veya Usta girişi yapmak için tıklayın
             </Link>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

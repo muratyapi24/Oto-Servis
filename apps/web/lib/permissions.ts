@@ -1,5 +1,7 @@
 export type Role = "SUPER_ADMIN" | "TENANT_ADMIN" | "MECHANIC" | "RECEPTIONIST" | "ACCOUNTANT" | "CUSTOMER";
 
+export { MOBILE_WEB_NAV_ITEMS } from "./dashboard-navigation";
+
 export const ROLE_ACCESS_MATRIX = {
   TENANT_ADMIN: [
     "/dashboard",
@@ -76,18 +78,6 @@ export const ROLE_ACCESS_MATRIX = {
   ]
 };
 
-// Mobil web (m/firma) özelindeki menüler ve ikonları
-export const MOBILE_WEB_NAV_ITEMS = [
-  { name: "Dashboard", href: "/m/firma/panel", icon: "dashboard" },
-  { name: "Kuyruk", href: "/m/firma/kuyruk", icon: "garage" },
-  { name: "Araçlar", href: "/m/firma/araclar", icon: "directions_car" },
-  { name: "Analiz", href: "/m/firma/analiz", icon: "insights" },
-  { name: "Personel", href: "/m/firma/personel", icon: "group" },
-  { name: "Finans", href: "/m/firma/finans", icon: "payments" },
-  { name: "Stok", href: "/m/firma/stok", icon: "inventory_2" },
-  { name: "Ayarlar", href: "/m/firma/ayarlar", icon: "settings" },
-];
-
 export function canAccess(role: string | undefined | null, href: string): boolean {
   if (!role) return false;
   if (role === "SUPER_ADMIN") return true; 
@@ -100,8 +90,12 @@ export function canAccess(role: string | undefined | null, href: string): boolea
   const accessList = ROLE_ACCESS_MATRIX[role as keyof typeof ROLE_ACCESS_MATRIX];
   if (!accessList) return false;
 
-  // Tam eşleşme arıyoruz
-  return accessList.includes(href);
+  return accessList.some((allowedHref) => {
+    if (allowedHref === "/dashboard") {
+      return href === allowedHref;
+    }
+    return href === allowedHref || href.startsWith(`${allowedHref}/`);
+  });
 }
 
 export function filterNavItems(role: string | null | undefined, items: any[]): any[] {

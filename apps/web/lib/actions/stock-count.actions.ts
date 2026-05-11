@@ -1,8 +1,9 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import * as Sentry from "@sentry/nextjs";
 import {
   createStockCountSchema,
@@ -37,12 +38,10 @@ export async function createStockCount(
   data: CreateStockCountInput
 ): Promise<ActionResult<{ countId: string }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
-    const tenantId = session.user.tenantId;
     const validatedData = createStockCountSchema.parse(data);
 
     // Aynı lokasyonda açık (DRAFT veya IN_PROGRESS) sayım var mı kontrol et
@@ -136,7 +135,7 @@ export async function createStockCount(
 
     revalidatePath("/dashboard/inventory/stock-counts");
     return { success: true, data: { countId: stockCount.id } };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("Stok sayımı oluşturma hatası:", error);
     return { success: false, error: "Stok sayımı oluşturulamadı." };
@@ -152,12 +151,10 @@ export async function updateStockCountItem(
   actualQuantity: number
 ): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     // Validasyon
     const validatedData = updateStockCountItemSchema.parse({ actualQuantity });
@@ -210,7 +207,7 @@ export async function updateStockCountItem(
 
     revalidatePath(`/dashboard/inventory/stock-counts/${countId}`);
     return { success: true };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("Sayım kalemi güncelleme hatası:", error);
     return { success: false, error: "Sayım kalemi güncellenemedi." };
@@ -224,12 +221,10 @@ export async function approveStockCount(
   countId: string
 ): Promise<ActionResult<{ adjustments: number }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
-    const tenantId = session.user.tenantId;
 
     // Sayımı ve kalemlerini getir
     const stockCount = await prisma.stockCount.findFirst({
@@ -344,7 +339,7 @@ export async function approveStockCount(
       success: true,
       data: { adjustments: itemsWithDifference.length },
     };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("Stok sayımı onaylama hatası:", error);
     return { success: false, error: "Stok sayımı onaylanamadı." };
@@ -358,12 +353,10 @@ export async function getStockCounts(
   filters?: StockCountFilters
 ): Promise<ActionResult<{ counts: any[]; total: number }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
     const page = filters?.page ?? 1;
     const pageSize = filters?.pageSize ?? 20;
     const skip = (page - 1) * pageSize;
@@ -407,7 +400,7 @@ export async function getStockCounts(
         total,
       },
     };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("Stok sayımı listesi hatası:", error);
     return { success: false, error: "Stok sayımları listelenemedi." };
@@ -421,12 +414,10 @@ export async function getStockCountDetail(
   countId: string
 ): Promise<ActionResult<{ count: any; summary: any }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const count = await prisma.stockCount.findFirst({
       where: { id: countId, tenantId },
@@ -501,7 +492,7 @@ export async function getStockCountDetail(
         summary,
       },
     };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("Stok sayımı detay hatası:", error);
     return { success: false, error: "Stok sayımı detayı alınamadı." };

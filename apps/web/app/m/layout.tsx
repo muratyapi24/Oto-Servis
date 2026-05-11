@@ -1,10 +1,18 @@
 import React from "react";
-import { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "MS Oto Servis Mobil",
   description: "Oto Servis Yönetimi Mobil Uygulaması",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
   themeColor: "#f8f9ff",
 };
 

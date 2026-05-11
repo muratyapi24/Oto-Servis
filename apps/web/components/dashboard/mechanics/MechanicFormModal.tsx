@@ -46,6 +46,9 @@ export default function MechanicFormModal({ isOpen, onClose, mechanicData }: Mec
           experienceYears: Number(mechanicData.experienceYears) || 0,
           hourlyRate: Number(mechanicData.hourlyRate) || 0,
           isActive: mechanicData.isActive ?? true,
+          role: mechanicData.role || "Usta",
+          shiftStart: mechanicData.shiftStart || "08:00",
+          shiftEnd: mechanicData.shiftEnd || "18:00",
         });
         setSpecialtiesList(mechanicData.specialties || []);
       } else {
@@ -58,6 +61,9 @@ export default function MechanicFormModal({ isOpen, onClose, mechanicData }: Mec
           experienceYears: 0, // NaN olmaması için form defaults düzeltildi
           hourlyRate: 0,
           isActive: true,
+          role: "Usta",
+          shiftStart: "08:00",
+          shiftEnd: "18:00",
         });
         setSpecialtiesList([]);
       }
@@ -136,12 +142,33 @@ export default function MechanicFormModal({ isOpen, onClose, mechanicData }: Mec
         {/* Professional Details */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1">
+            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Rol / Unvan *</label>
+            <select {...form.register("role")} className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold">
+              <option value="Usta">Usta</option>
+              <option value="Teknisyen">Teknisyen</option>
+              <option value="Muhasebe">Muhasebe</option>
+              <option value="Yönetici">Yönetici</option>
+              <option value="Resepsiyon">Resepsiyon</option>
+            </select>
+          </div>
+          <div className="space-y-1">
             <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Deneyim Yılı</label>
             <input type="number" {...form.register("experienceYears", { valueAsNumber: true })} className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
           </div>
           <div className="space-y-1">
             <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Saatlik Ücret (₺)</label>
             <input type="number" {...form.register("hourlyRate", { valueAsNumber: true })} className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Vardiya Başlangıç</label>
+            <input type="time" {...form.register("shiftStart")} className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Vardiya Bitiş</label>
+            <input type="time" {...form.register("shiftEnd")} className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
           </div>
         </div>
 
@@ -158,7 +185,7 @@ export default function MechanicFormModal({ isOpen, onClose, mechanicData }: Mec
             <button 
               type="button" 
               onClick={addSpecialty}
-              className="bg-slate-200 text-slate-700 font-bold px-4 rounded-xl hover:bg-slate-300:bg-slate-700 transition"
+              className="bg-slate-200 text-slate-700 font-bold px-4 rounded-xl hover:bg-slate-300 transition"
             >
                <Plus className="w-4 h-4" />
             </button>
@@ -188,7 +215,7 @@ export default function MechanicFormModal({ isOpen, onClose, mechanicData }: Mec
            <button 
              type="button"
              onClick={onClose}
-             className="px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest text-slate-500 bg-slate-100 hover:bg-slate-200:bg-slate-700 transition-colors"
+             className="px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest text-slate-500 bg-slate-100 hover:bg-slate-200 transition-colors"
            >
              İPTAL
            </button>

@@ -8,6 +8,8 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
+    "db:seed:plans": "tsx prisma/seed-plans.ts",
+    "db:seed:demo": "tsx prisma/seed-demo.ts",
     "lint": "eslint . --max-warnings 0"
   },
   "prisma": {

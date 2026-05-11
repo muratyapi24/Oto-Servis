@@ -64,7 +64,7 @@ export default function BelgelerScreen() {
       >
         <Text style={styles.sectionLabel}>Servis #{id} Belgeleri</Text>
 
-        {MOCK_DOCUMENTS.map((doc) => (
+        {(__DEV__ ? MOCK_DOCUMENTS : []).map((doc) => (
           <View key={doc.id} style={[styles.card, Shadow.navy]}>
             {/* File info */}
             <View style={styles.cardTop}>

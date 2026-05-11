@@ -14,6 +14,8 @@ import { sendWhatsAppFunction } from "@/lib/inngest/functions/send-whatsapp";
 import { appointmentReminderFunction } from "@/lib/inngest/functions/appointment-reminder";
 import { bulkNotificationFunction } from "@/lib/inngest/functions/bulk-notification";
 import { subscriptionExpiryCheckFunction } from "@/lib/inngest/functions/subscription-expiry-check";
+import { onboardingEmailSequence } from "@/lib/inngest/functions/onboarding-emails";
+import { demoResetFunction } from "@/lib/inngest/functions/demo-reset";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -32,6 +34,8 @@ export const { GET, POST, PUT } = serve({
     appointmentReminderFunction,
     bulkNotificationFunction,
     subscriptionExpiryCheckFunction,
+    onboardingEmailSequence,
+    demoResetFunction,
   ],
   signingKey: process.env.INNGEST_SIGNING_KEY,
 } as any);

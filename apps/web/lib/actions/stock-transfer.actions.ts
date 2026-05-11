@@ -1,5 +1,7 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
 import { auth } from "@/auth";
@@ -37,12 +39,10 @@ export async function createStockTransfer(
   data: CreateStockTransferInput
 ): Promise<ActionResult<{ transferId: string }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
-    const tenantId = session.user.tenantId;
     const validatedData = createStockTransferSchema.parse(data);
 
     // Kaynak ve hedef lokasyonların tenant'a ait olduğunu doğrula
@@ -153,7 +153,7 @@ export async function createStockTransfer(
 
     revalidatePath("/dashboard/inventory/transfers");
     return { success: true, data: { transferId: stockTransfer.id } };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("Stok transfer talebi oluşturma hatası:", error);
     return { success: false, error: "Stok transfer talebi oluşturulamadı." };
@@ -166,14 +166,10 @@ export async function createStockTransfer(
 export async function approveStockTransfer(
   transferId: string
 ): Promise<ActionResult> {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId, session } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
-
-    const tenantId = session.user.tenantId;
-
     // Transfer ve kalemlerini getir
     const transfer = await prisma.stockTransfer.findFirst({
       where: { id: transferId, tenantId },
@@ -329,24 +325,21 @@ export async function approveStockTransfer(
     revalidatePath("/dashboard/inventory");
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("Stok transferi onaylama hatası:", error);
 
     // Rollback durumunda AuditLog kaydı
     try {
-      const session = await auth();
-      if (session?.user?.tenantId) {
-        await prisma.auditLog.create({
-          data: {
-            level: "ERROR",
-            module: "STOCK-TRANSFER",
-            message: `Stok transferi onaylama başarısız — Transfer ID: ${transferId}, Hata: ${error?.message ?? "Bilinmeyen hata"}`,
-            tenantId: session.user.tenantId,
-            userId: session.user.id ?? null,
-          },
-        });
-      }
+      await prisma.auditLog.create({
+        data: {
+          level: "ERROR",
+          module: "STOCK-TRANSFER",
+          message: `Stok transferi onaylama başarısız — Transfer ID: ${transferId}, Hata: ${(error instanceof Error ? error.message : String(error)) ?? "Bilinmeyen hata"}`,
+          tenantId,
+          userId: session.user.id ?? null,
+        },
+      });
     } catch {
       // AuditLog kaydı başarısız olsa bile ana hatayı döndür
     }
@@ -363,12 +356,10 @@ export async function rejectStockTransfer(
   reason: string
 ): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
-    const tenantId = session.user.tenantId;
 
     const transfer = await prisma.stockTransfer.findFirst({
       where: { id: transferId, tenantId },
@@ -445,7 +436,7 @@ export async function rejectStockTransfer(
     revalidatePath(`/dashboard/inventory/transfers/${transferId}`);
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("Stok transferi reddetme hatası:", error);
     return { success: false, error: "Stok transferi reddedilemedi." };
@@ -459,12 +450,10 @@ export async function getStockTransfers(
   filters?: StockTransferFilters
 ): Promise<ActionResult<{ transfers: any[]; total: number }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
     const page = filters?.page ?? 1;
     const pageSize = filters?.pageSize ?? 20;
     const skip = (page - 1) * pageSize;
@@ -525,7 +514,7 @@ export async function getStockTransfers(
         total,
       },
     };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("Stok transferi listesi hatası:", error);
     return { success: false, error: "Stok transferleri listelenemedi." };

@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GlassHeader } from "@/components/GlassHeader";
 import { Colors, Radius, Shadow } from "@/constants/theme";
+import { api } from "@/lib/api";
 
 interface Notification {
   id: string;
@@ -70,21 +72,57 @@ const TYPE_ICON: Record<Notification["type"], string> = {
 };
 
 export default function BildirimlerScreen() {
-  const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<Notification[]>(__DEV__ ? MOCK_NOTIFICATIONS : []);
+  const [loading, setLoading] = useState(!__DEV__);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const result = await api.firmaBildirimler();
+        const mapped: Notification[] = result.notifications.map((n) => ({
+          id: n.id,
+          type: n.title.toLowerCase().includes("stok") ? "stok"
+            : n.title.toLowerCase().includes("onay") ? "onay"
+            : "servis",
+          title: n.title,
+          body: n.message,
+          time: new Date(n.createdAt).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }),
+          read: n.isRead,
+        }));
+        setNotifications(mapped);
+      } catch {
+        if (__DEV__) setNotifications(MOCK_NOTIFICATIONS);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   function markAsRead(id: string) {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+    api.firmaBildirimOku(id).catch(() => {});
   }
 
   function markAllAsRead() {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    api.firmaTumBildirimOku().catch(() => {});
   }
 
   const allRead = unreadCount === 0;
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container} edges={["top"]}>
+        <GlassHeader title="Bildirimler" onBack={() => router.back()} />
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator color={Colors.primary} size="large" />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>

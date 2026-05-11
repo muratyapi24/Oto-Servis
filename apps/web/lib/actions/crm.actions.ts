@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
+import { guardTenant } from "@/lib/guards";
 import { revalidatePath } from "next/cache";
 import dayjs from "dayjs";
 
@@ -10,10 +10,10 @@ import dayjs from "dayjs";
 // ─────────────────────────────────────────────────────────────
 
 export async function getUpcomingMaintenances() {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-    const tenantId = session.user.tenantId;
 
     const now = new Date();
     const thirtyDaysLater = dayjs().add(30, "day").toDate();
@@ -90,9 +90,9 @@ export async function getUpcomingMaintenances() {
       plans: serialized,
       stats: { overdueCount, upcomingCount, totalPending },
     };
-  } catch (err: any) {
+  } catch (err) {
     console.error("getUpcomingMaintenances error:", err);
-    return { error: "Bakım planları alınamadı: " + err.message };
+    return { error: "Bakım planları alınamadı: " + (err instanceof Error ? err.message : String(err)) };
   }
 }
 
@@ -102,11 +102,11 @@ export async function getUpcomingMaintenances() {
 
 export async function sendMaintenanceReminderSms(
   planId: string
-): Promise<{ success?: string; error?: string }> {
+) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-    const tenantId = session.user.tenantId;
 
     const plan = await prisma.maintenancePlan.findFirst({
       where: { id: planId, tenantId },
@@ -166,9 +166,9 @@ export async function sendMaintenanceReminderSms(
     } else {
       return { error: result.error || "SMS gönderilemedi." };
     }
-  } catch (err: any) {
+  } catch (err) {
     console.error("sendMaintenanceReminderSms error:", err);
-    return { error: "SMS gönderilirken hata: " + err.message };
+    return { error: "SMS gönderilirken hata: " + (err instanceof Error ? err.message : String(err)) };
   }
 }
 
@@ -176,10 +176,11 @@ export async function sendMaintenanceReminderSms(
 // 3) Toplu Hatırlatma SMS (Gecikmiş veya Yaklaşan tüm planlar)
 // ─────────────────────────────────────────────────────────────
 
-export async function sendBulkMaintenanceReminders(): Promise<{ success?: string; sentCount?: number; failCount?: number; error?: string }> {
+export async function sendBulkMaintenanceReminders() {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
 
     const result = await getUpcomingMaintenances();
     if (result.error || !result.plans) return { error: result.error || "Veri alınamadı" };
@@ -205,8 +206,8 @@ export async function sendBulkMaintenanceReminders(): Promise<{ success?: string
       sentCount,
       failCount,
     };
-  } catch (err: any) {
+  } catch (err) {
     console.error("sendBulkMaintenanceReminders error:", err);
-    return { error: "Toplu gönderim hatası: " + err.message };
+    return { error: "Toplu gönderim hatası: " + (err instanceof Error ? err.message : String(err)) };
   }
 }

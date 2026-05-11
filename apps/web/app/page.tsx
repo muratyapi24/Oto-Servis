@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import LandingNavbar from "@/components/landing/LandingNavbar";
 import LandingFooter from "@/components/landing/LandingFooter";
+import { DemoRequestSection } from "@/components/landing/DemoRequestSection";
+import { RoiCalculator } from "@/components/landing/RoiCalculator";
+import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
+import { CookieBanner } from "@/components/landing/CookieBanner";
 
 export const metadata: Metadata = {
   title: "MS Oto Servis | Türkiye'nin En İyi Oto Servis Yönetim Platformu",
@@ -117,11 +121,11 @@ export default function HomePage() {
                 Ücretsiz Başla
               </Link>
               <Link
-                href="/pricing"
+                href="#demo-talep"
                 className="inline-flex items-center justify-center gap-2 bg-white/10 text-white font-bold px-8 py-4 rounded-2xl border border-white/20 hover:bg-white/20 transition-all"
               >
-                <span className="material-symbols-outlined text-[20px]">payments</span>
-                Fiyatları Gör
+                <span className="material-symbols-outlined text-[20px]">calendar_month</span>
+                Demo Talep Et
               </Link>
             </div>
           </div>
@@ -188,6 +192,15 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ROI Hesaplayıcı */}
+        <RoiCalculator />
+
+        {/* Testimonials */}
+        <TestimonialsSection />
+
+        {/* Demo Talep Formu */}
+        <DemoRequestSection />
+
         {/* CTA */}
         <section className="bg-gradient-to-br from-blue-900 to-indigo-900 py-20 px-6 text-center">
           <div className="max-w-2xl mx-auto">
@@ -217,6 +230,7 @@ export default function HomePage() {
       </main>
 
       <LandingFooter />
+      <CookieBanner />
     </div>
   );
 }

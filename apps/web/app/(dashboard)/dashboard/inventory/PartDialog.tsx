@@ -1,14 +1,115 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useForm as useRHForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { createPartSchema, updatePartSchema } from "@/lib/validations/inventory";
 import { createPart, updatePart } from "@/lib/actions/inventory.actions";
-import { X, Plus, AlertCircle, PackagePlus, Edit } from "lucide-react";
+import { X, Plus, AlertCircle, PackagePlus, Edit, ChevronDown, Search } from "lucide-react";
 
-export function PartDialog({ categories, initialData }: { categories: { id: string, name: string }[], initialData?: any }) {
+interface PartDialogProps {
+  categories: { id: string; name: string }[];
+  suppliers?: { id: string; name: string }[];
+  existingParts?: any[];
+  initialData?: any;
+}
+
+/* ── Searchable Dropdown Bileşeni ── */
+function SearchableSelect({
+  options,
+  value,
+  onChange,
+  placeholder = "Seçiniz...",
+  searchPlaceholder = "Ara...",
+  emptyMessage = "Sonuç bulunamadı",
+  className = "",
+}: {
+  options: { value: string; label: string; sub?: string }[];
+  value: string;
+  onChange: (val: string) => void;
+  placeholder?: string;
+  searchPlaceholder?: string;
+  emptyMessage?: string;
+  className?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const filtered = options.filter(
+    (o) =>
+      o.label.toLowerCase().includes(search.toLowerCase()) ||
+      (o.sub && o.sub.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  const selectedLabel = options.find((o) => o.value === value)?.label;
+
+  return (
+    <div className={`relative ${className}`} ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm text-left flex items-center justify-between focus:ring-primary focus:border-primary"
+      >
+        <span className={selectedLabel ? "text-gray-900" : "text-gray-400"}>
+          {selectedLabel || placeholder}
+        </span>
+        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {open && (
+        <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
+          <div className="p-2 border-b">
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-8 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                placeholder={searchPlaceholder}
+                autoFocus
+              />
+            </div>
+          </div>
+          <div className="overflow-y-auto max-h-44">
+            {filtered.length === 0 ? (
+              <div className="px-3 py-4 text-sm text-gray-400 text-center">{emptyMessage}</div>
+            ) : (
+              filtered.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => {
+                    onChange(opt.value);
+                    setOpen(false);
+                    setSearch("");
+                  }}
+                  className={`w-full text-left px-3 py-2.5 text-sm hover:bg-primary/5 transition-colors flex flex-col ${value === opt.value ? "bg-primary/10 font-semibold text-primary" : "text-gray-700"
+                    }`}
+                >
+                  <span>{opt.label}</span>
+                  {opt.sub && <span className="text-[11px] text-gray-400">{opt.sub}</span>}
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function PartDialog({ categories, suppliers = [], existingParts = [], initialData }: PartDialogProps) {
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +134,54 @@ export function PartDialog({ categories, initialData }: { categories: { id: stri
     },
   });
 
+  const watchCategoryId = form.watch("categoryId");
+
+  // Seçili kategoriye göre mevcut parçaları filtrele (suggestion dropdown için)
+  const categoryParts = useMemo(() => {
+    if (!watchCategoryId) return [];
+    return existingParts.filter((p) => p.categoryId === watchCategoryId);
+  }, [watchCategoryId, existingParts]);
+
+  // Parça suggestion seçildiğinde formu otomatik doldur
+  function handlePartSuggestionSelect(partId: string) {
+    const part = existingParts.find((p) => p.id === partId);
+    if (!part) return;
+    form.setValue("name", part.name);
+    form.setValue("partNumber", part.partNumber || "");
+    form.setValue("brand", part.brand || "");
+    form.setValue("description", part.description || "");
+    form.setValue("purchasePrice", Number(part.purchasePrice) || 0);
+    form.setValue("sellingPrice", Number(part.sellingPrice) || 0);
+    form.setValue("taxRate", Number(part.taxRate) || 20);
+    form.setValue("unit", part.unit || "adet");
+    form.setValue("supplierName", part.supplierName || "");
+    form.setValue("location", part.location || "");
+    form.setValue("minStockLevel", part.minStockLevel || 0);
+  }
+
+  // Supplier dropdown seçenekleri
+  const supplierOptions = useMemo(
+    () => suppliers.map((s) => ({ value: s.name, label: s.name })),
+    [suppliers]
+  );
+
+  // Kategori dropdown seçenekleri
+  const categorySelectOptions = useMemo(
+    () => categories.map((c) => ({ value: c.id, label: c.name })),
+    [categories]
+  );
+
+  // Parça suggestion seçenekleri
+  const partSuggestionOptions = useMemo(
+    () =>
+      categoryParts.map((p) => ({
+        value: p.id,
+        label: p.name,
+        sub: `${p.partNumber || "—"} · ${p.brand || ""} · ₺${Number(p.sellingPrice).toFixed(2)}`,
+      })),
+    [categoryParts]
+  );
+
   async function onSubmit(data: z.infer<typeof createPartSchema>) {
     setSubmitting(true);
     setError(null);
@@ -43,7 +192,7 @@ export function PartDialog({ categories, initialData }: { categories: { id: stri
       } else {
         res = await createPart(data);
       }
-      
+
       if (res?.error) {
         setError(res.error);
       } else {
@@ -60,19 +209,19 @@ export function PartDialog({ categories, initialData }: { categories: { id: stri
   return (
     <>
       {initialData ? (
-        <button 
+        <button
           onClick={() => setOpen(true)}
           className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 text-slate-700 flex items-center gap-2"
         >
           <Edit className="w-4 h-4" /> Düzenle
         </button>
       ) : (
-        <button 
+        <button
           onClick={() => setOpen(true)}
-          className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors shadow-sm"
+          className="flex items-center gap-2 whitespace-nowrap bg-blue-100 text-blue-700 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-200 transition-all"
         >
           <PackagePlus className="w-4 h-4" />
-          <span className="text-sm font-medium">Stok Kartı Aç (Yeni Parça Ekle)</span>
+          <span>Yeni Parça Ekle</span>
         </button>
       )}
 
@@ -98,42 +247,74 @@ export function PartDialog({ categories, initialData }: { categories: { id: stri
               )}
 
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                
-                {/* Temel Bilgiler */}
+
+                {/* Parça Tanımı */}
                 <div>
                   <h3 className="text-sm font-bold text-gray-800 border-b pb-2 mb-4 uppercase tracking-wider">Parça Tanımı</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    {/* Kategori — Searchable Dropdown */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Kategori *</label>
-                      <select 
-                        {...form.register("categoryId")}
-                        className="w-full p-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block"
-                      >
-                        <option value="">-- Grup Seçiniz --</option>
-                        {categories.map(c => (
-                          <option key={c.id} value={c.id}>{c.name}</option>
-                        ))}
-                      </select>
+                      <SearchableSelect
+                        options={categorySelectOptions}
+                        value={form.watch("categoryId")}
+                        onChange={(val) => {
+                          form.setValue("categoryId", val);
+                          // Kategori değiştiğinde parça alanlarını temizle (sadece yeni kayıtta)
+                          if (!initialData) {
+                            form.setValue("name", "");
+                            form.setValue("partNumber", "");
+                            form.setValue("brand", "");
+                            form.setValue("purchasePrice", 0);
+                            form.setValue("sellingPrice", 0);
+                          }
+                        }}
+                        placeholder="-- Kategori Seçiniz --"
+                        searchPlaceholder="Kategori ara..."
+                        emptyMessage="Kategori bulunamadı"
+                      />
                       {form.formState.errors.categoryId && <p className="text-red-500 text-xs mt-1">{form.formState.errors.categoryId.message}</p>}
                     </div>
 
+                    {/* OEM / Parça / Barkod No */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Oem/Parça/Barkod No *</label>
                       <input {...form.register("partNumber")} className="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary uppercase" placeholder="Örn: 90915-YZZD2" />
                       {form.formState.errors.partNumber && <p className="text-red-500 text-xs mt-1">{form.formState.errors.partNumber.message}</p>}
                     </div>
-                    
+
+                    {/* Mevcut Parçalardan Seç (Suggestion) — sadece kategori seçiliyken ve yeni kayıtta */}
+                    {!initialData && watchCategoryId && categoryParts.length > 0 && (
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-amber-600 mb-1">
+                          💡 Bu kategoride {categoryParts.length} kayıtlı parça var — birini seçerek formu otomatik doldurun:
+                        </label>
+                        <SearchableSelect
+                          options={partSuggestionOptions}
+                          value=""
+                          onChange={handlePartSuggestionSelect}
+                          placeholder="Mevcut parçadan seç (opsiyonel)..."
+                          searchPlaceholder="Parça adı veya barkod ara..."
+                          emptyMessage="Eşleşen parça yok"
+                        />
+                      </div>
+                    )}
+
+                    {/* Ürün Adı */}
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-1">Ürün Adı *</label>
                       <input {...form.register("name")} className="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary" placeholder="Yağ Filtresi vb." />
                       {form.formState.errors.name && <p className="text-red-500 text-xs mt-1">{form.formState.errors.name.message}</p>}
                     </div>
 
+                    {/* Parça Markası */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Parça Markası / Üretici</label>
                       <input {...form.register("brand")} className="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary" placeholder="Bosch, Mann vb." />
                     </div>
 
+                    {/* Açıklama */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Açıklama / Not</label>
                       <input {...form.register("description")} className="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary" placeholder="Araç uyum bilgisi vs." />
@@ -157,7 +338,11 @@ export function PartDialog({ categories, initialData }: { categories: { id: stri
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">KDV Oranı (%)</label>
-                      <input type="number" {...form.register("taxRate", { valueAsNumber: true })} className="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary" placeholder="20" />
+                      <select {...form.register("taxRate", { valueAsNumber: true })} className="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary">
+                        <option value={1}>%1</option>
+                        <option value={10}>%10</option>
+                        <option value={20}>%20</option>
+                      </select>
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">Stok Birimi</label>
@@ -170,9 +355,25 @@ export function PartDialog({ categories, initialData }: { categories: { id: stri
                       </select>
                     </div>
                   </div>
+
+                  {/* Kâr Marjı Bilgisi */}
+                  {form.watch("sellingPrice") > 0 && form.watch("purchasePrice") > 0 && (
+                    <div className="mt-3 p-3 bg-emerald-50 border border-emerald-100 rounded-lg">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-emerald-700 font-medium">Kâr Marjı:</span>
+                        <span className="text-emerald-800 font-bold">
+                          ₺{(form.watch("sellingPrice") - form.watch("purchasePrice")).toFixed(2)}
+                          {" "}
+                          <span className="text-emerald-600 text-xs">
+                            (%{(((form.watch("sellingPrice") - form.watch("purchasePrice")) / form.watch("purchasePrice")) * 100).toFixed(1)})
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                {/* Stok ve Konum */}
+                {/* Miktar / Depo */}
                 <div>
                   <h3 className="text-sm font-bold text-gray-800 border-b pb-2 mb-4 uppercase tracking-wider">Miktar / Depo</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -188,9 +389,25 @@ export function PartDialog({ categories, initialData }: { categories: { id: stri
                       <label className="block text-xs font-medium text-gray-700 mb-1">Depo Raf/Konum</label>
                       <input {...form.register("location")} className="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary uppercase" placeholder="Örn: A-10-R3" />
                     </div>
+
+                    {/* Tedarikçi — Searchable Dropdown */}
                     <div className="md:col-span-3">
                       <label className="block text-xs font-medium text-gray-700 mb-1">Tedarikçi / Toptancı Adı (Opsiyonel)</label>
-                      <input {...form.register("supplierName")} className="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary" placeholder="Toptancı firmayı yazınız" />
+                      {suppliers.length > 0 ? (
+                        <SearchableSelect
+                          options={[
+                            { value: "", label: "— Seçilmedi —" },
+                            ...supplierOptions,
+                          ]}
+                          value={form.watch("supplierName") || ""}
+                          onChange={(val) => form.setValue("supplierName", val)}
+                          placeholder="Tedarikçi seçiniz..."
+                          searchPlaceholder="Tedarikçi adı ara..."
+                          emptyMessage="Tedarikçi bulunamadı"
+                        />
+                      ) : (
+                        <input {...form.register("supplierName")} className="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary" placeholder="Toptancı firmayı yazınız" />
+                      )}
                     </div>
                   </div>
                 </div>

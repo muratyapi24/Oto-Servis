@@ -8,7 +8,7 @@ import { addServiceItemSchema } from "@/lib/validations/services";
 import { addServiceItem } from "@/lib/actions/service.actions";
 import { X, Plus, Cog, Wrench } from "lucide-react";
 
-type ItemOption = { id: string; name: string; price: number };
+type ItemOption = { id: string; name: string; price: number; currentStock?: number };
 
 export function AddServiceItemDialog({ 
   serviceOrderId, 
@@ -63,6 +63,16 @@ export function AddServiceItemDialog({
   };
 
   async function onSubmit(data: z.infer<typeof addServiceItemSchema>) {
+    if (data.itemType === "PART") {
+      const selectedPart = parts.find(p => p.id === data.partId);
+      if (selectedPart && selectedPart.currentStock !== undefined) {
+        if (data.quantity > selectedPart.currentStock) {
+          setError(`Yetersiz Stok! Sadece ${selectedPart.currentStock} adet mevcut.`);
+          return;
+        }
+      }
+    }
+
     setSubmitting(true);
     setError(null);
     try {
@@ -121,7 +131,9 @@ export function AddServiceItemDialog({
                     <select className="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg text-sm" onChange={onSelectPart}>
                       <option value="">-- Parça Lütfen Seçiniz --</option>
                       {parts.map(p => (
-                        <option key={p.id} value={p.id}>{p.name} (Satış: {p.price}₺)</option>
+                        <option key={p.id} value={p.id} disabled={p.currentStock === 0}>
+                          {p.name} (Satış: {p.price}₺) - Stok: {p.currentStock}
+                        </option>
                       ))}
                     </select>
                   </div>

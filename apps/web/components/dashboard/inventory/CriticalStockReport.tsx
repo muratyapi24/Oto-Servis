@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Download, FileText, AlertTriangle, AlertCircle, Phone, Mail, User } from "lucide-react";
 import { exportElementToPdf } from "@/lib/pdf-utils";
 import { exportToCsv } from "@/lib/csv-utils";
@@ -156,9 +156,8 @@ export default function CriticalStockReport({ parts, summary }: CriticalStockRep
                   const isExpanded = expandedSupplier === part.id;
 
                   return (
-                    <>
+                    <React.Fragment key={part.id}>
                       <tr
-                        key={part.id}
                         className={`border-b border-slate-50 transition-colors ${
                           isOutOfStock ? "bg-red-50/40 hover:bg-red-50/60" : "bg-amber-50/30 hover:bg-amber-50/50"
                         }`}
@@ -238,7 +237,7 @@ export default function CriticalStockReport({ parts, summary }: CriticalStockRep
                           </td>
                         </tr>
                       )}
-                    </>
+                    </React.Fragment>
                   );
                 })
               )}

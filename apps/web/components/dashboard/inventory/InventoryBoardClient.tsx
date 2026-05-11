@@ -21,6 +21,7 @@ import {
 import Link from "next/link";
 import { CategoryDialog } from "@/app/(dashboard)/dashboard/inventory/CategoryDialog";
 import { PartDialog } from "@/app/(dashboard)/dashboard/inventory/PartDialog";
+import { PurchaseDialog } from "@/app/(dashboard)/dashboard/inventory/purchases/PurchaseDialog";
 import StockAdjustDialog from "./StockAdjustDialog";
 import BarcodeScannerDialog from "./BarcodeScannerDialog";
 import { deletePart, sendLowStockAlert } from "@/lib/actions/inventory.actions";
@@ -44,6 +45,7 @@ interface InventoryBoardProps {
     allParts: any[];
     categories: any[];
     recentMovements: any[];
+    suppliers: { id: string; name: string }[];
   }
 }
 
@@ -55,6 +57,7 @@ export default function InventoryBoardClient({ data }: InventoryBoardProps) {
   const [barcodeScannerOpen, setBarcodeScannerOpen] = useState(false);
 
   const { metrics, lowStockItems, allParts, categories, recentMovements } = data;
+  const suppliers = data.suppliers || [];
 
   // Use an effect to click outside dropdown
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -101,48 +104,52 @@ export default function InventoryBoardClient({ data }: InventoryBoardProps) {
     <div className="flex-1 space-y-8 min-h-screen pb-12">
       
       {/* Top action bar */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-         <div className="flex items-center gap-4 w-full md:w-auto">
-            <div className="relative flex-1 md:w-80">
-              <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+      <div className="space-y-3 mb-8">
+         {/* Row 1: Arama + Ana Aksiyonlar */}
+         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="relative flex-1 md:max-w-sm">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input 
                  type="text" 
                  value={searchTerm}
                  onChange={(e) => setSearchTerm(e.target.value)}
-                 className="w-full pl-10 pr-4 py-2 bg-slate-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none" 
+                 className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 outline-none transition-all shadow-sm" 
                  placeholder="Ürün adı, barkod, kategori ara..." 
               />
             </div>
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
+               <CategoryDialog categories={categoryOptions} />
+               <PartDialog categories={categoryOptions} suppliers={suppliers} existingParts={allParts} />
+               <PurchaseDialog />
+               <button
+                 onClick={() => setBarcodeScannerOpen(true)}
+                 className="flex items-center gap-2 whitespace-nowrap bg-amber-500 text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-sm hover:bg-amber-600 transition-all">
+                 <ScanBarcode className="w-4 h-4" /> Barkod Tara
+               </button>
+            </div>
          </div>
-         <div className="flex flex-wrap items-center gap-3">
+
+         {/* Row 2: İkincil Linkler */}
+         <div className="flex flex-wrap items-center gap-2">
+            <Link 
+              href="/dashboard/inventory/purchases"
+              className="flex items-center gap-1.5 text-slate-500 hover:text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-50 transition-all">
+               <History className="w-3.5 h-3.5" /> Alım Geçmişi
+            </Link>
+            <Link 
+              href="/dashboard/inventory/reports"
+              className="flex items-center gap-1.5 text-slate-500 hover:text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-50 transition-all">
+               <TrendingUp className="w-3.5 h-3.5" /> Raporlar
+            </Link>
             {metrics.lowStockCount > 0 && (
               <button 
                 onClick={handleSendLowStockAlert}
                 disabled={isAlertSending}
-                className="flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-red-100 transition-all disabled:opacity-50">
-                 <Send className="w-4 h-4" /> 
-                 {isAlertSending ? "SMS Gönderiliyor..." : "Stok Uyarısı SMS"}
+                className="flex items-center gap-1.5 text-red-500 hover:text-red-700 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-red-50 transition-all disabled:opacity-50 ml-auto">
+                 <Send className="w-3.5 h-3.5" /> 
+                 {isAlertSending ? "Gönderiliyor..." : "Stok Uyarısı SMS"}
               </button>
             )}
-            <Link 
-              href="/dashboard/inventory/purchases"
-              className="flex items-center gap-2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-slate-50 transition-all">
-               <History className="w-4 h-4" /> Alım Geçmişi
-            </Link>
-            <Link 
-              href="/dashboard/inventory/reports"
-              className="flex items-center gap-2 bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-slate-50 transition-all">
-               <TrendingUp className="w-4 h-4" /> Raporlar
-            </Link>
-            <button
-              onClick={() => setBarcodeScannerOpen(true)}
-              className="flex items-center gap-2 bg-amber-500 text-white px-4 py-2 rounded-xl text-sm font-black shadow-sm hover:bg-amber-600 transition-all">
-              <ScanBarcode className="w-4 h-4" /> Barkod ile Stok Girişi
-            </button>
-            <div className="h-6 w-px bg-slate-200 mx-1 hidden sm:block"></div>
-            
-            <CategoryDialog categories={categoryOptions} />
-            <PartDialog categories={categoryOptions} />
          </div>
       </div>
 
@@ -309,7 +316,7 @@ export default function InventoryBoardClient({ data }: InventoryBoardProps) {
                               
                               {openDropdown === p.id && (
                                 <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg z-50 py-1 overflow-hidden">
-                                  <PartDialog categories={categoryOptions} initialData={p} />
+                                  <PartDialog categories={categoryOptions} suppliers={suppliers} existingParts={allParts} initialData={p} />
                                   <button 
                                     onClick={() => { setAdjustingPart(p); setOpenDropdown(null); }} 
                                     className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 text-slate-700 flex items-center gap-2"

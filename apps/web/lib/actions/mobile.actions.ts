@@ -1,5 +1,7 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { prisma } from "@repo/database";
 import { auth } from "@/auth";
 
@@ -68,12 +70,10 @@ export async function getMusteriPanelData() {
 }
 
 export async function getFirmaPanelData() {
-  const session = await auth();
-  if (!session?.user?.tenantId) {
-    return { error: "Yetkisiz erişim. Tenant ID bulunamadı.", overview: null };
-  }
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId, session } = g;
 
-  const tenantId = session.user.tenantId;
 
   // Günlük Hasılat & İşlemler
   const today = new Date();
@@ -184,12 +184,10 @@ export async function getFirmaPanelData() {
 }
 
 export async function getFirmaKuyrukData() {
-  const session = await auth();
-  if (!session?.user?.tenantId) {
-    return { error: "Yetkisiz işlem.", orders: [] };
-  }
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   
-  const tenantId = session.user.tenantId;
 
   const orders = await prisma.serviceOrder.findMany({
     where: { 
@@ -211,11 +209,9 @@ export async function getFirmaKuyrukData() {
 }
 
 export async function getFirmaPersonelData() {
-  const session = await auth();
-  if (!session?.user?.tenantId) {
-    return { error: "Yetkisiz erişim.", personel: null };
-  }
-  const tenantId = session.user.tenantId;
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
 
   const mechanics = await prisma.mechanic.findMany({
     where: { tenantId, deletedAt: null },
@@ -263,11 +259,9 @@ export async function getFirmaPersonelData() {
 }
 
 export async function getFirmaFinansData() {
-  const session = await auth();
-  if (!session?.user?.tenantId) {
-    return { error: "Yetkisiz erişim", data: null };
-  }
-  const tenantId = session.user.tenantId;
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
 
   const today = new Date();
   const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -307,11 +301,9 @@ export async function getFirmaFinansData() {
 }
 
 export async function getFirmaStokData() {
-  const session = await auth();
-  if (!session?.user?.tenantId) {
-    return { error: "Yetkisiz erişim", data: null };
-  }
-  const tenantId = session.user.tenantId;
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
 
   const criticalParts = await prisma.part.findMany({
     where: { tenantId, currentStock: { lte: prisma.part.fields.minStockLevel } },
@@ -337,11 +329,9 @@ export async function getFirmaStokData() {
 }
 
 export async function getFirmaServisDetay(orderId: string) {
-  const session = await auth();
-  if (!session?.user?.tenantId) {
-    return { error: "Yetkisiz erişim", status: 401, order: null };
-  }
-  const tenantId = session.user.tenantId;
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
 
   const order = await prisma.serviceOrder.findFirst({
     where: { id: orderId, tenantId, deletedAt: null },
@@ -389,11 +379,9 @@ export async function kapatFirmaServis(
   orderId: string,
   body: { qualityCheckNotes?: string }
 ) {
-  const session = await auth();
-  if (!session?.user?.tenantId) {
-    return { error: "Yetkisiz erişim", status: 401, order: null };
-  }
-  const tenantId = session.user.tenantId;
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId, session } = g;
 
   const order = await prisma.serviceOrder.findFirst({
     where: { id: orderId, tenantId, deletedAt: null },
@@ -449,11 +437,9 @@ export async function kapatFirmaServis(
 }
 
 export async function getFirmaOnayListesi() {
-  const session = await auth();
-  if (!session?.user?.tenantId) {
-    return { error: "Yetkisiz erişim", orders: [] };
-  }
-  const tenantId = session.user.tenantId;
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
 
   const orders = await prisma.serviceOrder.findMany({
     where: { tenantId, status: "WAITING_APPROVAL", deletedAt: null },
@@ -482,11 +468,9 @@ export async function firmaOnayIslem(
   orderId: string,
   body: { action: "approve" | "reject"; reason?: string }
 ) {
-  const session = await auth();
-  if (!session?.user?.tenantId) {
-    return { error: "Yetkisiz erişim", status: 401, order: null };
-  }
-  const tenantId = session.user.tenantId;
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
 
   const order = await prisma.serviceOrder.findFirst({
     where: {
@@ -558,11 +542,9 @@ export async function firmaOnayIslem(
 }
 
 export async function getFirmaPersonelDetay(mechanicId: string) {
-  const session = await auth();
-  if (!session?.user?.tenantId) {
-    return { error: "Yetkisiz erişim", status: 401, mechanic: null, performance: null };
-  }
-  const tenantId = session.user.tenantId;
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
 
   const mechanic = await prisma.mechanic.findFirst({
     where: { id: mechanicId, tenantId, deletedAt: null },
@@ -629,11 +611,9 @@ export async function getFirmaStokHareketler({
   limit?: number;
   partId?: string;
 }) {
-  const session = await auth();
-  if (!session?.user?.tenantId) {
-    return { error: "Yetkisiz erişim", movements: [], total: 0, page: 1, limit: 20 };
-  }
-  const tenantId = session.user.tenantId;
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
 
   const skip = (page - 1) * limit;
 

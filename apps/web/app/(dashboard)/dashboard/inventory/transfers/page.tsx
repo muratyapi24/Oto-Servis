@@ -23,7 +23,7 @@ export default async function StockTransfersPage() {
 
   const transfers = transfersResult.data?.transfers ?? [];
   const total = transfersResult.data?.total ?? 0;
-  const locations = (locationsResult.locations ?? []).map((l: any) => ({
+  const locations = ('locations' in locationsResult ? locationsResult.locations ?? [] : []).map((l: any) => ({
     id: l.id,
     name: l.name,
   }));

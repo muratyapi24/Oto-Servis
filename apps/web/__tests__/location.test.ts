@@ -34,7 +34,7 @@ describe("Location Properties", () => {
             id: fc.uuid(),
             serviceOrderCount: fc.integer({ min: 0, max: 100 }),
             appointmentCount: fc.integer({ min: 0, max: 100 }),
-            totalRevenue: fc.float({ min: 0, max: 100000 }),
+            totalRevenue: fc.double({ min: 0, max: 100000, noNaN: true }),
           }),
           { minLength: 1, maxLength: 10 }
         ),

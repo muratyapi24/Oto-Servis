@@ -5,6 +5,7 @@ export const Colors = {
   secondaryContainer: '#6cf8bb',
   surface: '#f7f9fb',
   onSurface: '#191c1e',
+  onSurfaceVariant: '#494a50',
   error: '#ba1a1a',
   surfaceContainerLow: '#f2f4f6',
   surfaceContainer: '#eceef0',
@@ -22,6 +23,13 @@ export const Radius = {
 } as const;
 
 export const Shadow = {
+  sm: {
+    shadowColor: 'rgba(0,35,111,1)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    elevation: 2,
+  },
   navy: {
     shadowColor: 'rgba(0,35,111,1)',
     shadowOffset: { width: 0, height: 10 },

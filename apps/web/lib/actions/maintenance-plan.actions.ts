@@ -1,17 +1,19 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import { createMaintenancePlanSchema, updateMaintenancePlanSchema } from "@/lib/validations/maintenance-plan";
 
 export async function getMaintenancePlans(vehicleId: string) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const plans = await prisma.maintenancePlan.findMany({
-      where: { vehicleId, tenantId: session.user.tenantId },
+      where: { vehicleId, tenantId: tenantId },
       orderBy: { createdAt: "desc" },
     });
 
@@ -38,8 +40,9 @@ export async function createMaintenancePlan(data: {
   dueMileage?: number | null;
 }) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const validated = createMaintenancePlanSchema.safeParse(data);
     if (!validated.success) {
@@ -48,14 +51,14 @@ export async function createMaintenancePlan(data: {
 
     // Aracın bu tenant'a ait olduğunu doğrula
     const vehicle = await prisma.vehicle.findUnique({
-      where: { id: validated.data.vehicleId, tenantId: session.user.tenantId },
+      where: { id: validated.data.vehicleId, tenantId: tenantId },
       select: { id: true },
     });
     if (!vehicle) return { error: "Araç bulunamadı." };
 
     const plan = await prisma.maintenancePlan.create({
       data: {
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         vehicleId: validated.data.vehicleId,
         title: validated.data.title,
         dueDate: validated.data.dueDate ? new Date(validated.data.dueDate) : null,
@@ -76,8 +79,9 @@ export async function updateMaintenancePlan(
   data: { title?: string; dueDate?: string | null; dueMileage?: number | null; isCompleted?: boolean }
 ) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const validated = updateMaintenancePlanSchema.safeParse(data);
     if (!validated.success) {
@@ -85,7 +89,7 @@ export async function updateMaintenancePlan(
     }
 
     const plan = await prisma.maintenancePlan.findUnique({
-      where: { id: planId, tenantId: session.user.tenantId },
+      where: { id: planId, tenantId: tenantId },
       select: { id: true, vehicleId: true },
     });
     if (!plan) return { error: "Bakım planı bulunamadı." };
@@ -110,11 +114,12 @@ export async function updateMaintenancePlan(
 
 export async function deleteMaintenancePlan(planId: string) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const plan = await prisma.maintenancePlan.findUnique({
-      where: { id: planId, tenantId: session.user.tenantId },
+      where: { id: planId, tenantId: tenantId },
       select: { id: true, vehicleId: true },
     });
     if (!plan) return { error: "Bakım planı bulunamadı." };

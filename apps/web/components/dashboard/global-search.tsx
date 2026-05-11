@@ -68,14 +68,12 @@ export function GlobalSearch() {
       {/* Arama tetikleyici */}
       <button
         onClick={() => { setOpen(true); setTimeout(() => inputRef.current?.focus(), 50); }}
-        className="flex items-center gap-2 px-3 py-1.5 border rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors"
+        className="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full min-w-[320px] text-sm text-slate-400 hover:bg-slate-100 transition-colors"
         aria-label="Ara (Ctrl+K)"
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-        <span>Ara...</span>
-        <kbd className="hidden sm:inline-flex px-1.5 py-0.5 text-xs border rounded bg-gray-100">⌘K</kbd>
+        <span className="material-symbols-outlined text-sm">search</span>
+        <span className="flex-1 text-left">Servis, müşteri, plaka ara...</span>
+        <kbd className="hidden sm:inline-flex px-1.5 py-0.5 text-[10px] border rounded bg-gray-100 text-gray-400 font-mono">Ctrl+K</kbd>
       </button>
 
       {/* Modal */}

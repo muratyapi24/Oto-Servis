@@ -265,7 +265,7 @@ export async function sendWhatsApp(options: SendWhatsAppOptions): Promise<WhatsA
 
     return { success: true, messageId: result.messageId };
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : "Bilinmeyen hata";
+    const errorMessage = err instanceof Error ? (err instanceof Error ? err.message : String(err)) : "Bilinmeyen hata";
 
     Sentry.captureException(err, {
       tags: { module: "whatsapp-notification" },

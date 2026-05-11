@@ -71,7 +71,7 @@ const TYPE_ICON: Record<Notification["type"], string> = {
 
 export default function BildirimlerScreen() {
   const [notifications, setNotifications] =
-    useState<Notification[]>(MOCK_NOTIFICATIONS);
+    useState<Notification[]>(__DEV__ ? MOCK_NOTIFICATIONS : []);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
   const allRead = unreadCount === 0;

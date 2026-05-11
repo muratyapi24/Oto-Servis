@@ -70,13 +70,13 @@ export default function BarcodeScanner({ onScan, onError, mode = "camera" }: Bar
       const error = err instanceof Error ? err : new Error(String(err));
       const isPermissionDenied =
         error.name === "NotAllowedError" ||
-        error.message.includes("Permission") ||
-        error.message.includes("permission");
+        (error instanceof Error ? error.message : String(error)).includes("Permission") ||
+        (error instanceof Error ? error.message : String(error)).includes("permission");
 
       if (isPermissionDenied) {
         setCameraError("Kamera izni reddedildi. Manuel giriş moduna geçildi.");
       } else {
-        setCameraError(error.message || "Kamera başlatılamadı. Manuel giriş moduna geçildi.");
+        setCameraError((error instanceof Error ? error.message : String(error)) || "Kamera başlatılamadı. Manuel giriş moduna geçildi.");
       }
 
       setActiveMode("manual");

@@ -14,7 +14,19 @@ import { SegmentedControl } from "@/components/SegmentedControl";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { Colors, Radius, Shadow } from "@/constants/theme";
 
-const MOCK_INVOICE = {
+interface MockInvoiceItem {
+  name: string;
+  qty: number;
+  price: number;
+}
+
+interface MockInvoice {
+  number: string;
+  date: string;
+  items: MockInvoiceItem[];
+}
+
+const MOCK_INVOICE: MockInvoice = {
   number: "FTR-2026-00142",
   date: "15 Ocak 2025",
   items: [
@@ -30,13 +42,14 @@ const PAYMENT_METHODS = [
   { label: "Havale", value: "havale" },
 ];
 
-function calcTotals(items: typeof MOCK_INVOICE.items) {
+function calcTotals(items: MockInvoiceItem[]) {
   const subtotal = items.reduce((sum, i) => sum + i.qty * i.price, 0);
   const kdv = Math.round(subtotal * 0.2);
   return { subtotal, kdv, total: subtotal + kdv };
 }
 
 export default function OdemeScreen() {
+  if (!__DEV__) return null; // TODO: Connect to real payment API
   const [paymentMethod, setPaymentMethod] = useState("kk");
   const { subtotal, kdv, total } = calcTotals(MOCK_INVOICE.items);
 

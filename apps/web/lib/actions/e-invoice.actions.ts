@@ -1,8 +1,9 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import * as Sentry from "@sentry/nextjs";
 import { Resend } from "resend";
 import { generateUBLTRXml, getEInvoiceXmlKey } from "@/lib/e-invoice/ubl-tr-generator";
@@ -30,12 +31,10 @@ export async function sendEInvoice(
   invoiceId: string
 ): Promise<ActionResult<{ uuid: string; ettn: string }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const invoice = await prisma.invoice.findFirst({
       where: { id: invoiceId, tenantId, deletedAt: null },
@@ -153,7 +152,7 @@ export async function sendEInvoice(
       },
     });
 
-    revalidatePath(`/dashboard/finance/invoices/${invoiceId}`);
+    revalidatePath(`/dashboard/finances/invoices/${invoiceId}`);
     return { success: true, data: { uuid: result.uuid!, ettn: result.ettn! } };
   } catch (error: unknown) {
     Sentry.captureException(error);
@@ -170,12 +169,10 @@ export async function sendEArchiveInvoice(
   invoiceId: string
 ): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const invoice = await prisma.invoice.findFirst({
       where: { id: invoiceId, tenantId, deletedAt: null },
@@ -291,7 +288,7 @@ export async function sendEArchiveInvoice(
       },
     });
 
-    revalidatePath(`/dashboard/finance/invoices/${invoiceId}`);
+    revalidatePath(`/dashboard/finances/invoices/${invoiceId}`);
     return { success: true };
   } catch (error: unknown) {
     Sentry.captureException(error);
@@ -308,10 +305,9 @@ export async function checkEInvoiceEligibility(
   taxNumber: string
 ): Promise<ActionResult<{ isEligible: boolean }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const result = await checkEInvoiceEligibilityAtGIB(taxNumber);
     return { success: true, data: { isEligible: result.isEligible } };
@@ -329,12 +325,10 @@ export async function cancelEInvoice(
   invoiceId: string
 ): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const invoice = await prisma.invoice.findFirst({
       where: { id: invoiceId, tenantId, deletedAt: null },
@@ -359,7 +353,7 @@ export async function cancelEInvoice(
       data: { eInvoiceStatus: "CANCELLED" },
     });
 
-    revalidatePath(`/dashboard/finance/invoices/${invoiceId}`);
+    revalidatePath(`/dashboard/finances/invoices/${invoiceId}`);
     return { success: true };
   } catch (error: unknown) {
     Sentry.captureException(error);
@@ -375,12 +369,10 @@ export async function queryEInvoiceStatus(
   invoiceId: string
 ): Promise<ActionResult<{ status: string }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const invoice = await prisma.invoice.findFirst({
       where: { id: invoiceId, tenantId, deletedAt: null },

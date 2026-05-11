@@ -131,7 +131,7 @@ export async function sendEInvoiceToGIB(
     Sentry.captureException(err, { tags: { module: "e-invoice-send" } });
     return {
       success: false,
-      errorMessage: err instanceof Error ? err.message : "e-Fatura gönderilemedi.",
+      errorMessage: err instanceof Error ? (err instanceof Error ? err.message : String(err)) : "e-Fatura gönderilemedi.",
     };
   }
 }
@@ -176,7 +176,7 @@ export async function queryEInvoiceStatusFromGIB(
     Sentry.captureException(err, { tags: { module: "e-invoice-status" } });
     return {
       success: false,
-      errorMessage: err instanceof Error ? err.message : "Durum sorgulanamadı.",
+      errorMessage: err instanceof Error ? (err instanceof Error ? err.message : String(err)) : "Durum sorgulanamadı.",
     };
   }
 }
@@ -219,7 +219,7 @@ export async function cancelEInvoiceAtGIB(
     Sentry.captureException(err, { tags: { module: "e-invoice-cancel" } });
     return {
       success: false,
-      errorMessage: err instanceof Error ? err.message : "e-Fatura iptal edilemedi.",
+      errorMessage: err instanceof Error ? (err instanceof Error ? err.message : String(err)) : "e-Fatura iptal edilemedi.",
     };
   }
 }

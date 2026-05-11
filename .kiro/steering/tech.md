@@ -64,11 +64,11 @@ pnpm --filter web build     # Production build
 pnpm --filter web lint      # ESLint (0 warnings allowed)
 
 # Mobile app only
-pnpm --filter bst-mobile start          # Expo dev server
-pnpm --filter bst-mobile android        # Android
-pnpm --filter bst-mobile ios            # iOS
-pnpm --filter bst-mobile build:android  # EAS Android build
-pnpm --filter bst-mobile build:ios      # EAS iOS build
+pnpm --filter ms-mobile start          # Expo dev server
+pnpm --filter ms-mobile android        # Android
+pnpm --filter ms-mobile ios            # iOS
+pnpm --filter ms-mobile build:android  # EAS Android build
+pnpm --filter ms-mobile build:ios      # EAS iOS build
 
 # Database
 npx tsx packages/database/prisma/seed.ts       # Seed database

@@ -1,8 +1,9 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import { CreateCustomerInput, createCustomerSchema, UpdateCustomerInput, updateCustomerSchema } from "@/lib/validations/customers";
 import { getCached, invalidateCache, CacheKeys, CacheTTL } from "@/lib/cache";
 import { checkLimit } from "@/lib/subscription-guard";
@@ -12,13 +13,12 @@ import { checkLimit } from "@/lib/subscription-guard";
  */
 export async function createCustomer(data: CreateCustomerInput) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { error: "Yetkisiz erişim. Sadece yetkili personeller işlem yapabilir." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     // Subscription Guard — Müşteri limit kontrolü
-    const limitCheck = await checkLimit(session.user.tenantId, "maxCustomers");
+    const limitCheck = await checkLimit(tenantId, "maxCustomers");
     if (!limitCheck.allowed) {
       return { error: limitCheck.message || "Müşteri limitinize ulaştınız. Paketinizi yükseltin." };
     }
@@ -28,7 +28,7 @@ export async function createCustomer(data: CreateCustomerInput) {
     // Telefon no benzersizliği kontrolü (Aynı tenant içinde aynı telefon olmamalı)
     const existingPhone = await prisma.customer.findFirst({
       where: {
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         phone: validatedData.phone,
       },
     });
@@ -39,7 +39,7 @@ export async function createCustomer(data: CreateCustomerInput) {
 
     const newCustomer = await prisma.customer.create({
       data: {
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         type: validatedData.type,
         firstName: validatedData.type === 'INDIVIDUAL' ? validatedData.firstName : null,
         lastName: validatedData.type === 'INDIVIDUAL' ? validatedData.lastName : null,
@@ -58,11 +58,11 @@ export async function createCustomer(data: CreateCustomerInput) {
     });
 
     revalidatePath("/dashboard/customers");
-    await invalidateCache(CacheKeys.customerList(session.user.tenantId));
+    await invalidateCache(CacheKeys.customerList(tenantId));
     return { success: "Müşteri başarıyla oluşturuldu.", customerId: newCustomer.id };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Müşteri oluşturulurken hata:", error);
-    if (error.name === "ZodError") {
+    if (error instanceof Error && error.name === "ZodError") {
       return { error: "Lütfen bilgileri geçerli formatta doldurun." };
     }
     return { error: "Müşteri oluşturulurken bir hata oluştu." };
@@ -74,12 +74,10 @@ export async function createCustomer(data: CreateCustomerInput) {
  */
 export async function getCustomers() {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      throw new Error("Yetkisiz erişim");
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
     const cacheKey = CacheKeys.customerList(tenantId);
 
     return getCached(cacheKey, CacheTTL.customerList, async () => {
@@ -102,7 +100,7 @@ export async function getCustomers() {
         })),
       };
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Müşteriler getirilirken hata:", error);
     return { error: "Müşteriler yüklenemedi." };
   }
@@ -110,18 +108,19 @@ export async function getCustomers() {
 
 export async function updateCustomer(data: UpdateCustomerInput) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const validated = updateCustomerSchema.parse(data);
 
     const existingPhone = await prisma.customer.findFirst({
-      where: { tenantId: session.user.tenantId, phone: validated.phone, id: { not: validated.id } }
+      where: { tenantId: tenantId, phone: validated.phone, id: { not: validated.id } }
     });
     if (existingPhone) return { error: "Bu telefon numarası başka bir müşteriye ait." };
 
     await prisma.customer.update({
-      where: { id: validated.id, tenantId: session.user.tenantId },
+      where: { id: validated.id, tenantId: tenantId },
       data: {
         type: validated.type,
         firstName: validated.type === 'INDIVIDUAL' ? validated.firstName : null,
@@ -141,7 +140,7 @@ export async function updateCustomer(data: UpdateCustomerInput) {
     });
 
     revalidatePath("/dashboard/customers");
-    await invalidateCache(CacheKeys.customerList(session.user.tenantId));
+    await invalidateCache(CacheKeys.customerList(tenantId));
     return { success: "Müşteri başarıyla güncellendi." };
   } catch (error) {
     console.error(error);
@@ -151,16 +150,17 @@ export async function updateCustomer(data: UpdateCustomerInput) {
 
 export async function deleteCustomer(id: string) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     await prisma.customer.update({
-      where: { id, tenantId: session.user.tenantId },
+      where: { id, tenantId: tenantId },
       data: { deletedAt: new Date() }
     });
 
     revalidatePath("/dashboard/customers");
-    await invalidateCache(CacheKeys.customerList(session.user.tenantId));
+    await invalidateCache(CacheKeys.customerList(tenantId));
     return { success: "Müşteri sistemden (Soft-Delete) başarıyla kaldırıldı." };
   } catch (err) {
     console.error(err);
@@ -217,15 +217,14 @@ export async function getCustomerById(id: string): Promise<{
   error?: string;
 }> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { customer: null, error: "Yetkisiz erişim" };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const customer = await prisma.customer.findUnique({
       where: {
         id,
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         deletedAt: null,
       },
       include: {

@@ -48,8 +48,15 @@ export default function PaymentFormModal({ isOpen, onClose, invoice, customers }
     setIsPending(true);
     setErrorMessage("");
     try {
+      if (invoice?.supplierId) {
+        data.supplierId = invoice.supplierId;
+        data.customerId = undefined;
+      }
+
       const res = await recordPayment({
         ...data,
+        customerId: data.customerId === "" ? undefined : data.customerId,
+        supplierId: data.supplierId === "" ? undefined : data.supplierId,
         paymentDate: new Date(data.paymentDate)
       });
       if (res.error) {

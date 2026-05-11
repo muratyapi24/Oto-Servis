@@ -21,7 +21,7 @@ export default async function StockCountsPage() {
 
   const counts = countsResult.data?.counts ?? [];
   const total = countsResult.data?.total ?? 0;
-  const locations = (locationsResult.locations ?? []).map((l: any) => ({
+  const locations = ('locations' in locationsResult ? locationsResult.locations ?? [] : []).map((l: any) => ({
     id: l.id,
     name: l.name,
   }));

@@ -11,7 +11,12 @@ interface ServiceCameraProps {
   onClose?: () => void;
 }
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
+const API_URL = (() => {
+  const url = process.env.EXPO_PUBLIC_API_URL;
+  if (!url && __DEV__) return "http://localhost:3000";
+  if (!url) throw new Error("EXPO_PUBLIC_API_URL tanımlanmamış.");
+  return url;
+})();
 
 export function ServiceCamera({ serviceOrderId, onPhotoUploaded, onClose }: ServiceCameraProps) {
   const [permission, requestPermission] = useCameraPermissions();

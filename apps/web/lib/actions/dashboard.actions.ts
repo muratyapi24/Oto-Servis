@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
+import { guardTenant } from "@/lib/guards";
 import { getCached, invalidateCache, CacheKeys, CacheTTL } from "@/lib/cache";
 
 /**
@@ -9,13 +9,11 @@ import { getCached, invalidateCache, CacheKeys, CacheTTL } from "@/lib/cache";
  * Hiçbir mock/statik veri kullanılmaz. Tüm veriler Prisma üzerinden gelir.
  */
 export async function getDashboardOverview() {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId, session } = g;
+  const userName = session.user?.name || "Yönetici";
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { error: "Yetkisiz işlem." };
-    }
-    const tenantId = session.user.tenantId;
-    const userName = session.user.name || "Yönetici";
 
     // Cache'den dön (TTL: 300s)
     const cacheKey = CacheKeys.dashboardKpi(tenantId);
@@ -294,9 +292,9 @@ export async function getDashboardOverview() {
       },
     };
     }); // getCached kapanışı
-  } catch (error: any) {
+  } catch (error) {
     console.error("Dashboard Overview Hatası:", error);
-    return { error: "Dashboard verileri alınamadı: " + error.message };
+    return { error: "Dashboard verileri alınamadı: " + (error instanceof Error ? error.message : String(error)) };
   }
 }
 

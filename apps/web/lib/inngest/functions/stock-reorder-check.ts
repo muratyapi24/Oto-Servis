@@ -226,7 +226,7 @@ export async function logReorderCheckError(
         level: "ERROR",
         module: "STOCK-REORDER",
         message: `Stok reorder kontrolü başarısız: partId=${partId}, tenantId=${tenantId}. Hata: ${
-          error instanceof Error ? error.message : String(error)
+          error instanceof Error ? (error instanceof Error ? error.message : String(error)) : String(error)
         }`,
         tenantId,
         traceId: `reorder-${partId}-${Date.now()}`,

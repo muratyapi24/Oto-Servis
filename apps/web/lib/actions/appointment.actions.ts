@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
+import { guardTenant } from "@/lib/guards";
 import { 
   CreateAppointmentInput, 
   createAppointmentSchema,
@@ -11,9 +11,10 @@ import {
 } from "@/lib/validations/appointments";
 
 export async function createAppointment(data: CreateAppointmentInput) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
 
     const val = createAppointmentSchema.parse(data);
 
@@ -22,7 +23,7 @@ export async function createAppointment(data: CreateAppointmentInput) {
 
     const apt = await prisma.appointment.create({
       data: {
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         customerId: val.customerId,
         vehicleId: val.vehicleId || null,
         appointmentDate: val.appointmentDate,
@@ -42,12 +43,13 @@ export async function createAppointment(data: CreateAppointmentInput) {
 }
 
 export async function getAppointments() {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz" };
 
     const apts = await prisma.appointment.findMany({
-      where: { tenantId: session.user.tenantId, deletedAt: null },
+      where: { tenantId: tenantId, deletedAt: null },
       include: {
         customer: { select: { firstName: true, lastName: true, companyName: true, type: true, phone: true } },
         vehicle: { select: { plate: true, brand: true, model: true } }
@@ -59,13 +61,13 @@ export async function getAppointments() {
     });
 
     const customers = await prisma.customer.findMany({
-      where: { tenantId: session.user.tenantId, deletedAt: null },
+      where: { tenantId: tenantId, deletedAt: null },
       select: { id: true, firstName: true, lastName: true, companyName: true, type: true },
       orderBy: { createdAt: 'desc' }
     });
 
     const vehicles = await prisma.vehicle.findMany({
-      where: { tenantId: session.user.tenantId, deletedAt: null },
+      where: { tenantId: tenantId, deletedAt: null },
       select: { id: true, customerId: true, plate: true, brand: true, model: true }
     });
 
@@ -92,16 +94,17 @@ export async function getAppointments() {
 }
 
 export async function updateAppointmentStatus(data: UpdateAppointmentStatusInput) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz" };
     
     const val = updateAppointmentStatusSchema.parse(data);
 
     // Eğer statü COMPLETED (Servise Al) ise, bir İş Emri oluşturmamız lazım
     if (val.status === "COMPLETED") {
       const apt = await prisma.appointment.findUnique({
-        where: { id: val.id, tenantId: session.user.tenantId }
+        where: { id: val.id, tenantId: tenantId }
       });
 
       if (!apt) return { error: "Randevu bulunamadı" };
@@ -110,7 +113,7 @@ export async function updateAppointmentStatus(data: UpdateAppointmentStatusInput
       // İş Emri Oluştur
       await prisma.serviceOrder.create({
         data: {
-          tenantId: session.user.tenantId,
+          tenantId: tenantId,
           customerId: apt.customerId,
           vehicleId: apt.vehicleId,
           status: "PENDING",
@@ -121,12 +124,16 @@ export async function updateAppointmentStatus(data: UpdateAppointmentStatusInput
     }
 
     await prisma.appointment.update({
-      where: { id: val.id, tenantId: session.user.tenantId },
+      where: { id: val.id, tenantId: tenantId },
       data: { status: val.status }
     });
 
     revalidatePath("/dashboard/appointments");
     revalidatePath("/dashboard/services");
+    if (val.status === "COMPLETED") {
+      revalidatePath("/m/musteri/panel", "page");
+      revalidatePath("/m/musteri/takip", "page");
+    }
     return { success: val.status === "COMPLETED" ? "Randevu başarıyla Servis İş Emrine dönüştürüldü" : "Statü güncellendi" };
   } catch (error) {
     console.error("Hata:", error);
@@ -135,12 +142,13 @@ export async function updateAppointmentStatus(data: UpdateAppointmentStatusInput
 }
 
 export async function updateAppointment(data: any) { // Type explicitly to avoid import issues in this chunk
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz" };
 
     const apt = await prisma.appointment.update({
-      where: { id: data.id, tenantId: session.user.tenantId },
+      where: { id: data.id, tenantId: tenantId },
       data: {
         customerId: data.customerId,
         vehicleId: data.vehicleId || null,
@@ -160,13 +168,14 @@ export async function updateAppointment(data: any) { // Type explicitly to avoid
 }
 
 export async function dragAndDropAppointment(id: string, newDate: Date, newTime: string) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz" };
 
     // Randevunun varlığını ve kullanıcıya ait olduğunu doğrula (update içinde where ile de yapılıyor ama bulamazsa throw atar)
     await prisma.appointment.update({
-      where: { id, tenantId: session.user.tenantId },
+      where: { id, tenantId: tenantId },
       data: {
         appointmentDate: newDate,
         appointmentTime: newTime
@@ -182,14 +191,13 @@ export async function dragAndDropAppointment(id: string, newDate: Date, newTime:
 }
 
 export async function getAppointmentById(id: string) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { appointment: null, error: "Yetkisiz erişim" };
-    }
 
     const appointment = await prisma.appointment.findUnique({
-      where: { id, tenantId: session.user.tenantId },
+      where: { id, tenantId: tenantId },
       include: {
         customer: {
           select: { id: true, type: true, firstName: true, lastName: true, companyName: true, phone: true },
@@ -205,7 +213,7 @@ export async function getAppointmentById(id: string) {
     }
 
     return { appointment };
-  } catch (error: any) {
+  } catch (error) {
     console.error("getAppointmentById hatası:", error);
     return { appointment: null, error: "Randevu bilgileri alınamadı." };
   }
@@ -213,10 +221,10 @@ export async function getAppointmentById(id: string) {
 
 /** Randevu İstatistikleri **/
 export async function getAppointmentStats() {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz" };
-    const tenantId = session.user.tenantId;
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -254,10 +262,10 @@ export async function getAppointmentStats() {
 
 /** SMS ile Randevu Hatırlatması Gönder **/
 export async function sendAppointmentReminder(appointmentId: string) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz" };
-    const tenantId = session.user.tenantId;
 
     const apt = await prisma.appointment.findFirst({
       where: { id: appointmentId, tenantId, deletedAt: null },
@@ -298,20 +306,21 @@ export async function sendAppointmentReminder(appointmentId: string) {
     } else {
       return { error: result.error || "SMS gönderilemedi" };
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error("Hatırlatma SMS hatası:", error);
-    return { error: "SMS gönderilemedi: " + error.message };
+    return { error: "SMS gönderilemedi: " + (error instanceof Error ? error.message : String(error)) };
   }
 }
 
 /** Randevuyu Sil (Soft Delete) **/
 export async function deleteAppointment(id: string) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz" };
 
     await prisma.appointment.update({
-      where: { id, tenantId: session.user.tenantId },
+      where: { id, tenantId: tenantId },
       data: { deletedAt: new Date() }
     });
 

@@ -2,6 +2,24 @@ import Link from "next/link";
 import SuperAdminFooter from "@/components/super-admin/Footer";
 import { getSystemSettings } from "@/lib/actions/superadmin.actions";
 
+type ToggleSetting = { enabled?: boolean };
+type SystemSettingsView = {
+  autoScaling?: ToggleSetting;
+  multiAZ?: ToggleSetting;
+  shadowDBSync?: ToggleSetting;
+  smtpGateway?: {
+    host?: string;
+    port?: string | number;
+    protocol?: string;
+  };
+  twoFactorAuth?: {
+    requiredForSuperAdmin?: boolean;
+  };
+  sessionTimeout?: {
+    minutes?: string | number;
+  };
+};
+
 export default async function SettingsPage(props: { searchParams?: Promise<{ tab?: string }> }) {
   const searchParams = await props.searchParams;
   const tab = searchParams?.tab || "general";
@@ -12,7 +30,7 @@ export default async function SettingsPage(props: { searchParams?: Promise<{ tab
     return <div className="p-8 text-error font-mono">{error}</div>;
   }
 
-  const s = settings || {};
+  const s = (settings || {}) as SystemSettingsView;
 
   return (
     <>

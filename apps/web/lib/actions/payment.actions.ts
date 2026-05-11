@@ -1,8 +1,9 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import * as Sentry from "@sentry/nextjs";
 import { createPaymentSchema, type CreatePaymentInput } from "@/lib/validations/payment";
 import { inngest } from "@/lib/inngest/client";
@@ -37,12 +38,10 @@ export async function initOnlinePayment(
   invoiceId: string
 ): Promise<ActionResult<{ checkoutToken: string; provider: string; checkoutFormContent?: string }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const invoice = await prisma.invoice.findFirst({
       where: { id: invoiceId, tenantId, deletedAt: null },
@@ -159,8 +158,8 @@ export async function initOnlinePayment(
           invoice.items.map((item) => [item.name, Number(item.lineTotal).toFixed(2), 1])
         ),
         userIp: "127.0.0.1",
-        okUrl: `${process.env.NEXTAUTH_URL ?? "http://localhost:3000"}/dashboard/finance/invoices/${invoiceId}?payment=success`,
-        failUrl: `${process.env.NEXTAUTH_URL ?? "http://localhost:3000"}/dashboard/finance/invoices/${invoiceId}?payment=failed`,
+        okUrl: `${process.env.NEXTAUTH_URL ?? "http://localhost:3000"}/dashboard/finances/invoices/${invoiceId}?payment=success`,
+        failUrl: `${process.env.NEXTAUTH_URL ?? "http://localhost:3000"}/dashboard/finances/invoices/${invoiceId}?payment=failed`,
         lang: "tr",
         timeoutLimit: "30",
       });
@@ -190,12 +189,10 @@ export async function createPayment(
   data: CreatePaymentInput
 ): Promise<ActionResult<{ paymentId: string }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
-    const tenantId = session.user.tenantId;
     const validatedData = createPaymentSchema.parse(data);
 
     // Fatura varsa kontrol et
@@ -300,19 +297,23 @@ export async function createPayment(
     });
 
     // Inngest event tetikle
-    await inngest.send({
-      name: "payment/created",
-      data: {
-        paymentId: payment.id,
-        tenantId,
-        invoiceId: validatedData.invoiceId ?? null,
-        amount: validatedData.amount,
-      },
-    });
+    try {
+      await inngest.send({
+        name: "payment/created",
+        data: {
+          paymentId: payment.id,
+          tenantId,
+          invoiceId: validatedData.invoiceId ?? null,
+          amount: validatedData.amount,
+        },
+      });
+    } catch (inngestErr) {
+      console.warn("Inngest event could not be sent (probably missing eventKey):", inngestErr);
+    }
 
-    revalidatePath("/dashboard/finance/payments");
+    revalidatePath("/dashboard/finances/payments");
     if (validatedData.invoiceId) {
-      revalidatePath(`/dashboard/finance/invoices/${validatedData.invoiceId}`);
+      revalidatePath(`/dashboard/finances/invoices/${validatedData.invoiceId}`);
     }
 
     return { success: true, data: { paymentId: payment.id } };
@@ -332,12 +333,10 @@ export async function updateCheckPaymentStatus(
   status: "COLLECTED" | "BOUNCED"
 ): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
-    const tenantId = session.user.tenantId;
 
     const checkPayment = await prisma.checkPayment.findFirst({
       where: { paymentId, tenantId },
@@ -445,7 +444,7 @@ export async function updateCheckPaymentStatus(
       });
     });
 
-    revalidatePath("/dashboard/finance/payments/checks");
+    revalidatePath("/dashboard/finances/payments/checks");
     return { success: true };
   } catch (error: unknown) {
     Sentry.captureException(error);
@@ -462,12 +461,10 @@ export async function getPayments(
   filters?: PaymentFilters
 ): Promise<ActionResult<{ payments: unknown[]; total: number }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
     const page = filters?.page ?? 1;
     const pageSize = filters?.pageSize ?? 20;
     const skip = (page - 1) * pageSize;
@@ -526,12 +523,10 @@ export async function getUpcomingCheckPayments(
   daysAhead = 7
 ): Promise<ActionResult<{ payments: unknown[] }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
     const now = new Date();
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + daysAhead);

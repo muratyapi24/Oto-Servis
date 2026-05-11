@@ -40,4 +40,14 @@ export type StockMovementCreatedEvent = {
   };
 };
 
-export type Events = SendEmailEvent | SendSmsEvent | StockMovementCreatedEvent;
+export type OnboardingRegisteredEvent = {
+  name: "onboarding/tenant.registered";
+  data: {
+    tenantId: string;
+    email: string;
+    firstName: string;
+    companyName: string;
+  };
+};
+
+export type Events = SendEmailEvent | SendSmsEvent | StockMovementCreatedEvent | OnboardingRegisteredEvent;

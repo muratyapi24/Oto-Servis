@@ -40,7 +40,8 @@ interface VehicleBoardProps {
 
 export default function VehicleBoardClient({ data, customers }: VehicleBoardProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("ALL");
+  const [filterStatus, setFilterStatus] = useState("TÜMÜ");
+  const [viewType, setViewType] = useState<"GRID" | "LIST">("GRID");
 
   const { metrics, recentRegistrations, vehiclesList } = data;
 
@@ -53,7 +54,7 @@ export default function VehicleBoardClient({ data, customers }: VehicleBoardProp
                         v.ownerName?.toLowerCase().includes(term);
     
     // Status Buton grupları için filter (ALL, READY, IN QUEUE, URGENT)
-    const statusMatch = filterStatus === "ALL" ? true : v.statusLabel === filterStatus;
+    const statusMatch = filterStatus === "TÜMÜ" ? true : v.statusLabel === filterStatus;
     
     return searchMatch && statusMatch;
   });
@@ -91,24 +92,24 @@ export default function VehicleBoardClient({ data, customers }: VehicleBoardProp
                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Servis Durumu Filitresi</label>
                    <div className="flex flex-wrap items-center gap-2 mt-2">
                      <button 
-                       onClick={() => setFilterStatus("ALL")}
-                       className={`px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border ${filterStatus === "ALL" ? "bg-slate-800 text-white border-slate-800" : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100"}`}>
+                       onClick={() => setFilterStatus("TÜMÜ")}
+                       className={`px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border ${filterStatus === "TÜMÜ" ? "bg-slate-800 text-white border-slate-800" : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100"}`}>
                        TÜMÜ
                      </button>
                      <button 
-                       onClick={() => setFilterStatus("READY")}
-                       className={`px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border ${filterStatus === "READY" ? "bg-emerald-100 text-emerald-800 border-emerald-200" : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-emerald-50 hover:text-emerald-700"}`}>
-                       READY (BOŞTA)
+                       onClick={() => setFilterStatus("BOŞTA")}
+                       className={`px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border ${filterStatus === "BOŞTA" ? "bg-emerald-100 text-emerald-800 border-emerald-200" : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-emerald-50 hover:text-emerald-700"}`}>
+                       BOŞTA
                      </button>
                      <button 
-                       onClick={() => setFilterStatus("IN QUEUE")}
-                       className={`px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border ${filterStatus === "IN QUEUE" ? "bg-amber-100 text-amber-800 border-amber-200" : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-amber-50 hover:text-amber-700"}`}>
-                       IN QUEUE (SERVİSTE)
+                       onClick={() => setFilterStatus("SERVİSTE")}
+                       className={`px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border ${filterStatus === "SERVİSTE" ? "bg-amber-100 text-amber-800 border-amber-200" : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-amber-50 hover:text-amber-700"}`}>
+                       SERVİSTE
                      </button>
                      <button 
-                       onClick={() => setFilterStatus("URGENT")}
-                       className={`px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border ${filterStatus === "URGENT" ? "bg-red-100 text-red-800 border-red-200" : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-red-50 hover:text-red-700"}`}>
-                       URGENT (BEKLİYOR)
+                       onClick={() => setFilterStatus("BEKLİYOR")}
+                       className={`px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border ${filterStatus === "BEKLİYOR" ? "bg-red-100 text-red-800 border-red-200" : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-red-50 hover:text-red-700"}`}>
+                       BEKLİYOR
                      </button>
                    </div>
                 </div>
@@ -142,88 +143,192 @@ export default function VehicleBoardClient({ data, customers }: VehicleBoardProp
       </div>
 
       {/* View Switcher Headline */}
-      <div className="flex items-center justify-between px-2 md:px-4 mt-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-2 md:px-4 mt-4 gap-4">
         <h3 className="text-lg font-black text-slate-800">Araç Veritabanı</h3>
-        <span className="text-xs font-bold bg-white px-3 py-1 border border-slate-200 rounded-full shadow-sm text-slate-500">
-           {filteredVehicles.length} sonuç listeleniyor
-        </span>
+        <div className="flex items-center gap-4">
+           <div className="flex items-center bg-slate-100 p-1 rounded-lg">
+             <button onClick={() => setViewType("GRID")} className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewType === 'GRID' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}>Kart</button>
+             <button onClick={() => setViewType("LIST")} className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewType === 'LIST' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}>Liste</button>
+           </div>
+           <span className="text-xs font-bold bg-white px-3 py-1 border border-slate-200 rounded-full shadow-sm text-slate-500 hidden sm:inline-block">
+              {filteredVehicles.length} sonuç listeleniyor
+           </span>
+        </div>
       </div>
 
-      {/* Grid of Vehicles */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        
-        {filteredVehicles.length === 0 ? (
-          <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-16 bg-white border border-slate-100 rounded-3xl">
-             <CarFront className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-             <p className="text-slate-500 font-bold">Aranan kriterlerde araç bulunamadı.</p>
+      {/* Grid or List of Vehicles */}
+      {viewType === "GRID" ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          {filteredVehicles.length === 0 ? (
+            <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-16 bg-white border border-slate-100 rounded-3xl">
+               <CarFront className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+               <p className="text-slate-500 font-bold">Aranan kriterlerde araç bulunamadı.</p>
+            </div>
+          ) : (
+            filteredVehicles.map(v => {
+              
+              // Status Renkleri
+              let statusBadge = "bg-emerald-100 text-emerald-800";
+              let mainIcon = <CarFront className="w-8 h-8" />;
+                 
+              if (v.statusLabel === "SERVİSTE") {
+                 statusBadge = "bg-amber-100 text-amber-800";
+                 mainIcon = <Activity className="w-8 h-8" />;
+              } else if (v.statusLabel === "BEKLİYOR") {
+                 statusBadge = "bg-red-100 text-red-800";
+                 mainIcon = <Clock className="w-8 h-8" />;
+              }
+              // Elektrikliyse ikon farklı
+              if (v.fuelType?.toLowerCase().includes("elektrik") || v.fuelType?.toLowerCase().includes("ev")) {
+                 mainIcon = <Zap className="w-8 h-8" />;
+              }
+
+              return (
+                <div key={v.id} className="group bg-white rounded-3xl p-6 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 border border-transparent hover:border-blue-500/10 flex flex-col justify-between">
+                  <div>
+                     <div className="flex justify-between items-start mb-6 gap-2">
+                       <div className="flex items-center gap-4">
+                          <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300 shadow-inner">
+                             {mainIcon}
+                          </div>
+                          <div>
+                             <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{v.plate}</p>
+                             <h4 className="text-lg font-black text-slate-900 leading-tight mt-0.5">{v.brand} {v.model}</h4>
+                             <p className="text-[11px] text-slate-500 font-medium mt-1">Sahibi: <span className="text-slate-700 font-bold">{v.ownerName}</span></p>
+                          </div>
+                       </div>
+                       <span className={`px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider whitespace-nowrap ${statusBadge}`}>
+                          {v.statusLabel}
+                       </span>
+                     </div>
+
+                     <div className="grid grid-cols-2 gap-4 py-4 border-y border-slate-50">
+                       <div>
+                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1"><CalendarCheck className="w-3 h-3"/> Son Servis</p>
+                         <p className="text-xs font-black text-slate-800">
+                            {v.lastServiceDate ? dayjs(v.lastServiceDate).format('DD MMM YYYY') : "Kayıt Yok"}
+                         </p>
+                       </div>
+                       <div>
+                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1"><CalendarClock className="w-3 h-3"/> Randevu</p>
+                         <p className={`text-xs font-black ${v.statusLabel === 'BEKLİYOR' ? 'text-red-500' : 'text-amber-600'}`}>
+                            {v.nextAppointmentDate ? dayjs(v.nextAppointmentDate).fromNow() : "Bekleyen Yok"}
+                         </p>
+                       </div>
+                     </div>
+                  </div>
+
+                  <div className="mt-5 flex gap-3">
+                    <Link href={`/dashboard/vehicles/${v.id}`} className="flex-1 bg-slate-50 text-blue-700 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-600 hover:text-white transition-all text-center">
+                      Geçmişi Gör
+                    </Link>
+                    {v.statusLabel === "BOŞTA" ? (
+                      <Link href={`/dashboard/services/new?vehicleId=${v.id}`} className="flex-1 bg-blue-700 text-white py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-blue-700/20 hover:bg-blue-800 transition-all active:scale-95 text-center flex items-center justify-center gap-1">
+                        <PlusCircle className="w-3.5 h-3.5"/> Servis Aç
+                      </Link>
+                    ) : (
+                      <button disabled className="flex-1 bg-slate-100 text-slate-400 py-2.5 rounded-xl text-xs font-bold text-center flex items-center justify-center gap-1 cursor-not-allowed" title="Araç zaten serviste">
+                        <PlusCircle className="w-3.5 h-3.5"/> Servis Aç
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )
+            })
+          )}
+        </div>
+      ) : (
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="overflow-x-auto">
+             <table className="w-full text-left text-sm">
+               <thead className="bg-slate-50/50 border-b border-slate-100">
+                 <tr>
+                   <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-wider">Araç & Plaka</th>
+                   <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-wider">Müşteri</th>
+                   <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-wider">Durum</th>
+                   <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-wider">Son Servis</th>
+                   <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-wider">Randevu</th>
+                   <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-wider text-right">İşlem</th>
+                 </tr>
+               </thead>
+               <tbody className="divide-y divide-slate-100">
+                 {filteredVehicles.length === 0 ? (
+                   <tr>
+                     <td colSpan={6} className="text-center py-12 text-slate-500 font-bold">Aranan kriterlerde araç bulunamadı.</td>
+                   </tr>
+                 ) : (
+                   filteredVehicles.map(v => {
+                      let statusBadge = "bg-emerald-100 text-emerald-800";
+                      let mainIcon = <CarFront className="w-6 h-6" />;
+                         
+                      if (v.statusLabel === "SERVİSTE") {
+                         statusBadge = "bg-amber-100 text-amber-800";
+                         mainIcon = <Activity className="w-6 h-6" />;
+                      } else if (v.statusLabel === "BEKLİYOR") {
+                         statusBadge = "bg-red-100 text-red-800";
+                         mainIcon = <Clock className="w-6 h-6" />;
+                      }
+                      if (v.fuelType?.toLowerCase().includes("elektrik") || v.fuelType?.toLowerCase().includes("ev")) {
+                         mainIcon = <Zap className="w-6 h-6" />;
+                      }
+
+                     return (
+                       <tr key={v.id} className="hover:bg-slate-50/50 transition-colors group">
+                         <td className="px-6 py-4">
+                           <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                {mainIcon}
+                              </div>
+                              <div>
+                                <p className="font-bold text-slate-900">{v.brand} {v.model}</p>
+                                <p className="text-[10px] font-black text-slate-500 tracking-widest">{v.plate}</p>
+                              </div>
+                           </div>
+                         </td>
+                         <td className="px-6 py-4">
+                           <span className="text-xs font-bold text-slate-700">{v.ownerName}</span>
+                         </td>
+                         <td className="px-6 py-4">
+                           <span className={`px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-wider whitespace-nowrap ${statusBadge}`}>
+                             {v.statusLabel}
+                           </span>
+                         </td>
+                         <td className="px-6 py-4">
+                           <span className="text-xs font-bold text-slate-800">
+                              {v.lastServiceDate ? dayjs(v.lastServiceDate).format('DD MMM YYYY') : "Kayıt Yok"}
+                           </span>
+                         </td>
+                         <td className="px-6 py-4">
+                           <span className={`text-xs font-bold ${v.statusLabel === 'BEKLİYOR' ? 'text-red-500' : 'text-amber-600'}`}>
+                              {v.nextAppointmentDate ? dayjs(v.nextAppointmentDate).fromNow() : "Bekleyen Yok"}
+                           </span>
+                         </td>
+                         <td className="px-6 py-4 text-right">
+                            <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                               <Link href={`/dashboard/vehicles/${v.id}`} className="p-2 bg-slate-100 text-blue-700 rounded-lg hover:bg-blue-600 hover:text-white transition-all" title="Geçmişi Gör">
+                                 <BookOpen className="w-4 h-4" />
+                               </Link>
+                               {v.statusLabel === "BOŞTA" ? (
+                                 <Link href={`/dashboard/services/new?vehicleId=${v.id}`} className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-700 hover:text-white transition-all" title="Servis Aç">
+                                   <PlusCircle className="w-4 h-4" />
+                                 </Link>
+                               ) : (
+                                 <button disabled className="p-2 bg-slate-100 text-slate-300 rounded-lg cursor-not-allowed" title="Araç zaten serviste">
+                                   <PlusCircle className="w-4 h-4" />
+                                 </button>
+                               )}
+                            </div>
+                         </td>
+                       </tr>
+                     );
+                   })
+                 )}
+               </tbody>
+             </table>
           </div>
-        ) : (
-          filteredVehicles.map(v => {
-            
-            // Status Renkleri
-            let statusBadge = "bg-emerald-100 text-emerald-800";
-            let mainIcon = <CarFront className="w-8 h-8" />;
-               
-            if (v.statusLabel === "IN QUEUE") {
-               statusBadge = "bg-amber-100 text-amber-800";
-               mainIcon = <Activity className="w-8 h-8" />;
-            } else if (v.statusLabel === "URGENT") {
-               statusBadge = "bg-red-100 text-red-800";
-               mainIcon = <Clock className="w-8 h-8" />;
-            }
-            // Elektrikliyse ikon farklı
-            if (v.fuelType?.toLowerCase().includes("elektrik") || v.fuelType?.toLowerCase().includes("ev")) {
-               mainIcon = <Zap className="w-8 h-8" />;
-            }
-
-            return (
-              <div key={v.id} className="group bg-white rounded-3xl p-6 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 border border-transparent hover:border-blue-500/10 flex flex-col justify-between">
-                <div>
-                   <div className="flex justify-between items-start mb-6 gap-2">
-                     <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300 shadow-inner">
-                           {mainIcon}
-                        </div>
-                        <div>
-                           <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{v.plate}</p>
-                           <h4 className="text-lg font-black text-slate-900 leading-tight mt-0.5">{v.brand} {v.model}</h4>
-                           <p className="text-[11px] text-slate-500 font-medium mt-1">Sahibi: <span className="text-slate-700 font-bold">{v.ownerName}</span></p>
-                        </div>
-                     </div>
-                     <span className={`px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-wider whitespace-nowrap ${statusBadge}`}>
-                        {v.statusLabel}
-                     </span>
-                   </div>
-
-                   <div className="grid grid-cols-2 gap-4 py-4 border-y border-slate-50">
-                     <div>
-                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1"><CalendarCheck className="w-3 h-3"/> Son Servis</p>
-                       <p className="text-xs font-black text-slate-800">
-                          {v.lastServiceDate ? dayjs(v.lastServiceDate).format('DD MMM YYYY') : "Kayıt Yok"}
-                       </p>
-                     </div>
-                     <div>
-                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1"><CalendarClock className="w-3 h-3"/> Randevu</p>
-                       <p className={`text-xs font-black ${v.statusLabel === 'URGENT' ? 'text-red-500' : 'text-amber-600'}`}>
-                          {v.nextAppointmentDate ? dayjs(v.nextAppointmentDate).fromNow() : "Bekleyen Yok"}
-                       </p>
-                     </div>
-                   </div>
-                </div>
-
-                <div className="mt-5 flex gap-3">
-                  <Link href={`/dashboard/vehicles/${v.id}`} className="flex-1 bg-slate-50 text-blue-700 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-600 hover:text-white transition-all text-center">
-                    Geçmişi Gör
-                  </Link>
-                  <Link href={`/dashboard/services/new?vehicleId=${v.id}`} className="flex-1 bg-blue-700 text-white py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-blue-700/20 hover:bg-blue-800 transition-all active:scale-95 text-center flex items-center justify-center gap-1">
-                    <PlusCircle className="w-3.5 h-3.5"/> Servis Aç
-                  </Link>
-                </div>
-              </div>
-            )
-          })
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Bottom Summary Section - Table & Analytics */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mt-12">

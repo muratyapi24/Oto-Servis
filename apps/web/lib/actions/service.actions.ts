@@ -1,9 +1,10 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import { invalidateCache, CacheKeys } from "@/lib/cache";
 import { publishSSEEvent } from "@/lib/sse";
 import { sendPushToTenant } from "@/lib/push";
@@ -22,16 +23,15 @@ import {
 
 export async function createServiceOrder(data: CreateServiceOrderInput) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const validatedData = createServiceOrderSchema.parse(data);
 
     const newOrder = await prisma.serviceOrder.create({
       data: {
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         customerId: validatedData.customerId,
         vehicleId: validatedData.vehicleId,
         complaintDescription: validatedData.complaintDescription,
@@ -44,7 +44,7 @@ export async function createServiceOrder(data: CreateServiceOrderInput) {
 
     revalidatePath("/dashboard/services");
     return { success: "Servis İş Emri başarıyla oluşturuldu", serviceOrderId: newOrder.id };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("İş Emri kaydı hatası:", error);
     return { error: "İş Emri kaydedilirken bir hata oluştu." };
@@ -53,11 +53,12 @@ export async function createServiceOrder(data: CreateServiceOrderInput) {
 
 export async function deleteServiceOrder(id: string) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     await prisma.serviceOrder.update({
-      where: { id, tenantId: session.user.tenantId },
+      where: { id, tenantId: tenantId },
       data: { deletedAt: new Date() }
     });
 
@@ -72,12 +73,13 @@ export async function deleteServiceOrder(id: string) {
 
 export async function getServiceOrders() {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) throw new Error("Yetkisiz erişim");
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const orders = await prisma.serviceOrder.findMany({
       where: {
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         deletedAt: null,
       },
       include: {
@@ -101,7 +103,7 @@ export async function getServiceOrders() {
     }));
 
     return { orders: serializedOrders };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("Servis işlemleri getirilemedi:", error);
     return { error: "İş Emirleri yüklenemedi." };
@@ -114,10 +116,10 @@ export async function getServiceOrders() {
  */
 export async function getServiceDashboard() {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const [orders, allCustomers, allVehicles, dbMechs] = await Promise.all([
       prisma.serviceOrder.findMany({
@@ -177,7 +179,7 @@ export async function getServiceDashboard() {
     }));
 
     return { orders: serializedOrders, customers, vehicles, mechanics };
-  } catch (error: any) {
+  } catch (error) {
     Sentry.captureException(error);
     console.error("Servis Dashboard verileri yüklenemedi:", error);
     return { error: "Servis verileri yüklenirken bir sorun oluştu." };
@@ -186,13 +188,14 @@ export async function getServiceDashboard() {
 
 export async function getServiceOrderById(id: string) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) throw new Error("Yetkisiz erişim");
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const order = await prisma.serviceOrder.findFirst({
       where: {
         id,
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
       },
       include: {
         customer: true,
@@ -246,12 +249,13 @@ export async function getServiceOrderById(id: string) {
 
 export async function updateOrderStatus(data: UpdateOrderStatusInput) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-    
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
+
     // Authorization check
     const existing = await prisma.serviceOrder.findFirst({
-      where: { id: data.orderId, tenantId: session.user.tenantId }
+      where: { id: data.orderId, tenantId }
     });
     if(!existing) return { error: "Emir bulunamadı" };
 
@@ -295,7 +299,7 @@ export async function updateOrderStatus(data: UpdateOrderStatusInput) {
 
           await tx.stockMovement.create({
             data: {
-              tenantId: session.user.tenantId,
+              tenantId,
               partId: item.partId,
               quantity: Number(item.quantity),
               type: "IN",
@@ -314,17 +318,19 @@ export async function updateOrderStatus(data: UpdateOrderStatusInput) {
         });
 
         if (!existingInvoice && Number(orderToUpdate.totalAmount) > 0) {
-          // Tüm servis kalemlerini fatura satırına dönüştür
           const allItems = await tx.serviceItem.findMany({
             where: { serviceOrderId: val.orderId }
           });
 
+          const { getNextInvoiceNumber } = await import('@/lib/sequence-utils');
+          const invoiceNumber = await getNextInvoiceNumber(tenantId, tx);
+
           const newInvoice = await tx.invoice.create({
             data: {
-              tenantId: session.user.tenantId,
+              tenantId,
               customerId: orderToUpdate.customerId,
               serviceOrderId: orderToUpdate.id,
-              invoiceNumber: `INV-${Date.now()}`,
+              invoiceNumber,
               type: "SALES",
               status: "SENT",
               issueDate: new Date(),
@@ -339,7 +345,7 @@ export async function updateOrderStatus(data: UpdateOrderStatusInput) {
           if (allItems.length > 0) {
             await tx.invoiceItem.createMany({
               data: allItems.map((si, idx) => ({
-                tenantId: session.user.tenantId,
+                tenantId,
                 invoiceId: newInvoice.id,
                 type: si.itemType === "PART" ? "PART" : si.itemType === "LABOR" ? "LABOR" : "SERVICE",
                 name: si.name,
@@ -449,17 +455,17 @@ export async function updateOrderStatus(data: UpdateOrderStatusInput) {
 
     revalidatePath(`/dashboard/services`);
     revalidatePath(`/dashboard/services/${val.orderId}`);
-    await invalidateCache(CacheKeys.dashboardKpi(session.user.tenantId));
+    await invalidateCache(CacheKeys.dashboardKpi(tenantId));
 
     // SSE yayını — bağlı tüm dashboard client'larına anlık bildirim
     publishSSEEvent({
       type: "SERVICE_ORDER_UPDATED",
       payload: { id: val.orderId, status: val.status },
-      tenantId: session.user.tenantId,
+      tenantId: tenantId,
     });
 
     // Push bildirim — tenant yöneticilerine
-    sendPushToTenant(session.user.tenantId, {
+    sendPushToTenant(tenantId, {
       title: "Servis Durumu Güncellendi",
       body: `İş emri #${val.orderId.slice(-6)} → ${val.status}`,
       url: `/dashboard/services/${val.orderId}`,
@@ -474,11 +480,11 @@ export async function updateOrderStatus(data: UpdateOrderStatusInput) {
 
 export async function addServiceItem(data: AddServiceItemInput) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
     const val = addServiceItemSchema.parse(data);
-    const tenantId = session.user.tenantId;
 
     const order = await prisma.serviceOrder.findFirst({
       where: { id: val.serviceOrderId, tenantId }
@@ -574,10 +580,10 @@ export async function addServiceItem(data: AddServiceItemInput) {
 
 export async function removeServiceItem(serviceItemId: string) {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const item = await prisma.serviceItem.findFirst({
       where: { id: serviceItemId, tenantId },

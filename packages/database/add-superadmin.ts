@@ -8,7 +8,7 @@ async function main() {
   
   // Önce var mı kontrol et (Tekrar çalıştırmalarda hata vermesin)
   const existing = await prisma.user.findUnique({
-    where: { email: 'superadmin@bstservis.com' }
+    where: { email: 'superadmin@msotoservis.com' }
   });
 
   if (existing) {
@@ -16,12 +16,12 @@ async function main() {
     return;
   }
 
-  const hashedPassword = await bcrypt.hash('123456', 10);
+  const hashedPassword = await bcrypt.hash('SuperAdmin123!', 10);
 
   const admin = await prisma.user.create({
     data: {
       name: 'Super Admin',
-      email: 'superadmin@bstservis.com',
+      email: 'superadmin@msotoservis.com',
       password: hashedPassword,
       role: UserRole.SUPER_ADMIN,
       hasTwoFactor: true,
@@ -29,9 +29,9 @@ async function main() {
     },
   });
 
-  console.log('✅ Super Admin (Kurucu) eklendi:');
+  console.log('✅ Super Admin eklendi:');
   console.log(`- E-Posta: ${admin.email}`);
-  console.log(`- Şifre: 123456`);
+  console.log(`- Şifre: SuperAdmin123!`);
   console.log(`- 2FA: Aktif`);
 }
 

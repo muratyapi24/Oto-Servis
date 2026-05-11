@@ -1,7 +1,9 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, useState, useTransition } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { startSubscriptionCheckout } from "@/lib/actions/subscription.actions";
 
 interface PlanData {
   id: string;
@@ -133,6 +135,40 @@ export default function PricingClient({
   groupedFeatures,
 }: PricingClientProps) {
   const [isYearly, setIsYearly] = useState(true);
+  const [isPending, startTransition] = useTransition();
+  const [checkoutPlan, setCheckoutPlan] = useState<string | null>(null);
+  const { data: session } = useSession();
+  const isLoggedIn = !!session?.user;
+
+  function buildRegisterUrl(planSlug: string) {
+    return `/register?plan=${planSlug}&billing=${isYearly ? "yearly" : "monthly"}`;
+  }
+
+  function buildUpgradeUrl(planSlug: string) {
+    return `/dashboard/settings/billing?upgrade=${planSlug}&billing=${isYearly ? "yearly" : "monthly"}`;
+  }
+
+  function handleCheckout(planSlug: string) {
+    if (!isLoggedIn) {
+      window.location.href = buildRegisterUrl(planSlug);
+      return;
+    }
+    setCheckoutPlan(planSlug);
+    startTransition(async () => {
+      const result = await startSubscriptionCheckout(planSlug, isYearly ? "yearly" : "monthly");
+      if (result.checkoutFormContent) {
+        // iyzico form HTML'ini yeni pencerede aç
+        const win = window.open("", "_blank");
+        win?.document.write(result.checkoutFormContent);
+        win?.document.close();
+      } else if (result.upgradeUrl) {
+        window.location.href = result.upgradeUrl;
+      } else {
+        alert(result.error ?? "Ödeme başlatılamadı. Lütfen tekrar deneyin.");
+      }
+      setCheckoutPlan(null);
+    });
+  }
 
   function getDisplayPrice(plan: PlanData | null): string {
     if (!plan) return "—";
@@ -224,10 +260,10 @@ export default function PricingClient({
               features={starter!.features as Record<string, unknown>}
             />
             <Link
-              href="/register"
+              href={isLoggedIn ? buildUpgradeUrl(starter!.slug) : buildRegisterUrl(starter!.slug)}
               className="w-full py-4 rounded-lg font-bold text-primary bg-surface-container-high hover:bg-surface-container-highest transition-colors active:scale-95 text-center block"
             >
-              Ücretsiz Başlayın
+              {isLoggedIn ? "Bu Plana Geç" : "Ücretsiz Başlayın"}
             </Link>
           </div>
         )}
@@ -257,12 +293,17 @@ export default function PricingClient({
             <PlanFeatureList
               features={professional!.features as Record<string, unknown>}
             />
-            <Link
-              href="/register"
-              className="w-full py-4 rounded-lg font-bold text-white milled-gradient shadow-lg shadow-primary/30 hover:scale-[0.98] transition-transform active:scale-90 text-center block"
+            <button
+              onClick={() => handleCheckout(professional!.slug)}
+              disabled={isPending && checkoutPlan === professional!.slug}
+              className="w-full py-4 rounded-lg font-bold text-white milled-gradient shadow-lg shadow-primary/30 hover:scale-[0.98] transition-transform active:scale-90 text-center disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {professional!.trialDays} Gün Ücretsiz Dene
-            </Link>
+              {isPending && checkoutPlan === professional!.slug
+                ? "Yönlendiriliyor…"
+                : isLoggedIn
+                  ? `Satın Al — ${getDisplayPrice(professional)}/ay`
+                  : `${professional!.trialDays} Gün Ücretsiz Dene`}
+            </button>
           </div>
         )}
 
@@ -289,10 +330,10 @@ export default function PricingClient({
               features={enterprise!.features as Record<string, unknown>}
             />
             <Link
-              href="/contact"
+              href="/#demo-talep"
               className="w-full py-4 rounded-lg font-bold text-on-surface bg-surface-container-high hover:bg-surface-container-highest transition-colors active:scale-95 text-center block"
             >
-              Bize Ulaşın
+              Demo Talep Et
             </Link>
           </div>
         )}

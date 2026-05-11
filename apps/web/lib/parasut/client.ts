@@ -184,7 +184,7 @@ export async function testParasutConnectionWithCreds(
   } catch (err) {
     return {
       connected: false,
-      errorMessage: err instanceof Error ? err.message : "Bağlantı hatası",
+      errorMessage: err instanceof Error ? (err instanceof Error ? err.message : String(err)) : "Bağlantı hatası",
     };
   }
 }

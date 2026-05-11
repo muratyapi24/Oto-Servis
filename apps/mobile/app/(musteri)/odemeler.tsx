@@ -113,7 +113,7 @@ export default function OdemelerScreen() {
         </View>
 
         {/* Payment List */}
-        {MOCK_PAYMENTS.map((payment) => (
+        {(__DEV__ ? MOCK_PAYMENTS : []).map((payment) => (
           <TouchableOpacity
             key={payment.id}
             style={[styles.paymentCard, Shadow.navy]}

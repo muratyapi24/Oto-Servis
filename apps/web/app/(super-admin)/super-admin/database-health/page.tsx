@@ -1,6 +1,7 @@
 import Link from "next/link";
 import SuperAdminFooter from "@/components/super-admin/Footer";
 import { getDatabaseHealthMetrics } from "@/lib/actions/superadmin.actions";
+import { MockPageGuard } from "@/components/super-admin/MockPageGuard";
 
 export const metadata = { title: "Veritabanı Sağlık Monitörü | Super Admin" };
 
@@ -55,6 +56,7 @@ export default async function DatabaseHealthPage(props: {
   const poolUsedPct = Math.round((data.connectionPool.active / data.connectionPool.max) * 100);
 
   return (
+    <MockPageGuard title="Veritabanı Sağlık Monitörü" description="Gerçek zamanlı DB metrikleri, yavaş sorgu analizi ve bağlantı havuzu yönetimi yakında aktif edilecektir.">
     <>
       <header className="h-12 bg-white flex shrink-0 items-center justify-between px-6 border-b border-outline/20 sticky top-0 z-40">
         <div className="flex items-center gap-2">
@@ -306,5 +308,6 @@ export default async function DatabaseHealthPage(props: {
 
       <SuperAdminFooter />
     </>
+    </MockPageGuard>
   );
 }

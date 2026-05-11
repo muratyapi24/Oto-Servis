@@ -1,0 +1,18 @@
+{
+  "testSuite": "Firma Platformu Entegrasyon Testleri",
+  "startTime": "2026-05-05T15:37:40.988Z",
+  "endTime": "2026-05-05T15:37:56.027Z",
+  "totalTests": 1,
+  "passedTests": 0,
+  "failedTests": 1,
+  "skippedTests": 0,
+  "results": [
+    {
+      "testId": "payment",
+      "testName": "Ödeme Testi",
+      "status": "FAIL",
+      "duration": 14863,
+      "error": "page.selectOption: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('select[name=\"supplierId\"]')\u001b[22m\n"
+    }
+  ]
+}

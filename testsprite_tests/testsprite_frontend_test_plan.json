@@ -1,0 +1,71 @@
+[
+  {
+    "id": "TC015",
+    "title": "E2E: Service Order creation with stock deduction, invoice auto-generation, partial payment and balance verification",
+    "description": "Log in as Firm Admin, create a new service order for an existing customer/vehicle, add a stock part and a labor item, complete the service (auto-generates invoice and deducts stock), navigate to the generated invoice, record a partial payment, and verify remaining balance is correct.",
+    "category": "E2E Financial Workflow",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login. Enter 'admin@msotoservis.com' and 'Admin123!'. Click 'Giriş Yap'."
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard/services (Servis İşlemleri / Kanban page). Click 'Yeni İş Emri' or the '+ Yeni İş Emri' button to open the service order creation dialog."
+      },
+      {
+        "type": "action",
+        "description": "In the service order dialog: Select the first available customer from the dropdown. After customer is selected, select the first available vehicle for that customer. In 'Geliş Şikayeti' textarea, enter 'E2E Test: Fren balataları ve yağ değişimi'. Click 'Oluştur' or 'Kaydet' button to save the service order."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a success message appears confirming the service order was created, such as 'Servis İş Emri başarıyla oluşturuldu'."
+      },
+      {
+        "type": "action",
+        "description": "Navigate to the newly created service order detail page. This may happen automatically after creation, or find the latest order on the services page and click on it to open its detail."
+      },
+      {
+        "type": "action",
+        "description": "On the service order detail page, click the 'Parça veya İşçilik Ekle' button. In the dialog that opens, ensure 'Stok Parçası' radio is selected (default). From the 'Stoktan Parça Seçimi' dropdown, select the first available part. Leave quantity as 1. Click 'Hizmet/Parça Ekle' button."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the dialog closes and the part item now appears in the 'Servis & Parça Kalemleri' table with its name, quantity, unit price, and total price visible."
+      },
+      {
+        "type": "action",
+        "description": "Click 'Parça veya İşçilik Ekle' again. This time, click the 'İşçilik Emeği' radio button. From the 'Görevli Usta Seçimi' dropdown, select the first available mechanic. Set quantity to 2 (hours). Click 'Hizmet/Parça Ekle' button."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the labor item now appears in the items table. The 'GENEL TOPLAM' at the bottom should be greater than 0 and show a non-zero amount in ₺."
+      },
+      {
+        "type": "action",
+        "description": "Find the status section at the top of the page. Click the 'Durumu Değiştir' or status change button/dropdown. Select 'TAMAMLANDI' (COMPLETED) status and confirm the change."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the status badge changes to 'TAMAMLANDI' (green badge with checkmark). This action should auto-generate an invoice."
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /dashboard/finances/invoices (Fatura Listesi). Look for the most recently created invoice in the list – it should be the one with the newest date and linked to the service order just completed."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that a new invoice exists in the list with status 'Gönderildi' (SENT) and its total amount matches the service order total."
+      },
+      {
+        "type": "action",
+        "description": "Click on the invoice to open its detail page. On the invoice detail page, find the 'Ödeme Kaydet' section. In the 'Tutar' field, enter an amount that is roughly half of the total (e.g. if total is 1200, enter 600). Select 'Nakit' as payment method. Click 'Ödemeyi Kaydet' button."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a success message 'Ödeme kaydedildi' appears. Verify that the 'Ödeme Geçmişi' section now shows 1 payment record with the amount just entered. Verify the 'Kalan' field shows the remaining balance (total minus paid) in red."
+      }
+    ],
+    "priority": "High"
+  }
+]

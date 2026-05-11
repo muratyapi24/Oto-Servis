@@ -1,0 +1,34 @@
+version: "2"
+type: frontend
+tech_stack:
+  - TypeScript
+  - Next.js
+  - Tailwind CSS
+  - Prisma
+routes:
+  - path: /login
+    file: apps/web/app/login/page.tsx
+    auth_required: false
+    description: User login page
+  - path: /dashboard/finance/invoices/new
+    file: apps/web/app/(dashboard)/dashboard/finance/invoices/new/page.tsx
+    auth_required: true
+    description: Create new invoice page
+features:
+  - name: Purchase Invoice Flow
+    description: Create purchase invoice, verify stock and balance, partial payment, and cancel
+    files:
+      - apps/web/lib/actions/stock.actions.ts
+      - apps/web/lib/actions/finance.actions.ts
+    entry_route: /dashboard/finance/invoices/new
+    user_interactions:
+      - Select supplier
+      - Add parts and quantities
+      - Submit invoice
+      - Make partial payment
+      - Cancel invoice
+    api_calls:
+      - method: POST
+        endpoint: server_action
+    auth_required: true
+known_limitations: []

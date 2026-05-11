@@ -2,6 +2,7 @@ import Link from "next/link"
 import SuperAdminFooter from "@/components/super-admin/Footer"
 import { getReportTemplates } from "@/lib/actions/superadmin.actions"
 import ReportWizard from "./ReportWizard"
+import { MockPageGuard } from "@/components/super-admin/MockPageGuard"
 
 export const metadata = { title: "Dinamik Rapor Sihirbazı | Super Admin" }
 
@@ -20,6 +21,7 @@ export default async function ReportsPage(props: { searchParams?: Promise<{ tab?
   const templates = "error" in result ? [] : result.templates
 
   return (
+    <MockPageGuard title="Dinamik Rapor Sihirbazı" description="Özel rapor oluşturma ve şablon yönetimi yakında gerçek veriye bağlanacaktır.">
     <>
       <header className="h-12 bg-white flex shrink-0 items-center justify-between px-6 border-b border-outline/20 sticky top-0 z-40">
         <div className="flex items-center gap-2">
@@ -153,5 +155,6 @@ export default async function ReportsPage(props: { searchParams?: Promise<{ tab?
 
       <SuperAdminFooter />
     </>
+    </MockPageGuard>
   )
 }

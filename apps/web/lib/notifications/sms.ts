@@ -67,7 +67,7 @@ export async function sendSms(options: SendSmsOptions): Promise<{ success: boole
 
   // 3. İlgili Provider'a göre gönderim yap
   try {
-    let providerResultUrl = "";
+    const providerResultUrl = "";
     let providerResultData: any = {};
     const settings = activeProvider.settings as any;
 
@@ -163,17 +163,17 @@ export async function sendSms(options: SendSmsOptions): Promise<{ success: boole
     return { success: true };
 
   } catch (err: any) {
-    console.error(`[SMS] ${activeProvider.provider} Gönderim hatası:`, err.message);
+    console.error(`[SMS] ${activeProvider.provider} Gönderim hatası:`, (err instanceof Error ? err.message : String(err)));
     if (notificationId) {
       await prisma.notification.update({
         where: { id: notificationId },
         data: {
           status: "FAILED",
           retryCount: { increment: 1 },
-          metadata: { error: err.message },
+          metadata: { error: (err instanceof Error ? err.message : String(err)) },
         },
       });
     }
-    return { success: false, error: err.message };
+    return { success: false, error: (err instanceof Error ? err.message : String(err)) };
   }
 }

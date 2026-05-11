@@ -15,7 +15,7 @@ export default async function NewStockCountPage() {
     getPartCategories(),
   ]);
 
-  if (locationsResult.error) {
+  if ('error' in locationsResult) {
     return <PageError message={locationsResult.error} />;
   }
 

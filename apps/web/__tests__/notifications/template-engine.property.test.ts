@@ -5,7 +5,6 @@ import * as fc from "fast-check";
 import {
   parseTemplate,
   renderTemplate,
-  validateTemplateVariables,
 } from "@/lib/notifications/template-engine";
 
 // ---------------------------------------------------------------------------

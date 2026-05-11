@@ -1,8 +1,9 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import * as Sentry from "@sentry/nextjs";
 import {
   customerPreferenceSchema,
@@ -23,12 +24,10 @@ export async function getCustomerNotificationPreference(
   customerId: string
 ): Promise<ActionResult<{ preference: unknown }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const preference = await prisma.customerNotificationPreference.findFirst({
       where: { tenantId, customerId },
@@ -60,12 +59,10 @@ export async function updateCustomerNotificationPreference(
   data: CustomerPreferenceInput
 ): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
     const validatedData = customerPreferenceSchema.parse(data);
 
     // WhatsApp etkinleştirmede telefon numarası doğrulaması

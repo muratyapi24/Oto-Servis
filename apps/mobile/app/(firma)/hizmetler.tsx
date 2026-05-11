@@ -99,8 +99,8 @@ export default function HizmetlerScreen() {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return MOCK_SERVICES;
-    return MOCK_SERVICES.filter((s) => s.name.toLowerCase().includes(q));
+    if (!q) return __DEV__ ? MOCK_SERVICES : [];
+    return (__DEV__ ? MOCK_SERVICES : []).filter((s) => s.name.toLowerCase().includes(q));
   }, [search]);
 
   return (

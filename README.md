@@ -1,159 +1,196 @@
-# Turborepo starter
+# BST Otoservis — SaaS Oto Servis Yönetim Platformu
 
-This Turborepo starter is maintained by the Turborepo core team.
+> Türkiye'nin oto servislerine özel bulut tabanlı yönetim yazılımı.
+> Randevu, iş emri, stok, fatura, tahsilat ve müşteri bilgilendirme tek platformda.
 
-## Using this example
+---
 
-Run the following command:
+## Özellikler
 
-```sh
-npx create-turbo@latest
+| Modül | Kapsam |
+|-------|--------|
+| **İş Emri** | Dijital kabul, parça/işçilik takibi, müşteri onay linki, QR takip |
+| **Müşteri & Araç** | Detaylı araç profili, servis geçmişi, bakım planı, fotoğraf |
+| **Stok** | Parça yönetimi, stok hareketleri, kritik stok uyarısı, transfer |
+| **Finans** | Fatura, tahsilat, cari hesap, çek/senet, Paraşüt entegrasyonu |
+| **Randevu** | Görsel takvim, sürükle-bırak, SMS/WhatsApp hatırlatıcı |
+| **Bildirim** | SMS, WhatsApp, e-posta, push — tek kanaldan |
+| **Müşteri Portali** | Araç takibi, servis geçmişi, bakım planı görüntüleme |
+| **Usta Portali** | Mobil web ve native Expo uygulaması |
+| **Super Admin** | Multi-tenant yönetim, abonelik, audit log |
+| **Uyum** | KVKK, IYS, e-Fatura/GIB, Türkiye'ye özgü |
+
+---
+
+## Teknoloji
+
+```
+apps/
+  web/        Next.js 15 (App Router) + Tailwind
+  mobile/     Expo (React Native) — beta
+packages/
+  database/   Prisma + PostgreSQL (multi-tenant schema)
+  ui/         Shared component library
 ```
 
-## What's inside?
+**Stack:** Next.js 15 · Prisma · PostgreSQL · NextAuth v5 · Inngest · Sentry · jsPDF · XLSX
 
-This Turborepo includes the following packages/apps:
+---
 
-### Apps and Packages
+## Kurulum
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### Gereksinimler
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+- Node.js 20+
+- pnpm 9+
+- PostgreSQL 15+
 
-### Utilities
+### Hızlı Başlangıç
 
-This Turborepo has some additional tools already setup for you:
+```bash
+# Bağımlılıkları yükle
+pnpm install
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+# .env.local dosyasını oluştur
+cp apps/web/.env.example apps/web/.env.local
 
-### Build
+# Prisma generate + migrate
+pnpm --filter database db:generate
+pnpm --filter database db:push
 
-To build all apps and packages, run the following command:
+# Abonelik planlarını yükle (zorunlu)
+pnpm --filter database db:seed:plans
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+# Demo tenant oluştur (opsiyonel)
+pnpm --filter database db:seed:demo
 
-```sh
-cd my-turborepo
-turbo build
+# Geliştirme sunucusu
+pnpm dev
 ```
 
-Without global `turbo`, use your package manager:
+---
 
-```sh
-cd my-turborepo
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+## Ortam Değişkenleri
+
+`apps/web/.env.local` örnek:
+
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/bstoto"
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="change-this-in-production"
+ADMIN_EMAIL="admin@example.com"
+
+# Demo
+DEMO_TENANT_SLUG="demo-oto"
+DEMO_EMAIL="demo@bstoto.com"
+DEMO_PASSWORD="Demo1234!"
+
+# SMS/WhatsApp/E-posta/Depolama/Ödeme anahtarları için
+# apps/web/.env.example dosyasına bakın
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## Geliştirme
 
-```sh
-turbo build --filter=docs
+```bash
+pnpm --filter web exec jest --runInBand    # Testler
+pnpm --filter web check-types              # TypeScript
+pnpm --filter web lint                     # Lint
+pnpm --filter database exec prisma studio  # Veritabanı arayüzü
 ```
 
-Without global `turbo`:
+CI: TypeCheck ✅ | 53 test suite ✅ | 443 test ✅ | Lint 654/660 ✅
 
-```sh
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+---
+
+## Demo
+
+Demo tenant (`DEMO_TENANT_SLUG=demo-oto`) her gece 03:00 UTC'de sıfırlanır.
+
+| Rol | E-posta | Şifre |
+|-----|---------|-------|
+| Admin | demo@bstoto.com | Demo1234! |
+| Resepsiyon | resepsiyon.demo-oto@demo.com | Demo1234! |
+| Usta | usta.kadir.demo-oto@demo.com | Demo1234! |
+
+---
+
+## Fiyatlandırma
+
+| Paket | Aylık | Yıllık |
+|-------|------:|-------:|
+| Başlangıç | ₺799 + KDV | ₺7.990 + KDV |
+| Profesyonel | ₺1.499 + KDV | ₺14.990 + KDV |
+| Kurumsal | ₺2.999 + KDV | ₺29.990 + KDV |
+
+---
+
+## Production Deployment
+
+### Vercel + Supabase / Railway (Önerilen)
+
+```bash
+# 1. Veritabanı migrate
+DATABASE_URL="postgresql://..." pnpm --filter database db:push
+
+# 2. Abonelik planlarını seed et (ilk kurulumda bir kez)
+pnpm --filter database db:seed:plans
+
+# 3. Vercel'e deploy
+vercel --prod
 ```
 
-### Develop
+### Zorunlu Production Env Değişkenleri
 
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+```env
+DATABASE_URL              # PostgreSQL bağlantı URL
+NEXTAUTH_SECRET           # Güçlü rastgele string (openssl rand -base64 32)
+NEXTAUTH_URL              # https://yourdomain.com
+ADMIN_EMAIL               # Super admin bildirimleri için
+SENTRY_DSN                # Hata izleme (opsiyonel ama önerilir)
+UPSTASH_REDIS_REST_URL    # OTP ve rate-limit için
+UPSTASH_REDIS_REST_TOKEN
+RESEND_API_KEY            # E-posta bildirimleri için
 ```
 
-Without global `turbo`, use your package manager:
+### Sağlık Kontrolü
 
-```sh
-cd my-turborepo
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+```
+GET /api/health  →  { status: "ok", timestamp: "..." }
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## Mimari
 
-```sh
-turbo dev --filter=web
+```
+┌─────────────────────────────────────────────────────────┐
+│  Next.js 15 App Router (apps/web)                       │
+│  ├── app/                 Sayfa ve API Route'ları        │
+│  ├── lib/actions/         Server Actions (RBAC guard)    │
+│  ├── lib/guards.ts        guardTenant / guardTenantRole  │
+│  └── lib/inngest/         Arka plan iş yönetimi          │
+├─────────────────────────────────────────────────────────┤
+│  Expo React Native (apps/mobile)   — Beta               │
+│  ├── app/(firma)/         Usta/yönetici portali          │
+│  └── app/(musteri)/       Müşteri portali                │
+├─────────────────────────────────────────────────────────┤
+│  PostgreSQL + Prisma (packages/database)                 │
+│  Multi-tenant: her kayıt tenantId ile izole              │
+└─────────────────────────────────────────────────────────┘
 ```
 
-Without global `turbo`:
+---
 
-```sh
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+## Güvenlik
 
-### Remote Caching
+- **Tenant izolasyonu:** Her Prisma sorgusuna `tenantId` filtresi zorunlu
+- **RBAC:** `guardTenantRole(["TENANT_ADMIN", "ACCOUNTANT"])` server action'larda
+- **Rate limiting:** Upstash Redis tabanlı, IP ve endpoint başına
+- **2FA:** TOTP (Google Authenticator uyumlu) yönetici hesapları için
+- **KVKK:** Kayıt sırasında IP + user-agent + timestamp konsolide log
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+---
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+© 2026 BST Teknoloji — Özel yazılım, tüm hakları saklıdır.

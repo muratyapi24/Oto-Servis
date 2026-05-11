@@ -1,8 +1,9 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import * as Sentry from "@sentry/nextjs";
 import {
   createInvoiceSchema,
@@ -43,12 +44,10 @@ export async function createInvoice(
   data: CreateInvoiceInput
 ): Promise<ActionResult<{ invoiceId: string }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
-    const tenantId = session.user.tenantId;
     const validatedData = createInvoiceSchema.parse(data);
 
     const invoice = await prisma.$transaction(async (tx) => {
@@ -126,12 +125,12 @@ export async function createInvoice(
       return newInvoice;
     });
 
-    revalidatePath("/dashboard/finance/invoices");
+    revalidatePath("/dashboard/finances/invoices");
     return { success: true, data: { invoiceId: invoice.id } };
   } catch (error: unknown) {
     Sentry.captureException(error);
     console.error("Fatura oluşturma hatası:", error);
-    if (error instanceof Error && error.message === "ACCOUNTING_INTEGRITY_ERROR") {
+    if (error instanceof Error && (error instanceof Error ? error.message : String(error)) === "ACCOUNTING_INTEGRITY_ERROR") {
       return { success: false, error: "Muhasebe denklik hatası: Toplam tutarlar uyuşmuyor." };
     }
     return { success: false, error: "Fatura oluşturulamadı." };
@@ -146,12 +145,10 @@ export async function updateInvoice(
   data: Partial<CreateInvoiceInput>
 ): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
-    const tenantId = session.user.tenantId;
 
     const invoice = await prisma.invoice.findFirst({
       where: { id: invoiceId, tenantId, deletedAt: null },
@@ -236,8 +233,8 @@ export async function updateInvoice(
       });
     });
 
-    revalidatePath("/dashboard/finance/invoices");
-    revalidatePath(`/dashboard/finance/invoices/${invoiceId}`);
+    revalidatePath("/dashboard/finances/invoices");
+    revalidatePath(`/dashboard/finances/invoices/${invoiceId}`);
     return { success: true };
   } catch (error: unknown) {
     Sentry.captureException(error);
@@ -263,12 +260,10 @@ export async function addInvoiceItem(
   }
 ): Promise<ActionResult<{ itemId: string }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const invoice = await prisma.invoice.findFirst({
       where: { id: invoiceId, tenantId, deletedAt: null },
@@ -336,7 +331,7 @@ export async function addInvoiceItem(
       return newItem;
     });
 
-    revalidatePath(`/dashboard/finance/invoices/${invoiceId}`);
+    revalidatePath(`/dashboard/finances/invoices/${invoiceId}`);
     return { success: true, data: { itemId: item.id } };
   } catch (error: unknown) {
     Sentry.captureException(error);
@@ -362,12 +357,10 @@ export async function updateInvoiceItem(
   }
 ): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const item = await prisma.invoiceItem.findFirst({
       where: { id: itemId, tenantId },
@@ -431,7 +424,7 @@ export async function updateInvoiceItem(
       });
     });
 
-    revalidatePath(`/dashboard/finance/invoices/${item.invoiceId}`);
+    revalidatePath(`/dashboard/finances/invoices/${item.invoiceId}`);
     return { success: true };
   } catch (error: unknown) {
     Sentry.captureException(error);
@@ -445,12 +438,10 @@ export async function updateInvoiceItem(
 // ---------------------------------------------------------------------------
 export async function deleteInvoiceItem(itemId: string): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const item = await prisma.invoiceItem.findFirst({
       where: { id: itemId, tenantId },
@@ -495,7 +486,7 @@ export async function deleteInvoiceItem(itemId: string): Promise<ActionResult> {
       });
     });
 
-    revalidatePath(`/dashboard/finance/invoices/${item.invoiceId}`);
+    revalidatePath(`/dashboard/finances/invoices/${item.invoiceId}`);
     return { success: true };
   } catch (error: unknown) {
     Sentry.captureException(error);
@@ -512,12 +503,10 @@ export async function reorderInvoiceItems(
   itemIds: string[]
 ): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const invoice = await prisma.invoice.findFirst({
       where: { id: invoiceId, tenantId, deletedAt: null },
@@ -537,7 +526,7 @@ export async function reorderInvoiceItems(
       }
     });
 
-    revalidatePath(`/dashboard/finance/invoices/${invoiceId}`);
+    revalidatePath(`/dashboard/finances/invoices/${invoiceId}`);
     return { success: true };
   } catch (error: unknown) {
     Sentry.captureException(error);
@@ -553,12 +542,10 @@ export async function createInvoiceFromServiceOrder(
   serviceOrderId: string
 ): Promise<ActionResult<{ invoiceId: string }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
-    const tenantId = session.user.tenantId;
 
     // ServiceOrder'ı ServiceItem'larla birlikte getir
     const serviceOrder = await prisma.serviceOrder.findFirst({
@@ -644,7 +631,7 @@ export async function createInvoiceFromServiceOrder(
       return newInvoice;
     });
 
-    revalidatePath("/dashboard/finance/invoices");
+    revalidatePath("/dashboard/finances/invoices");
     return { success: true, data: { invoiceId: invoice.id } };
   } catch (error: unknown) {
     Sentry.captureException(error);
@@ -660,12 +647,10 @@ export async function getInvoices(
   filters?: InvoiceFilters
 ): Promise<ActionResult<{ invoices: unknown[]; total: number }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
     const page = filters?.page ?? 1;
     const pageSize = filters?.pageSize ?? 20;
     const skip = (page - 1) * pageSize;
@@ -730,12 +715,10 @@ export async function getInvoiceById(
   invoiceId: string
 ): Promise<ActionResult<{ invoice: unknown }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const invoice = await prisma.invoice.findFirst({
       where: { id: invoiceId, tenantId, deletedAt: null },
@@ -784,12 +767,10 @@ export async function updateInvoiceStatus(
   status: "SENT" | "PAID" | "CANCELLED"
 ): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId, session } = g;
 
-    const tenantId = session.user.tenantId;
 
     const invoice = await prisma.invoice.findFirst({
       where: { id: invoiceId, tenantId, deletedAt: null },
@@ -835,38 +816,11 @@ export async function updateInvoiceStatus(
 
     const updateData: Record<string, unknown> = { status };
 
-    // SENT durumuna geçişte kalıcı fatura numarası ata (InvoiceSequence ile SELECT FOR UPDATE)
     if (status === "SENT") {
-      const year = new Date().getFullYear();
-
+      const { getNextInvoiceNumber } = await import('@/lib/sequence-utils');
+      
       const newInvoiceNumber = await prisma.$transaction(async (tx) => {
-        // SELECT FOR UPDATE ile kilit
-        const seqRows = await tx.$queryRaw<Array<{ id: string; lastSeq: number }>>`
-          SELECT id, "lastSeq" FROM "InvoiceSequence"
-          WHERE "tenantId" = ${tenantId} AND "year" = ${year}
-          FOR UPDATE
-        `;
-
-        let newSeq: number;
-
-        if (seqRows.length === 0) {
-          // Yeni kayıt oluştur
-          newSeq = 1;
-          await tx.$executeRaw`
-            INSERT INTO "InvoiceSequence" (id, "tenantId", "year", "lastSeq")
-            VALUES (gen_random_uuid(), ${tenantId}, ${year}, 1)
-          `;
-        } else {
-          // Mevcut kaydı artır
-          newSeq = (seqRows[0]?.lastSeq ?? 0) + 1;
-          await tx.$executeRaw`
-            UPDATE "InvoiceSequence"
-            SET "lastSeq" = ${newSeq}
-            WHERE "tenantId" = ${tenantId} AND "year" = ${year}
-          `;
-        }
-
-        return generateInvoiceNumber(year, newSeq);
+        return await getNextInvoiceNumber(tenantId, tx);
       });
 
       updateData.invoiceNumber = newInvoiceNumber;
@@ -900,8 +854,8 @@ export async function updateInvoiceStatus(
       },
     });
 
-    revalidatePath("/dashboard/finance/invoices");
-    revalidatePath(`/dashboard/finance/invoices/${invoiceId}`);
+    revalidatePath("/dashboard/finances/invoices");
+    revalidatePath(`/dashboard/finances/invoices/${invoiceId}`);
     return { success: true };
   } catch (error: unknown) {
     Sentry.captureException(error);
@@ -917,12 +871,10 @@ export async function getInvoicePdfUrl(
   invoiceId: string
 ): Promise<ActionResult<{ url: string }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const invoice = await prisma.invoice.findFirst({
       where: { id: invoiceId, tenantId, deletedAt: null },

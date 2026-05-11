@@ -1,8 +1,9 @@
 "use server";
 
+import { guardTenant } from "@/lib/guards";
+
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
 import * as Sentry from "@sentry/nextjs";
 import {
   notificationTemplateSchema,
@@ -24,12 +25,10 @@ export async function createNotificationTemplate(
   data: NotificationTemplateInput
 ): Promise<ActionResult<{ templateId: string }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
     const validatedData = notificationTemplateSchema.parse(data);
 
     // 3.7 Değişkenleri otomatik tespit et
@@ -67,12 +66,10 @@ export async function updateNotificationTemplate(
   data: Partial<NotificationTemplateInput>
 ): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const template = await prisma.notificationTemplate.findFirst({
       where: { id: templateId, tenantId, deletedAt: null },
@@ -116,12 +113,10 @@ export async function deleteNotificationTemplate(
   templateId: string
 ): Promise<ActionResult> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     await prisma.notificationTemplate.updateMany({
       where: { id: templateId, tenantId, deletedAt: null },
@@ -145,12 +140,10 @@ export async function getNotificationTemplates(filters?: {
   channel?: string;
 }): Promise<ActionResult<{ templates: unknown[] }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const templates = await prisma.notificationTemplate.findMany({
       where: {
@@ -180,12 +173,10 @@ export async function getNotificationTemplateById(
   templateId: string
 ): Promise<ActionResult<{ template: unknown }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const template = await prisma.notificationTemplate.findFirst({
       where: { id: templateId, tenantId, deletedAt: null },
@@ -225,12 +216,10 @@ export async function previewTemplate(
   customVariables?: Record<string, string>
 ): Promise<ActionResult<{ preview: string }>> {
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { success: false, error: "Yetkisiz erişim." };
-    }
+    const g = await guardTenant();
+    if ("error" in g) return g as never;
+    const { tenantId } = g;
 
-    const tenantId = session.user.tenantId;
 
     const template = await prisma.notificationTemplate.findFirst({
       where: { id: templateId, tenantId, deletedAt: null },

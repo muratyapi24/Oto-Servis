@@ -2,17 +2,23 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import { auth } from "@/auth";
+import { guardTenantRole, guardTenant } from "@/lib/guards";
 import { CreateVehicleInput, createVehicleSchema } from "@/lib/validations/vehicles";
+import { checkLimit } from "@/lib/subscription-guard";
 
 /**
  * Creates a new vehicle for a specific customer in current tenant.
  */
 export async function createVehicle(data: CreateVehicleInput) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { error: "Yetkisiz erişim." };
+
+    // Subscription Guard — Araç limit kontrolü
+    const limitCheck = await checkLimit(tenantId, "maxVehicles");
+    if (!limitCheck.allowed) {
+      return { error: limitCheck.message || "Araç limitinize ulaştınız. Paketinizi yükseltin." };
     }
 
     const validatedData = createVehicleSchema.parse(data);
@@ -20,7 +26,7 @@ export async function createVehicle(data: CreateVehicleInput) {
     // Aynı firmada aynı plaka kontrolü
     const existingPlate = await prisma.vehicle.findFirst({
       where: {
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         plate: validatedData.plate,
       },
     });
@@ -31,7 +37,7 @@ export async function createVehicle(data: CreateVehicleInput) {
 
     const newVehicle = await prisma.vehicle.create({
       data: {
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         customerId: validatedData.customerId,
         plate: validatedData.plate,
         brand: validatedData.brand,
@@ -56,9 +62,9 @@ export async function createVehicle(data: CreateVehicleInput) {
     revalidatePath("/dashboard/vehicles");
     revalidatePath(`/dashboard/customers/${validatedData.customerId}`);
     return { success: "Araç başarıyla kaydedildi.", vehicleId: newVehicle.id };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Araç kaydedilirken hata:", error);
-    if (error.name === "ZodError") {
+    if (error instanceof Error && error.name === "ZodError") {
       return { error: "Lütfen bilgileri düzeltin." };
     }
     return { error: "Araç kaydedilirken bir sunucu hatası oluştu." };
@@ -69,15 +75,14 @@ export async function createVehicle(data: CreateVehicleInput) {
  * Retrieves all vehicles for the current tenant.
  */
 export async function getVehicles() {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      throw new Error("Yetkisiz erişim");
-    }
 
     const vehicles = await prisma.vehicle.findMany({
       where: {
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         deletedAt: null,
       },
       include: {
@@ -98,7 +103,7 @@ export async function getVehicles() {
     });
 
     return { vehicles };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Araçlar getirilirken hata:", error);
     return { error: "Araç listesi yüklenemedi." };
   }
@@ -108,9 +113,10 @@ export async function getVehicles() {
  * Updates an existing vehicle.
  */
 export async function updateVehicle(data: any) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
 
     const { id, ...updateData } = data;
     if (!id) return { error: "ID bulunamadı" };
@@ -119,7 +125,7 @@ export async function updateVehicle(data: any) {
     if (updateData.plate) {
       const existingPlate = await prisma.vehicle.findFirst({
         where: {
-          tenantId: session.user.tenantId,
+          tenantId: tenantId,
           plate: updateData.plate,
           id: { not: id }
         },
@@ -128,7 +134,7 @@ export async function updateVehicle(data: any) {
     }
 
     await prisma.vehicle.update({
-      where: { id, tenantId: session.user.tenantId },
+      where: { id, tenantId: tenantId },
       data: {
         customerId: updateData.customerId,
         plate: updateData.plate,
@@ -165,12 +171,13 @@ export async function updateVehicle(data: any) {
  * Soft deletes a vehicle.
  */
 export async function deleteVehicle(id: string) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
 
     await prisma.vehicle.update({
-      where: { id, tenantId: session.user.tenantId },
+      where: { id, tenantId: tenantId },
       data: { deletedAt: new Date() }
     });
 
@@ -186,11 +193,10 @@ export async function deleteVehicle(id: string) {
  * Retrieves analytics and expanded vehicle data for the Fleet Dashboard
  */
 export async function getVehicleDashboard() {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim" };
-
-    const tenantId = session.user.tenantId;
 
     // Tüm araçları müşteri ve servis geçmişi (son servis & aktif servis tespiti için) ile çek
     const allVehicles = await prisma.vehicle.findMany({
@@ -233,7 +239,7 @@ export async function getVehicleDashboard() {
       }
 
       // --- Durum Etiketlemesi (Status) ---
-      let statusLabel = "READY"; // Opsiyonel durum: Hazır/Boşta
+      let statusLabel = "BOŞTA"; // Opsiyonel durum: Hazır/Boşta
       let lastServiceDate = null;
       let nextAppointmentDate = null;
 
@@ -245,13 +251,12 @@ export async function getVehicleDashboard() {
            return; 
          }
 
-         // @ts-ignore (eğer COMPLETED enum'da yoksa patlamaması için, ancak projemizde genellikle var)
          if (latestSO.status === "COMPLETED") {
             lastServiceDate = latestSO.updatedAt;
          } else if (latestSO.status === "IN_PROGRESS" || latestSO.status === "WAITING_APPROVAL") {
-            statusLabel = "IN QUEUE";
+            statusLabel = "SERVİSTE";
          } else if (latestSO.status === "PENDING") {
-            statusLabel = "URGENT"; // Sadece görsellik katması için, pendingler acil bekleyen varsayılır.
+            statusLabel = "BEKLİYOR"; // Sadece görsellik katması için, pendingler acil bekleyen varsayılır.
             nextAppointmentDate = latestSO.createdAt; 
          }
       }
@@ -286,7 +291,7 @@ export async function getVehicleDashboard() {
        vehiclesList: formattedVehicles // Datagrid / Cards döngüsü için  
     };
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("Vehicle Dashboard Error:", error);
     return { error: "Araç verileri yüklenirken bir problem oluştu." };
   }
@@ -295,37 +300,16 @@ export async function getVehicleDashboard() {
 /**
  * Retrieves a single vehicle by ID with related customer and service orders.
  */
-export async function getVehicleById(id: string): Promise<{
-  vehicle: {
-    id: string; plate: string; brand: string; model: string; year: number | null;
-    chassisNo: string | null; engineNo: string | null; color: string | null;
-    engineType: string | null; transmission: string | null; fuelType: string | null;
-    mileage: number; driverName: string | null; driverPhone: string | null;
-    insuranceCompany: string | null; policyNumber: string | null;
-    registrationDate: Date | null; notes: string | null;
-    imageUrl: string | null;
-    customer: {
-      id: string; type: string; firstName: string | null;
-      lastName: string | null; companyName: string | null; phone: string;
-    };
-    serviceOrders: {
-      id: string; orderNumber: number; status: string;
-      receptionDate: Date; complaintDescription: string; totalAmount: number;
-    }[];
-    _count: { serviceOrders: number };
-  } | null;
-  error?: string;
-}> {
+export async function getVehicleById(id: string) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) {
-      return { vehicle: null, error: "Yetkisiz erişim." };
-    }
 
     const vehicle = await prisma.vehicle.findUnique({
       where: {
         id,
-        tenantId: session.user.tenantId,
+        tenantId: tenantId,
         deletedAt: null,
       },
       select: {
@@ -387,7 +371,7 @@ export async function getVehicleById(id: string): Promise<{
     };
 
     return { vehicle: serialized };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Araç detayı getirilirken hata:", error);
     return { vehicle: null, error: "Araç detayı yüklenemedi." };
   }
@@ -399,13 +383,14 @@ export async function getVehicleById(id: string): Promise<{
 export async function updateVehicleImage(
   vehicleId: string,
   imageUrl: string
-): Promise<{ success?: string; error?: string }> {
+) {
+  const g = await guardTenant();
+  if ("error" in g) return g as never;
+  const { tenantId } = g;
   try {
-    const session = await auth();
-    if (!session?.user?.tenantId) return { error: "Yetkisiz erişim." };
 
     await prisma.vehicle.update({
-      where: { id: vehicleId, tenantId: session.user.tenantId },
+      where: { id: vehicleId, tenantId: tenantId },
       data: { imageUrl },
     });
 

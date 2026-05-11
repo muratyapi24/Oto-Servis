@@ -21,10 +21,10 @@ describe("Property 2: Teklif kalemi hesaplama doğruluğu", () => {
   it("subTotal, taxAmount ve totalPrice formüllere uygun hesaplanmalı", () => {
     fc.assert(
       fc.property(
-        fc.float({ min: 0.01, max: 1000, noNaN: true }),
-        fc.float({ min: 0.01, max: 10000, noNaN: true }),
-        fc.float({ min: 0, max: 100, noNaN: true }),
-        fc.float({ min: 0, max: 100, noNaN: true }),
+        fc.double({ min: 0.01, max: 1000, noNaN: true }),
+        fc.double({ min: 0.01, max: 10000, noNaN: true }),
+        fc.double({ min: 0, max: 100, noNaN: true }),
+        fc.double({ min: 0, max: 100, noNaN: true }),
         (qty, unitPrice, taxRate, discount) => {
           const safeDiscount = Math.min(discount, qty * unitPrice);
           const result = calcQuoteItem(qty, unitPrice, taxRate, safeDiscount);
