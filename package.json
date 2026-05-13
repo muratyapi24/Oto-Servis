@@ -16,5 +16,20 @@
   "packageManager": "pnpm@9.0.0",
   "engines": {
     "node": ">=18"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.2.14",
+      "@types/react-dom": "19.2.3"
+    },
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "swagger-ui-react>react": "19",
+        "swagger-ui-react>react-dom": "19",
+        "react-copy-to-clipboard>react": "19",
+        "react-debounce-input>react": "19",
+        "react-inspector>react": "19"
+      }
+    }
   }
 }
