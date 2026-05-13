@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@repo/database";
 import LandingNavbar from "@/components/landing/LandingNavbar";
 import LandingFooter from "@/components/landing/LandingFooter";
+import { Providers } from "@/components/Providers";
 import PricingClient from "./PricingClient";
 
 // Plan verileri nadiren değişir; 1 saatlik ISR yeterli
@@ -97,12 +98,14 @@ export default async function PricingPage() {
 
       <main className="pt-20 flex-1">
         {/* Pricing Client renders HERO, TIERS and COMPARISON, sharing state seamlessly */}
-        <PricingClient
-          starter={starter ?? null}
-          professional={professional ?? null}
-          enterprise={enterprise ?? null}
-          groupedFeatures={groupedFeatures}
-        />
+        <Providers>
+          <PricingClient
+            starter={starter ?? null}
+            professional={professional ?? null}
+            enterprise={enterprise ?? null}
+            groupedFeatures={groupedFeatures}
+          />
+        </Providers>
 
         {/* ADD-ONS */}
         <section className="bg-surface-container-low py-32">
