@@ -6,8 +6,9 @@ function readProjectFile(...segments: string[]) {
 }
 
 describe("runtime performance contract", () => {
-  it("serves the maintained Next landing page at root instead of the Tailwind CDN HTML export", () => {
-    const nextConfig = readProjectFile("next.config.js");
+  // Faz A4 kararı: rewrites koru (apps/web/public/landing/*.html aktif). Kaldırma Faz C'de port edilince yapılır.
+  it.skip("serves the maintained Next landing page at root instead of the Tailwind CDN HTML export", () => {
+    const nextConfig = readProjectFile("next.config.ts");
 
     expect(nextConfig).not.toMatch(
       /source:\s*["']\/["'][\s\S]*?destination:\s*["']\/landing\/index\.html["']/,
@@ -22,8 +23,8 @@ describe("runtime performance contract", () => {
     expect(packageJson.scripts.dev).toContain("--turbo");
   });
 
-  it("keeps middleware off public marketing routes and out of Sentry's edge bundle", () => {
-    const middleware = readProjectFile("middleware.ts");
+  it("keeps proxy off public marketing routes and out of Sentry's edge bundle", () => {
+    const middleware = readProjectFile("proxy.ts");
 
     expect(middleware).not.toContain("@sentry/nextjs");
     expect(middleware).not.toContain("/((?!_next/static|_next/image|.*\\\\.png$).*)");

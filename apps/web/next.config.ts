@@ -1,19 +1,19 @@
 import type { NextConfig } from "next";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { withSentryConfig } from "@sentry/nextjs";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
   turbopack: {
-    root: path.resolve(__dirname, "../.."),
+    root: path.resolve(process.cwd(), "../.."),
   },
   transpilePackages: ["@repo/ui", "@repo/database"],
   serverExternalPackages: ["@prisma/client", "bcryptjs"],
   typescript: {
-    ignoreBuildErrors: false,
+    // Next 16'nin build sirasindaki post-compile TypeScript adimi monorepo'da
+    // 'Maximum call stack size exceeded' hatasi veriyor. Type-check ayri olarak
+    // `pnpm check-types` (tsc --noEmit) ile yapilir.
+    ignoreBuildErrors: true,
   },
   async rewrites() {
     return {
