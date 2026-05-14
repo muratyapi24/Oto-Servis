@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { Colors, Radius, Shadow } from "../constants/theme";
+import { Colors, DarkColors, Radius, Shadow } from "../constants/theme";
+import { useTheme } from "./theme-provider";
 
 interface KpiCardProps {
   label: string;
@@ -12,25 +13,49 @@ interface KpiCardProps {
 }
 
 const VARIANT_STYLES = {
-  primary: {
-    bg: Colors.primaryContainer,
-    text: "#ffffff",
-    subText: "rgba(255,255,255,0.75)",
+  light: {
+    primary: {
+      bg: Colors.primaryContainer,
+      text: "#ffffff",
+      subText: "rgba(255,255,255,0.75)",
+    },
+    surface: {
+      bg: Colors.surfaceContainerLowest,
+      text: Colors.onSurface,
+      subText: Colors.outline,
+    },
+    success: {
+      bg: "#ecfdf5",
+      text: Colors.secondary,
+      subText: Colors.outline,
+    },
+    warning: {
+      bg: "#fffbeb",
+      text: "#b45309",
+      subText: Colors.outline,
+    },
   },
-  surface: {
-    bg: Colors.surfaceContainerLowest,
-    text: Colors.onSurface,
-    subText: Colors.outline,
-  },
-  success: {
-    bg: "#ecfdf5",
-    text: Colors.secondary,
-    subText: Colors.outline,
-  },
-  warning: {
-    bg: "#fffbeb",
-    text: "#b45309",
-    subText: Colors.outline,
+  dark: {
+    primary: {
+      bg: DarkColors.primaryContainer,
+      text: "#ffffff",
+      subText: "rgba(255,255,255,0.75)",
+    },
+    surface: {
+      bg: DarkColors.surfaceContainerLowest,
+      text: DarkColors.onSurface,
+      subText: DarkColors.outline,
+    },
+    success: {
+      bg: "#064e3b",
+      text: DarkColors.secondary,
+      subText: DarkColors.outline,
+    },
+    warning: {
+      bg: "#78350f",
+      text: "#fbbf24",
+      subText: DarkColors.outline,
+    },
   },
 };
 
@@ -42,15 +67,18 @@ export function KpiCard({
   trend,
   onPress,
 }: KpiCardProps) {
-  const v = VARIANT_STYLES[variant];
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const v = VARIANT_STYLES[isDark ? "dark" : "light"][variant];
+  const colors = isDark ? DarkColors : Colors;
 
   const content = (
     <View style={[styles.card, { backgroundColor: v.bg }, Shadow.navy]}>
       <View style={styles.header}>
         {icon ? <Text style={styles.icon}>{icon}</Text> : null}
         {trend ? (
-          <View style={styles.trendBadge}>
-            <Text style={[styles.trendText, { color: trend.direction === "up" ? Colors.secondary : Colors.error }]}>
+          <View style={[styles.trendBadge, { backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.06)" }]}>
+            <Text style={[styles.trendText, { color: trend.direction === "up" ? colors.secondary : colors.error }]}>
               {trend.direction === "up" ? "↑" : "↓"} {Math.abs(trend.value)}%
             </Text>
           </View>
@@ -96,7 +124,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
   },
   trendBadge: {
-    backgroundColor: "rgba(0,0,0,0.06)",
     borderRadius: 20,
     paddingHorizontal: 6,
     paddingVertical: 2,

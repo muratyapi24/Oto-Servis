@@ -15,6 +15,23 @@ export const Colors = {
   outlineVariant: '#c5c5d3',
 } as const;
 
+export const DarkColors = {
+  primary: '#a8c7fa',
+  primaryContainer: '#3b82f6',
+  secondary: '#6cf8bb',
+  secondaryContainer: '#006c49',
+  surface: '#1a1c1e',
+  onSurface: '#e3e3e3',
+  onSurfaceVariant: '#c4c6cf',
+  error: '#ffb4ab',
+  surfaceContainerLow: '#1f2123',
+  surfaceContainer: '#25272a',
+  surfaceContainerHigh: '#2f3135',
+  surfaceContainerLowest: '#0f1113',
+  outline: '#8e9099',
+  outlineVariant: '#44464f',
+} as const;
+
 export const Radius = {
   sm: 8,
   md: 12,   // XL
@@ -40,3 +57,12 @@ export const Shadow = {
 } as const;
 
 export const GradientCTA = ['#3B82F6', '#1E3A8A'] as const;
+
+/**
+ * Get theme-aware colors based on current theme mode
+ * @param isDark - Whether dark mode is active
+ * @returns Color palette for the current theme
+ */
+export function getThemeColors(isDark: boolean) {
+  return isDark ? DarkColors : Colors;
+}

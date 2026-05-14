@@ -1,7 +1,8 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { Colors, Radius, Shadow } from "../constants/theme";
+import { Colors, DarkColors, Radius, Shadow } from "../constants/theme";
 import { StatusBadge } from "./StatusBadge";
+import { useTheme } from "./theme-provider";
 
 interface ServiceCardOrder {
   id: string;
@@ -21,7 +22,10 @@ interface ServiceCardProps {
 }
 
 export function ServiceCard({ order, onPress, showPriorityBorder = true }: ServiceCardProps) {
-  const borderColor = order.isUrgent ? Colors.error : Colors.primaryContainer;
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const colors = isDark ? DarkColors : Colors;
+  const borderColor = order.isUrgent ? colors.error : colors.primaryContainer;
 
   return (
     <TouchableOpacity
@@ -29,15 +33,16 @@ export function ServiceCard({ order, onPress, showPriorityBorder = true }: Servi
       activeOpacity={0.85}
       style={[
         styles.card,
+        { backgroundColor: colors.surfaceContainerLowest },
         Shadow.navy,
         showPriorityBorder && { borderLeftColor: borderColor, borderLeftWidth: 4 },
       ]}
     >
       <View style={styles.header}>
         <View style={styles.plateRow}>
-          <Text style={styles.plate}>{order.plate}</Text>
+          <Text style={[styles.plate, { color: colors.onSurface }]}>{order.plate}</Text>
           {order.isUrgent && (
-            <View style={styles.acilBadge}>
+            <View style={[styles.acilBadge, { backgroundColor: colors.error }]}>
               <Text style={styles.acilText}>ACİL</Text>
             </View>
           )}
@@ -45,27 +50,27 @@ export function ServiceCard({ order, onPress, showPriorityBorder = true }: Servi
         <StatusBadge status={order.status} size="sm" />
       </View>
 
-      <Text style={styles.model} numberOfLines={1}>
+      <Text style={[styles.model, { color: colors.outline }]} numberOfLines={1}>
         {order.vehicleModel}
       </Text>
-      <Text style={styles.complaint} numberOfLines={2}>
+      <Text style={[styles.complaint, { color: colors.onSurface }]} numberOfLines={2}>
         {order.complaint}
       </Text>
 
       <View style={styles.footer}>
         {order.mechanicName ? (
-          <Text style={styles.mechanic}>👤 {order.mechanicName}</Text>
+          <Text style={[styles.mechanic, { color: colors.outline }]}>👤 {order.mechanicName}</Text>
         ) : null}
         <View style={styles.progressContainer}>
-          <View style={styles.progressTrack}>
+          <View style={[styles.progressTrack, { backgroundColor: colors.surfaceContainerHigh }]}>
             <View
               style={[
                 styles.progressFill,
-                { width: `${order.completionPercentage}%` },
+                { width: `${order.completionPercentage}%`, backgroundColor: colors.secondary },
               ]}
             />
           </View>
-          <Text style={styles.progressText}>{order.completionPercentage}%</Text>
+          <Text style={[styles.progressText, { color: colors.outline }]}>{order.completionPercentage}%</Text>
         </View>
       </View>
     </TouchableOpacity>

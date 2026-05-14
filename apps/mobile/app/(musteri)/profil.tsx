@@ -14,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { GlassHeader } from "@/components/GlassHeader";
 import { ProgressBar } from "@/components/ProgressBar";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Colors, Radius, Shadow } from "@/constants/theme";
 
 const TIER_CONFIG: Record<string, { label: string; color: string; bg: string; icon: string; min: number; max: number }> = {
@@ -190,6 +191,12 @@ export default function ProfilScreen() {
           </View>
         </View>
 
+        {/* Theme Settings */}
+        <Text style={styles.sectionTitle}>Tema Ayarları</Text>
+        <View style={[styles.themeCard, Shadow.navy]}>
+          <ThemeToggle />
+        </View>
+
         {/* Logout */}
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>🚪 Çıkış Yap</Text>
@@ -307,6 +314,13 @@ const styles = StyleSheet.create({
   },
   qrText: { fontSize: 16, fontWeight: "700", color: Colors.outline },
   qrSubtext: { fontSize: 11, color: Colors.outline, textAlign: "center", paddingHorizontal: 8 },
+
+  // Theme
+  themeCard: {
+    backgroundColor: Colors.surfaceContainerLowest,
+    borderRadius: Radius.lg,
+    overflow: "hidden",
+  },
 
   // Logout
   logoutButton: {

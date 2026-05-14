@@ -11,6 +11,7 @@ import {
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GlassHeader } from "@/components/GlassHeader";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Colors, Radius, Shadow } from "@/constants/theme";
 
 interface SettingRowProps {
@@ -113,6 +114,14 @@ export default function AyarlarScreen() {
             <Text style={styles.infoLabel}>Aktif Dil</Text>
             <Text style={styles.infoValue}>{languageEnglish ? "English" : "Türkçe"}</Text>
           </View>
+        </View>
+
+        {/* Tema section */}
+        <View style={styles.sectionLabel}>
+          <Text style={styles.sectionLabelText}>TEMA / THEME</Text>
+        </View>
+        <View style={[styles.card, Shadow.navy]}>
+          <ThemeToggle />
         </View>
 
         {/* Uygulama bilgisi */}

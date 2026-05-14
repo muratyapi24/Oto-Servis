@@ -6,7 +6,8 @@ import {
   StyleSheet,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Colors, Shadow, Radius } from "../constants/theme";
+import { Colors, DarkColors, Shadow, Radius } from "../constants/theme";
+import { useTheme } from "./theme-provider";
 
 interface GlassHeaderProps {
   title: string;
@@ -17,31 +18,37 @@ interface GlassHeaderProps {
 
 export function GlassHeader({ title, subtitle, rightAction, onBack }: GlassHeaderProps) {
   const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const colors = isDark ? DarkColors : Colors;
 
   return (
     <View
       style={[
         styles.container,
-        { paddingTop: insets.top + 8 },
+        { 
+          paddingTop: insets.top + 8,
+          backgroundColor: isDark ? "rgba(31,33,35,0.85)" : "rgba(255,255,255,0.85)",
+        },
         Shadow.navy,
       ]}
     >
       <View style={styles.row}>
         {onBack && (
           <TouchableOpacity
-            style={styles.backBtn}
+            style={[styles.backBtn, { backgroundColor: colors.surfaceContainerLow }]}
             onPress={onBack}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Text style={styles.backIcon}>←</Text>
+            <Text style={[styles.backIcon, { color: colors.onSurface }]}>←</Text>
           </TouchableOpacity>
         )}
         <View style={styles.titleContainer}>
-          <Text style={styles.title} numberOfLines={1}>
+          <Text style={[styles.title, { color: colors.onSurface }]} numberOfLines={1}>
             {title}
           </Text>
           {subtitle ? (
-            <Text style={styles.subtitle} numberOfLines={1}>
+            <Text style={[styles.subtitle, { color: colors.outline }]} numberOfLines={1}>
               {subtitle}
             </Text>
           ) : null}
@@ -56,7 +63,6 @@ export function GlassHeader({ title, subtitle, rightAction, onBack }: GlassHeade
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "rgba(255,255,255,0.85)",
     paddingHorizontal: 16,
     paddingBottom: 12,
     borderBottomWidth: 0,
@@ -70,14 +76,12 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: Radius.sm,
-    backgroundColor: Colors.surfaceContainerLow,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 8,
   },
   backIcon: {
     fontSize: 20,
-    color: Colors.onSurface,
     fontWeight: "600",
   },
   titleContainer: {
@@ -86,12 +90,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "700",
-    color: Colors.onSurface,
     letterSpacing: -0.3,
   },
   subtitle: {
     fontSize: 13,
-    color: Colors.outline,
     marginTop: 1,
   },
   rightAction: {

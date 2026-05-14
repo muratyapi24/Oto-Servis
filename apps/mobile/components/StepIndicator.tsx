@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { Colors } from "../constants/theme";
+import { Colors, DarkColors } from "../constants/theme";
+import { useTheme } from "./theme-provider";
 
 interface StepIndicatorProps {
   steps: string[];
@@ -8,6 +9,10 @@ interface StepIndicatorProps {
 }
 
 export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const colors = isDark ? DarkColors : Colors;
+
   return (
     <View style={styles.container}>
       {steps.map((step, index) => {
@@ -21,9 +26,9 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
               <View
                 style={[
                   styles.circle,
-                  isCompleted && styles.circleCompleted,
-                  isActive && styles.circleActive,
-                  isPending && styles.circlePending,
+                  isCompleted && [styles.circleCompleted, { backgroundColor: colors.secondary }],
+                  isActive && [styles.circleActive, { backgroundColor: colors.primaryContainer }],
+                  isPending && [styles.circlePending, { backgroundColor: colors.surfaceContainerHigh }],
                 ]}
               >
                 {isCompleted ? (
@@ -32,6 +37,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                   <Text
                     style={[
                       styles.stepNumber,
+                      { color: colors.outline },
                       (isCompleted || isActive) && styles.stepNumberActive,
                     ]}
                   >
@@ -42,8 +48,9 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
               <Text
                 style={[
                   styles.stepLabel,
-                  isActive && styles.stepLabelActive,
-                  isPending && styles.stepLabelPending,
+                  { color: colors.onSurface },
+                  isActive && [styles.stepLabelActive, { color: colors.primaryContainer }],
+                  isPending && [styles.stepLabelPending, { color: colors.outline }],
                 ]}
                 numberOfLines={1}
               >
@@ -54,7 +61,8 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
               <View
                 style={[
                   styles.connector,
-                  isCompleted && styles.connectorCompleted,
+                  { backgroundColor: colors.surfaceContainerHigh },
+                  isCompleted && [styles.connectorCompleted, { backgroundColor: colors.secondary }],
                 ]}
               />
             )}
@@ -83,15 +91,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  circleCompleted: {
-    backgroundColor: Colors.secondary,
-  },
-  circleActive: {
-    backgroundColor: Colors.primaryContainer,
-  },
-  circlePending: {
-    backgroundColor: Colors.surfaceContainerHigh,
-  },
+  circleCompleted: {},
+  circleActive: {},
+  circlePending: {},
   checkmark: {
     color: "#fff",
     fontSize: 14,
@@ -100,7 +102,6 @@ const styles = StyleSheet.create({
   stepNumber: {
     fontSize: 13,
     fontWeight: "700",
-    color: Colors.outline,
   },
   stepNumberActive: {
     color: "#fff",
@@ -108,25 +109,18 @@ const styles = StyleSheet.create({
   stepLabel: {
     fontSize: 10,
     fontWeight: "500",
-    color: Colors.onSurface,
     maxWidth: 60,
     textAlign: "center",
   },
   stepLabelActive: {
-    color: Colors.primaryContainer,
     fontWeight: "700",
   },
-  stepLabelPending: {
-    color: Colors.outline,
-  },
+  stepLabelPending: {},
   connector: {
     flex: 1,
     height: 2,
-    backgroundColor: Colors.surfaceContainerHigh,
     marginBottom: 16,
     marginHorizontal: 4,
   },
-  connectorCompleted: {
-    backgroundColor: Colors.secondary,
-  },
+  connectorCompleted: {},
 });

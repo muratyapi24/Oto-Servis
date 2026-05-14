@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { View, Animated, StyleSheet } from "react-native";
-import { Colors } from "../constants/theme";
+import { Colors, DarkColors } from "../constants/theme";
+import { useTheme } from "./theme-provider";
 
 interface ProgressBarProps {
   value: number;   // 0-100
@@ -11,10 +12,15 @@ interface ProgressBarProps {
 
 export function ProgressBar({
   value,
-  color = Colors.secondary,
+  color,
   height = 6,
   animated = true,
 }: ProgressBarProps) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const colors = isDark ? DarkColors : Colors;
+  const fillColor = color || colors.secondary;
+  
   const animatedWidth = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -36,7 +42,7 @@ export function ProgressBar({
   });
 
   return (
-    <View style={[styles.track, { height, borderRadius: height / 2 }]}>
+    <View style={[styles.track, { height, borderRadius: height / 2, backgroundColor: colors.surfaceContainerHigh }]}>
       <Animated.View
         style={[
           styles.fill,
@@ -44,7 +50,7 @@ export function ProgressBar({
             width: widthInterpolated,
             height,
             borderRadius: height / 2,
-            backgroundColor: color,
+            backgroundColor: fillColor,
           },
         ]}
       />
@@ -54,7 +60,6 @@ export function ProgressBar({
 
 const styles = StyleSheet.create({
   track: {
-    backgroundColor: Colors.surfaceContainerHigh,
     overflow: "hidden",
     width: "100%",
   },

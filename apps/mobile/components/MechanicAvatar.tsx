@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
-import { Colors } from "../constants/theme";
+import { Colors, DarkColors } from "../constants/theme";
+import { useTheme } from "./theme-provider";
 
 interface MechanicAvatarProps {
   avatarUrl?: string | null;
@@ -15,6 +16,9 @@ export function MechanicAvatar({
   lastName,
   size = 40,
 }: MechanicAvatarProps) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const colors = isDark ? DarkColors : Colors;
   const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   const borderRadius = size / 2;
 
@@ -31,7 +35,7 @@ export function MechanicAvatar({
     <View
       style={[
         styles.initialsContainer,
-        { width: size, height: size, borderRadius, backgroundColor: Colors.primaryContainer },
+        { width: size, height: size, borderRadius, backgroundColor: colors.primaryContainer },
       ]}
     >
       <Text style={[styles.initials, { fontSize: size * 0.35 }]}>{initials}</Text>

@@ -13,19 +13,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { api } from "@/lib/api";
 import { GlassHeader } from "@/components/GlassHeader";
 import { KpiCard } from "@/components/KpiCard";
-import { Colors, Radius, Shadow } from "@/constants/theme";
+import { Radius, Shadow } from "@/constants/theme";
+import { useThemeColors } from "@/lib/theme/useThemeColors";
 
 const PERIOD_OPTIONS = [
   { label: "Bugün", value: "today" },
   { label: "Bu Hafta", value: "week" },
   { label: "Bu Ay", value: "month" },
 ];
-
-const BAY_STATUS_COLORS: Record<string, string> = {
-  OCCUPIED: Colors.primaryContainer,
-  WAITING: "#b45309",
-  EMPTY: Colors.surfaceContainerHigh,
-};
 
 const BAY_STATUS_LABELS: Record<string, string> = {
   OCCUPIED: "Dolu",
@@ -35,6 +30,13 @@ const BAY_STATUS_LABELS: Record<string, string> = {
 
 export default function FirmaPanelScreen() {
   const [period, setPeriod] = useState("today");
+  const colors = useThemeColors();
+
+  const BAY_STATUS_COLORS: Record<string, string> = {
+    OCCUPIED: colors.primaryContainer,
+    WAITING: "#b45309",
+    EMPTY: colors.surfaceContainerHigh,
+  };
 
   const { data, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ["firma-panel"],
@@ -43,8 +45,8 @@ export default function FirmaPanelScreen() {
 
   if (isLoading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={Colors.primaryContainer} />
+      <View style={[styles.center, { backgroundColor: colors.surface }]}>
+        <ActivityIndicator size="large" color={colors.primaryContainer} />
       </View>
     );
   }
@@ -52,8 +54,8 @@ export default function FirmaPanelScreen() {
   const overview = data?.overview;
   if (!overview) {
     return (
-      <View style={styles.center}>
-        <Text style={styles.errorText}>Veri yüklenemedi</Text>
+      <View style={[styles.center, { backgroundColor: colors.surface }]}>
+        <Text style={[styles.errorText, { color: colors.error }]}>Veri yüklenemedi</Text>
       </View>
     );
   }
@@ -77,7 +79,7 @@ export default function FirmaPanelScreen() {
   const criticalParts: any[] = overview.criticalParts ?? [];
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.surface }]} edges={["top"]}>
       <GlassHeader
         title={overview.firmName ?? "Panel"}
         subtitle={today}
@@ -90,20 +92,21 @@ export default function FirmaPanelScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Period Filter */}
-        <View style={styles.periodRow}>
+        <View style={[styles.periodRow, { backgroundColor: colors.surfaceContainer }]}>
           {PERIOD_OPTIONS.map((opt) => (
             <TouchableOpacity
               key={opt.value}
               onPress={() => setPeriod(opt.value)}
               style={[
                 styles.periodBtn,
-                period === opt.value && styles.periodBtnActive,
+                period === opt.value && { backgroundColor: colors.primaryContainer },
               ]}
               activeOpacity={0.8}
             >
               <Text
                 style={[
                   styles.periodLabel,
+                  { color: colors.onSurface },
                   period === opt.value && styles.periodLabelActive,
                 ]}
               >
@@ -147,8 +150,8 @@ export default function FirmaPanelScreen() {
 
         {/* Weekly Bar Chart */}
         {weeklyChart.length > 0 && (
-          <View style={[styles.card, Shadow.navy]}>
-            <Text style={styles.sectionTitle}>Haftalık Performans</Text>
+          <View style={[styles.card, Shadow.navy, { backgroundColor: colors.surfaceContainerLowest }]}>
+            <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>Haftalık Performans</Text>
             <View style={styles.chartContainer}>
               {weeklyChart.map((item: any, idx: number) => {
                 const barHeight = Math.max(
@@ -162,11 +165,11 @@ export default function FirmaPanelScreen() {
                         styles.bar,
                         {
                           height: barHeight,
-                          backgroundColor: Colors.primaryContainer,
+                          backgroundColor: colors.primaryContainer,
                         },
                       ]}
                     />
-                    <Text style={styles.chartLabel}>{item.day}</Text>
+                    <Text style={[styles.chartLabel, { color: colors.outline }]}>{item.day}</Text>
                   </View>
                 );
               })}
@@ -176,8 +179,8 @@ export default function FirmaPanelScreen() {
 
         {/* Bay Status Grid */}
         {bayStatus.length > 0 && (
-          <View style={[styles.card, Shadow.navy]}>
-            <Text style={styles.sectionTitle}>Lift Durumu</Text>
+          <View style={[styles.card, Shadow.navy, { backgroundColor: colors.surfaceContainerLowest }]}>
+            <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>Lift Durumu</Text>
             <View style={styles.bayGrid}>
               {bayStatus.map((bay) => (
                 <View
@@ -187,7 +190,7 @@ export default function FirmaPanelScreen() {
                     {
                       backgroundColor:
                         BAY_STATUS_COLORS[bay.status] ??
-                        Colors.surfaceContainerHigh,
+                        colors.surfaceContainerHigh,
                     },
                   ]}
                 >
@@ -210,26 +213,26 @@ export default function FirmaPanelScreen() {
         {(escalations.length > 0 ||
           approvalQueue.length > 0 ||
           criticalParts.length > 0) && (
-          <View style={[styles.card, Shadow.navy]}>
-            <Text style={styles.sectionTitle}>Kritik Uyarılar</Text>
+          <View style={[styles.card, Shadow.navy, { backgroundColor: colors.surfaceContainerLowest }]}>
+            <Text style={[styles.sectionTitle, { color: colors.onSurface }]}>Kritik Uyarılar</Text>
 
             {escalations.map((esc: any) => (
               <View key={esc.id} style={styles.alertRow}>
                 <View
                   style={[
                     styles.alertDot,
-                    { backgroundColor: Colors.error },
+                    { backgroundColor: colors.error },
                   ]}
                 />
                 <View style={styles.alertContent}>
-                  <Text style={styles.alertTitle}>
+                  <Text style={[styles.alertTitle, { color: colors.onSurface }]}>
                     {esc.vehicle?.plate ?? "—"}
                   </Text>
-                  <Text style={styles.alertDesc} numberOfLines={1}>
+                  <Text style={[styles.alertDesc, { color: colors.outline }]} numberOfLines={1}>
                     {esc.complaintDescription}
                   </Text>
                 </View>
-                <View style={styles.acilBadge}>
+                <View style={[styles.acilBadge, { backgroundColor: colors.error }]}>
                   <Text style={styles.acilText}>ACİL</Text>
                 </View>
               </View>
@@ -244,10 +247,10 @@ export default function FirmaPanelScreen() {
                   ]}
                 />
                 <View style={styles.alertContent}>
-                  <Text style={styles.alertTitle}>
+                  <Text style={[styles.alertTitle, { color: colors.onSurface }]}>
                     {order.vehicle?.plate ?? "—"}
                   </Text>
-                  <Text style={styles.alertDesc} numberOfLines={1}>
+                  <Text style={[styles.alertDesc, { color: colors.outline }]} numberOfLines={1}>
                     Onay bekliyor — {fmt(order.totalAmount ?? 0)}
                   </Text>
                 </View>
@@ -263,8 +266,8 @@ export default function FirmaPanelScreen() {
                   ]}
                 />
                 <View style={styles.alertContent}>
-                  <Text style={styles.alertTitle}>{part.name}</Text>
-                  <Text style={styles.alertDesc}>
+                  <Text style={[styles.alertTitle, { color: colors.onSurface }]}>{part.name}</Text>
+                  <Text style={[styles.alertDesc, { color: colors.outline }]}>
                     Stok: {part.currentStock} / Min: {part.minStockLevel}
                   </Text>
                 </View>
@@ -281,14 +284,13 @@ export default function FirmaPanelScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.surface },
+  container: { flex: 1 },
   scroll: { padding: 16, gap: 16, paddingBottom: 32 },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
-  errorText: { fontSize: 16, color: Colors.error },
+  errorText: { fontSize: 16 },
 
   periodRow: {
     flexDirection: "row",
-    backgroundColor: Colors.surfaceContainer,
     borderRadius: Radius.md,
     padding: 3,
     gap: 2,
@@ -302,12 +304,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   periodBtnActive: {
-    backgroundColor: Colors.primaryContainer,
   },
   periodLabel: {
     fontSize: 13,
     fontWeight: "600",
-    color: Colors.onSurface,
   },
   periodLabelActive: {
     color: "#fff",
@@ -317,7 +317,6 @@ const styles = StyleSheet.create({
   bentoRow: { flexDirection: "row", gap: 10 },
 
   card: {
-    backgroundColor: Colors.surfaceContainerLowest,
     borderRadius: Radius.lg,
     padding: 16,
     gap: 12,
@@ -325,7 +324,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 15,
     fontWeight: "700",
-    color: Colors.onSurface,
   },
 
   chartContainer: {
@@ -348,7 +346,6 @@ const styles = StyleSheet.create({
   },
   chartLabel: {
     fontSize: 10,
-    color: Colors.outline,
     fontWeight: "500",
   },
 
@@ -396,15 +393,12 @@ const styles = StyleSheet.create({
   alertTitle: {
     fontSize: 13,
     fontWeight: "700",
-    color: Colors.onSurface,
   },
   alertDesc: {
     fontSize: 12,
-    color: Colors.outline,
     marginTop: 1,
   },
   acilBadge: {
-    backgroundColor: Colors.error,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: Radius.sm,

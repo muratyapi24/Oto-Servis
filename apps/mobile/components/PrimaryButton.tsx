@@ -6,7 +6,8 @@ import {
   ActivityIndicator,
   View,
 } from "react-native";
-import { Colors, Radius } from "../constants/theme";
+import { Colors, DarkColors, Radius } from "../constants/theme";
+import { useTheme } from "./theme-provider";
 
 interface PrimaryButtonProps {
   label: string;
@@ -28,6 +29,10 @@ export function PrimaryButton({
   size = "md",
   variant = "gradient",
 }: PrimaryButtonProps) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const colors = isDark ? DarkColors : Colors;
+  
   const height = SIZE_HEIGHT[size];
   const fontSize = SIZE_FONT[size];
   const isDisabled = disabled || loading;
@@ -40,7 +45,7 @@ export function PrimaryButton({
         activeOpacity={0.85}
         style={[
           styles.gradientFallback,
-          { height, borderRadius: Radius.md },
+          { height, borderRadius: Radius.md, backgroundColor: colors.primaryContainer },
           isDisabled && styles.disabled,
         ]}
       >
@@ -61,14 +66,14 @@ export function PrimaryButton({
         activeOpacity={0.8}
         style={[
           styles.outline,
-          { height, borderRadius: Radius.md },
+          { height, borderRadius: Radius.md, borderColor: colors.primaryContainer },
           isDisabled && styles.disabled,
         ]}
       >
         {loading ? (
-          <ActivityIndicator color={Colors.primaryContainer} size="small" />
+          <ActivityIndicator color={colors.primaryContainer} size="small" />
         ) : (
-          <Text style={[styles.outlineText, { fontSize }]}>{label}</Text>
+          <Text style={[styles.outlineText, { fontSize, color: colors.primaryContainer }]}>{label}</Text>
         )}
       </TouchableOpacity>
     );
@@ -83,9 +88,9 @@ export function PrimaryButton({
       style={[styles.ghost, { height }, isDisabled && styles.disabled]}
     >
       {loading ? (
-        <ActivityIndicator color={Colors.primaryContainer} size="small" />
+        <ActivityIndicator color={colors.primaryContainer} size="small" />
       ) : (
-        <Text style={[styles.ghostText, { fontSize }]}>{label}</Text>
+        <Text style={[styles.ghostText, { fontSize, color: colors.primaryContainer }]}>{label}</Text>
       )}
     </TouchableOpacity>
   );
@@ -93,7 +98,6 @@ export function PrimaryButton({
 
 const styles = StyleSheet.create({
   gradientFallback: {
-    backgroundColor: Colors.primaryContainer,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
@@ -105,13 +109,11 @@ const styles = StyleSheet.create({
   },
   outline: {
     borderWidth: 1.5,
-    borderColor: Colors.primaryContainer,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
   },
   outlineText: {
-    color: Colors.primaryContainer,
     fontWeight: "600",
   },
   ghost: {
@@ -120,7 +122,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   ghostText: {
-    color: Colors.primaryContainer,
     fontWeight: "600",
   },
   disabled: {
