@@ -2,6 +2,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  turbopack: {},
   transpilePackages: ["@repo/ui", "@repo/database"],
   serverExternalPackages: ["@prisma/client", "bcryptjs"],
   typescript: {
@@ -13,10 +14,6 @@ const nextConfig = {
   async rewrites() {
     return {
       beforeFiles: [
-        {
-          source: '/',
-          destination: '/landing/index.html',
-        },
         {
           source: '/features',
           destination: '/landing/features.html',
@@ -38,11 +35,15 @@ const nextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, {
+const sentryEnabled = Boolean(process.env.SENTRY_DSN);
+
+const sentryOptions = {
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
   silent: true,
-  widenClientFileUpload: true,
+  // Client bundle'ı şişirmemek için kapalı; sourcemap upload yalnızca server
+  // tarafı için anlamlı olacak şekilde daraltıldı.
+  widenClientFileUpload: false,
   hideSourceMaps: true,
   webpack: {
     disableSentryConfig: true,
@@ -53,4 +54,8 @@ export default withSentryConfig(nextConfig, {
   sourcemaps: {
     disable: true,
   },
-});
+};
+
+export default sentryEnabled
+  ? withSentryConfig(nextConfig, sentryOptions)
+  : nextConfig;

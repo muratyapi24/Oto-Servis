@@ -2,6 +2,7 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 interface TopAppBarProps {
   title?: string;
@@ -57,14 +58,17 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
         </h1>
       )}
 
-      <button className="p-2 border-none shrink-0 rounded-full hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors active:scale-95 duration-200">
-        <span
-          className="material-symbols-outlined text-blue-800 dark:text-blue-400 block"
-          data-icon="notifications"
-        >
-          notifications
-        </span>
-      </button>
+      <div className="flex items-center gap-2">
+        <ThemeToggle />
+        <button className="p-2 border-none shrink-0 rounded-full hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors active:scale-95 duration-200">
+          <span
+            className="material-symbols-outlined text-blue-800 dark:text-blue-400 block"
+            data-icon="notifications"
+          >
+            notifications
+          </span>
+        </button>
+      </div>
     </header>
   );
 };

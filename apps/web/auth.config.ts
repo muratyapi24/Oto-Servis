@@ -1,6 +1,7 @@
 import { canAccess } from "./lib/permissions";
 
 export const authConfig = {
+  trustHost: true,
   pages: {
     signIn: "/login",
     newUser: "/register",
@@ -38,20 +39,11 @@ export const authConfig = {
         // giriş yapmış kullanıcıya izin ver — RBAC client-side'da (Sidebar/NavBar) uygulanır
         if (!role) return true;
 
-        // RBAC: Alt sayfa yollarını ana modül yoluna indir
-        const pathSegments = nextUrl.pathname.split('/');
-        let basePath = nextUrl.pathname;
-        if (isDashboardPath && pathSegments.length > 2) {
-            basePath = `/${pathSegments[1]}/${pathSegments[2]}`; // ör. /dashboard/services
-        } else if (isMobilePath && pathSegments.length > 3) {
-            basePath = `/${pathSegments[1]}/${pathSegments[2]}/${pathSegments[3]}`; // ör. /m/firma/panel
-        }
-
-        const allowed = canAccess(role, basePath);
+        const allowed = canAccess(role, nextUrl.pathname);
 
         if (!allowed) {
             // Aynı yola yönlendirme yapma (sonsuz döngü önlemi)
-            if (basePath === "/dashboard") return true;
+            if (nextUrl.pathname === "/dashboard") return true;
             
             if (role === "SUPER_ADMIN") return Response.redirect(new URL("/super-admin", nextUrl));
             if (role === "CUSTOMER") return Response.redirect(new URL("/m/musteri/panel", nextUrl));

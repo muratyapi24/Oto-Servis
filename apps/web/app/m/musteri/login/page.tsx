@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
 import { Car, Phone, ShieldCheck, AlertCircle, ArrowRight, RefreshCw, KeyRound } from "lucide-react";
 import { sendCustomerOTP, verifyCustomerOTP } from "@/lib/actions/auth.actions";
 
@@ -143,24 +142,16 @@ export default function MusteriGirisPage() {
           </div>
 
           {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-4 mb-6 text-sm text-error bg-error-container/50 rounded-2xl flex items-start gap-3 border border-error/20"
-            >
+            <div className="p-4 mb-6 text-sm text-error bg-error-container/50 rounded-2xl flex items-start gap-3 border border-error/20">
               <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
               <span className="font-medium leading-relaxed">{error}</span>
-            </motion.div>
+            </div>
           )}
 
-          <AnimatePresence mode="wait">
+          <>
             {step === "form" ? (
-              <motion.form
+              <form
                 key="form"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
                 className="space-y-5"
                 onSubmit={handleSendOTP}
               >
@@ -207,14 +198,10 @@ export default function MusteriGirisPage() {
                   {loading ? "Kontrol ediliyor..." : "SMS Kodu Gönder"}
                   {!loading && <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />}
                 </button>
-              </motion.form>
+              </form>
             ) : (
-              <motion.form
+              <form
                 key="otp"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
                 className="space-y-5"
                 onSubmit={handleVerifyOTP}
               >
@@ -270,9 +257,9 @@ export default function MusteriGirisPage() {
                     {resendCountdown > 0 ? `Tekrar gönder (${resendCountdown}s)` : "Tekrar gönder"}
                   </button>
                 </div>
-              </motion.form>
+              </form>
             )}
-          </AnimatePresence>
+          </>
 
           <div className="mt-12 text-center">
             <Link href="/login" className="text-sm font-medium text-slate-500 hover:text-primary transition-colors inline-block">

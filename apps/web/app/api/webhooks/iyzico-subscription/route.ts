@@ -12,7 +12,7 @@ import {
   markWebhookEventProcessed,
   reserveWebhookEvent,
 } from "@/lib/webhooks/idempotency";
-import * as Sentry from "@sentry/nextjs";
+import { captureSentryException, captureSentryMessage } from "@/lib/monitoring/sentry";
 
 const FAIL_REDIRECT = "/dashboard/settings/billing?payment=failed";
 const SUCCESS_REDIRECT = "/dashboard/settings/billing?payment=success";
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     if (secretKey && incomingSignature) {
       const valid = verifyIyzicoWebhookSignature(body, incomingSignature, secretKey);
       if (!valid) {
-        Sentry.captureMessage("iyzico-subscription webhook: imza doğrulama başarısız", {
+        await captureSentryMessage("iyzico-subscription webhook: imza doğrulama başarısız", {
           extra: { signature: incomingSignature },
         });
         return NextResponse.json({ error: "invalid signature" }, { status: 401 });
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     const tenantId = parts.slice(1, -1).join("-");
 
     if (!tenantId) {
-      Sentry.captureMessage("iyzico-subscription webhook: geçersiz basketId", { extra: { basketId } });
+      await captureSentryMessage("iyzico-subscription webhook: geçersiz basketId", { extra: { basketId } });
       return NextResponse.redirect(new URL(FAIL_REDIRECT, request.nextUrl.origin));
     }
 
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     const result = await activateSubscription(tenantId, planSlug, billing, paymentId);
     if (!result.success) {
       await markWebhookEventFailed(reservedEvent.eventId, result.error ?? "activateSubscription başarısız");
-      Sentry.captureMessage("activateSubscription başarısız", {
+      await captureSentryMessage("activateSubscription başarısız", {
         extra: { tenantId, planSlug, error: result.error },
       });
       return NextResponse.redirect(new URL(FAIL_REDIRECT, request.nextUrl.origin));
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     await markWebhookEventProcessed(reservedEvent.eventId!);
     return NextResponse.redirect(new URL(SUCCESS_REDIRECT, request.nextUrl.origin));
   } catch (err) {
-    Sentry.captureException(err);
+    await captureSentryException(err);
     return NextResponse.json({ error: "webhook error" }, { status: 500 });
   }
 }

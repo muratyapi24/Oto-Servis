@@ -39,3 +39,12 @@ yarn-error.log*
 
 # Kiro MCP settings (contains API keys)
 .kiro/settings/mcp.json
+
+# Claude Code worktrees (geçici çalışma dizinleri)
+.claude/worktrees/
+
+# Claude Code rules submodule (ayrı bir repo, ignore et)
+everything-claude-code/
+
+# One-shot mobile theme migration script (tamamlandı)
+update-mobile-theme.mjs

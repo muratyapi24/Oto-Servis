@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ========================================
    MS OTO SERVİS - Design System
    Renk tokenları firma_ana_panel.html şablonundan
@@ -7,7 +9,7 @@
    ======================================== */
 
 @theme {
-  /* --- Şablondaki Tailwind Config Renkleri (Birebir) --- */
+  /* --- Light Mode Colors (Şablondaki Tailwind Config Renkleri) --- */
   --color-surface-container-lowest: #ffffff;
   --color-secondary: #9d4300;
   --color-on-secondary: #ffffff;
@@ -84,6 +86,62 @@
   --animate-scale-in: scale-in 0.3s ease-out;
 }
 
+/* ========================================
+   Dark Mode Class-Based Overrides
+   ======================================== */
+
+.dark {
+  color-scheme: dark;
+
+  --color-surface-container-lowest: #0b1c30;
+  --color-secondary: #ffb690;
+  --color-on-secondary: #5c2400;
+  --color-on-tertiary: #002113;
+  --color-on-error: #ffdad6;
+  --color-primary-container: #173bab;
+  --color-on-tertiary-fixed-variant: #4edea3;
+  --color-on-surface-variant: #c4c5d5;
+  --color-secondary-container: #783200;
+  --color-on-background: #eaf1ff;
+  --color-primary-fixed: #001453;
+  --color-primary-fixed-dim: #173bab;
+  --color-on-secondary-fixed: #ffdbca;
+  --color-surface-container-low: #162d47;
+  --color-surface-container-highest: #2e4a68;
+  --color-inverse-on-surface: #0b1c30;
+  --color-secondary-fixed: #341100;
+  --color-surface-container-high: #253f5d;
+  --color-outline-variant: #444653;
+  --color-on-primary: #001453;
+  --color-on-primary-container: #dde1ff;
+  --color-on-tertiary-container: #6ffbbe;
+  --color-tertiary-container: #005236;
+  --color-on-surface: #eaf1ff;
+  --color-error: #ffb4ab;
+  --color-primary: #b8c4ff;
+  --color-background: #0b1c30;
+  --color-inverse-surface: #eaf1ff;
+  --color-secondary-fixed-dim: #783200;
+  --color-inverse-primary: #00288e;
+  --color-on-secondary-container: #ffdbca;
+  --color-surface-tint: #b8c4ff;
+  --color-outline: #757684;
+  --color-surface-variant: #213145;
+  --color-surface-dim: #0b1c30;
+  --color-surface: #0b1c30;
+  --color-tertiary-fixed-dim: #005236;
+  --color-on-tertiary-fixed: #6ffbbe;
+  --color-on-error-container: #ffdad6;
+  --color-error-container: #93000a;
+  --color-surface-bright: #2e4a68;
+  --color-tertiary: #4edea3;
+  --color-on-primary-fixed: #dde1ff;
+  --color-on-primary-fixed-variant: #b8c4ff;
+  --color-tertiary-fixed: #002113;
+  --color-surface-container: #1b3552;
+  --color-on-secondary-fixed-variant: #ffb690;
+}
+
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -114,10 +172,17 @@ html {
 
 body {
   font-family: 'Inter', sans-serif;
-  background-color: #f8f9ff;
-  color: #0b1c30;
+  background-color: var(--color-background);
+  color: var(--color-on-background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    transition: none;
+  }
 }
 
 /* Şablondaki .glass-card */

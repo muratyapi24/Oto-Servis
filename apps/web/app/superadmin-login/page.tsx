@@ -4,10 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { motion } from "framer-motion";
 import { ShieldAlert, Eye, EyeOff, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth";
 import { superAdminLogin } from "@/lib/actions/auth.actions";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export default function SuperAdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -40,6 +40,11 @@ export default function SuperAdminLoginPage() {
 
   return (
     <div className="min-h-screen flex bg-slate-950" id="admin-login-page">
+      {/* Theme Toggle - Top Right */}
+      <div className="fixed top-6 right-6 z-50">
+        <ThemeToggle />
+      </div>
+
       {/* Centered Form for Super Admin */}
       <div className="w-full flex items-center justify-center p-6 relative overflow-hidden">
         
@@ -47,12 +52,7 @@ export default function SuperAdminLoginPage() {
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-900/30 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-900/20 rounded-full blur-3xl pointer-events-none" />
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-md bg-slate-900/80 backdrop-blur-xl border border-slate-800 p-8 rounded-3xl shadow-2xl relative z-10"
-        >
+        <div className="w-full max-w-md bg-slate-900/80 backdrop-blur-xl border border-slate-800 p-8 rounded-3xl shadow-2xl relative z-10">
           {/* Logo & Header */}
           <div className="flex flex-col items-center mb-8">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-blue-900 text-white shadow-lg mb-4">
@@ -133,7 +133,7 @@ export default function SuperAdminLoginPage() {
               Firma paneline geri dön
             </Link>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

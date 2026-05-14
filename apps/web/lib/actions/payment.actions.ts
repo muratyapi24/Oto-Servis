@@ -4,7 +4,7 @@ import { guardTenant } from "@/lib/guards";
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@repo/database";
-import * as Sentry from "@sentry/nextjs";
+import { captureSentryException } from "@/lib/monitoring/sentry";
 import { createPaymentSchema, type CreatePaymentInput } from "@/lib/validations/payment";
 import { inngest } from "@/lib/inngest/client";
 import { createIyzicoPaymentForm } from "@/lib/payment-providers/iyzico";
@@ -175,7 +175,7 @@ export async function initOnlinePayment(
 
     return { success: false, error: "Aktif ödeme sağlayıcısı bulunamadı." };
   } catch (error: unknown) {
-    Sentry.captureException(error);
+    await captureSentryException(error);
     console.error("Online ödeme başlatma hatası:", error);
     return { success: false, error: "Online ödeme başlatılamadı." };
   }
@@ -318,7 +318,7 @@ export async function createPayment(
 
     return { success: true, data: { paymentId: payment.id } };
   } catch (error: unknown) {
-    Sentry.captureException(error);
+    await captureSentryException(error);
     console.error("Ödeme kaydetme hatası:", error);
     return { success: false, error: "Ödeme kaydedilemedi." };
   }
@@ -447,7 +447,7 @@ export async function updateCheckPaymentStatus(
     revalidatePath("/dashboard/finances/payments/checks");
     return { success: true };
   } catch (error: unknown) {
-    Sentry.captureException(error);
+    await captureSentryException(error);
     console.error("Çek/senet durum güncelleme hatası:", error);
     return { success: false, error: "Çek/senet durumu güncellenemedi." };
   }
@@ -509,7 +509,7 @@ export async function getPayments(
       },
     };
   } catch (error: unknown) {
-    Sentry.captureException(error);
+    await captureSentryException(error);
     console.error("Ödeme listesi hatası:", error);
     return { success: false, error: "Ödemeler listelenemedi." };
   }
@@ -560,7 +560,7 @@ export async function getUpcomingCheckPayments(
       data: { payments: JSON.parse(JSON.stringify(checkPayments)) },
     };
   } catch (error: unknown) {
-    Sentry.captureException(error);
+    await captureSentryException(error);
     console.error("Vadesi yaklaşan çek/senet hatası:", error);
     return { success: false, error: "Vadesi yaklaşan çek/senetler alınamadı." };
   }

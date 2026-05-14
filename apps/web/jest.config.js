@@ -9,10 +9,15 @@ const config = {
     "^meilisearch$": "<rootDir>/__mocks__/meilisearch.cjs",
   },
   transform: {
-    "^.+\\.tsx?$": ["ts-jest", { tsconfig: { module: "commonjs" } }],
+    "^.+\\.tsx?$": ["ts-jest", { 
+      tsconfig: { 
+        module: "commonjs",
+        jsx: "react"
+      } 
+    }],
   },
   transformIgnorePatterns: ["/node_modules/"],
-  testMatch: ["**/__tests__/**/*.test.ts"],
+  testMatch: ["**/__tests__/**/*.test.ts", "**/__tests__/**/*.test.tsx"],
   extensionsToTreatAsEsm: [],
 };
 

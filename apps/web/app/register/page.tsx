@@ -5,12 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { motion, AnimatePresence } from "framer-motion";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
 import { registerTenant } from "@/lib/actions/auth.actions";
 import LandingNavbar from "@/components/landing/LandingNavbar";
 import LandingFooter from "@/components/landing/LandingFooter";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -65,18 +65,18 @@ export default function RegisterPage() {
     <div className="bg-surface font-body text-on-surface min-h-screen flex flex-col">
       <LandingNavbar />
 
+      {/* Theme Toggle - Top Right */}
+      <div className="fixed top-24 right-6 z-50">
+        <ThemeToggle />
+      </div>
+
       <main className="flex-1 flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-surface to-surface-variant pt-24 pb-20">
         
         {/* Abstract Background Shapes */}
         <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[50%] rounded-full bg-primary/5 blur-3xl pointer-events-none"></div>
         <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[50%] rounded-full bg-orange-400/5 blur-3xl pointer-events-none"></div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="relative z-10 w-full max-w-lg px-6"
-        >
+        <div className="relative z-10 w-full max-w-lg px-6">
           <div className="bg-white rounded-3xl shadow-2xl shadow-black/5 p-8 md:p-10 border border-white/50">
             <div className="text-center mb-8">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 text-primary mb-6">
@@ -108,14 +108,10 @@ export default function RegisterPage() {
             )}
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              <AnimatePresence mode="wait">
+              <>
                 {step === 1 && (
-                  <motion.div
+                  <div
                     key="step1"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 20 }}
-                    transition={{ duration: 0.3 }}
                     className="space-y-5"
                   >
                     <div className="grid grid-cols-2 gap-4">
@@ -175,16 +171,12 @@ export default function RegisterPage() {
                       Sonraki Adım
                       <span className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">arrow_forward</span>
                     </button>
-                  </motion.div>
+                  </div>
                 )}
 
                 {step === 2 && (
-                  <motion.div
+                  <div
                     key="step2"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3 }}
                     className="space-y-5"
                   >
                     {/* Email */}
@@ -275,9 +267,9 @@ export default function RegisterPage() {
                         {isSubmitting ? "Hesap Oluşturuluyor..." : successInfo ? "Oluşturuldu!" : "Kayıt Ol"}
                       </button>
                     </div>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
+              </>
             </form>
 
             <div className="mt-8 pt-8 border-t border-outline-variant/10 text-center">
@@ -293,7 +285,7 @@ export default function RegisterPage() {
           <p className="mt-8 text-center text-slate-500 text-xs font-medium tracking-widest uppercase mb-10">
             Güvenli İşlem • SSL Korumalı
           </p>
-        </motion.div>
+        </div>
       </main>
 
       <LandingFooter />

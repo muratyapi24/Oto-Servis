@@ -1,12 +1,27 @@
 import { inngest } from "../client";
 import { prisma } from "@repo/database";
-import { Redis } from "@upstash/redis";
 
-// Upstash Redis client — debounce için doğrudan oluştur
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
+type RedisClient = {
+  get(key: string): Promise<unknown>;
+  setex(key: string, ttl: number, value: string): Promise<unknown>;
+};
+
+let redisClientPromise: Promise<RedisClient | null> | null = null;
+
+async function getRedis() {
+  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+    return null;
+  }
+
+  redisClientPromise ??= import("@upstash/redis").then(({ Redis }) => {
+    return new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL!,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+    });
+  });
+
+  return redisClientPromise;
+}
 
 const REORDER_DEBOUNCE_TTL = 86400; // 24 saat (saniye)
 
@@ -75,6 +90,9 @@ export const stockReorderCheckFunction = inngest.createFunction(
 
     const alreadyAlerted = await step.run("check-debounce", async () => {
       try {
+        const redis = await getRedis();
+        if (!redis) return false;
+
         const existing = await redis.get(debounceKey);
         return existing !== null;
       } catch {
@@ -148,6 +166,9 @@ export const stockReorderCheckFunction = inngest.createFunction(
 
         // Redis debounce anahtarını set et (TTL: 24 saat)
         try {
+          const redis = await getRedis();
+          if (!redis) return notificationData.length;
+
           await redis.setex(debounceKey, REORDER_DEBOUNCE_TTL, "1");
         } catch {
           // Redis yazma hatası — kritik değil, devam et

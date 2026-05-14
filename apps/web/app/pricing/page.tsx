@@ -4,7 +4,8 @@ import LandingNavbar from "@/components/landing/LandingNavbar";
 import LandingFooter from "@/components/landing/LandingFooter";
 import PricingClient from "./PricingClient";
 
-export const dynamic = "force-dynamic";
+// Plan verileri nadiren değişir; 1 saatlik ISR yeterli
+export const revalidate = 3600;
 
 export const metadata = {
   title: "Fiyatlandırma - ÖNCÜ OTO SERVİS PROGRAMI",

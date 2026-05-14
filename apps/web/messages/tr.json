@@ -97,5 +97,12 @@
     "locale": "tr-TR",
     "dateFormat": "DD.MM.YYYY",
     "timeFormat": "HH:mm"
+  },
+  "theme": {
+    "toggleTheme": "Temayı Değiştir",
+    "light": "Açık Mod",
+    "dark": "Koyu Mod",
+    "system": "Sistem Teması",
+    "themeSettings": "Tema Ayarları"
   }
 }

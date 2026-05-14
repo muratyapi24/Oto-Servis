@@ -1,6 +1,3 @@
-import jsPDF from 'jspdf';
-import * as htmlToImage from 'html-to-image';
-
 interface ExportPdfOptions {
   filename?: string;
   orientation?: 'p' | 'l';
@@ -31,6 +28,9 @@ export const exportElementToPdf = async (
   }
 
   try {
+    const { default: jsPDF } = await import("jspdf");
+    const htmlToImage = await import("html-to-image");
+
     // Görünmez elementin renderlanmasını bekle
     // Not: Elementin görünür olması gerekebilir veya absolute/off-screen olabilir
     

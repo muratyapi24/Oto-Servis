@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export default function MusteriMobileLayout({
   children,
@@ -45,6 +46,7 @@ export default function MusteriMobileLayout({
           </span>
         </div>
         <div className="flex items-center gap-1.5">
+          <ThemeToggle />
           <button className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-surface-container transition-colors duration-200 active:scale-90">
             <span className="material-symbols-outlined text-on-surface-variant text-xl">notifications</span>
           </button>

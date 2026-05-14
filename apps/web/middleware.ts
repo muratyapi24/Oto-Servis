@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import NextAuth from "next-auth";
 import { authConfig } from "./auth.config";
-import * as Sentry from "@sentry/nextjs";
 import { checkRateLimit } from "./lib/rate-limit";
 
 const { auth } = NextAuth(authConfig);
@@ -33,12 +32,8 @@ export default auth(async (req) => {
     }
   }
 
-  // Sentry tenant tag
   const session = req.auth;
   const tenantId = session?.user?.tenantId;
-  if (tenantId) {
-    Sentry.setTag("tenantId", tenantId);
-  }
 
   // Subscription Guard — Dashboard rotalarında tenant durumunu kontrol et
   // Not: Edge Runtime'da Prisma doğrudan kullanılamaz;
@@ -84,5 +79,11 @@ export default auth(async (req) => {
 });
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|.*\\.png$).*)'],
+  matcher: [
+    "/api/((?!auth(?:/|$)).*)",
+    "/login",
+    "/dashboard/:path*",
+    "/m/:path*",
+    "/super-admin/:path*",
+  ],
 };

@@ -11,17 +11,19 @@ export function Card({
   children: React.ReactNode;
   href: string;
 }): JSX.Element {
+  const baseClasses = "block p-6 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-750";
+  
   return (
     <a
-      className={className}
+      className={className ? `${baseClasses} ${className}` : baseClasses}
       href={`${href}?utm_source=create-turbo&utm_medium=basic&utm_campaign=create-turbo"`}
       rel="noopener noreferrer"
       target="_blank"
     >
-      <h2>
-        {title} <span>-&gt;</span>
+      <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">
+        {title} <span className="inline-block transition-transform group-hover:translate-x-1 dark:text-gray-400">-&gt;</span>
       </h2>
-      <p>{children}</p>
+      <p className="text-gray-600 dark:text-gray-300">{children}</p>
     </a>
   );
 }

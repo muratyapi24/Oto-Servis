@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { motion } from "framer-motion";
 import { Settings, Lock, Mail, ArrowRight, AlertCircle, Wrench } from "lucide-react";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth";
 import { loginUser } from "@/lib/actions/auth.actions";
@@ -72,12 +71,7 @@ export default function FirmaGirisPage() {
 
       {/* Right - Form (Full width on mobile) */}
       <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-20 py-12 bg-surface">
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="w-full max-w-md mx-auto"
-        >
+        <div className="w-full max-w-md mx-auto">
           {/* Mobile Logo */}
           <div className="flex items-center gap-3 mb-10 group justify-center lg:hidden">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/30">
@@ -99,14 +93,10 @@ export default function FirmaGirisPage() {
           </div>
 
           {errorInfo && (
-            <motion.div 
-              initial={{ opacity: 0, y: -10 }} 
-              animate={{ opacity: 1, y: 0 }}
-              className="p-4 mb-8 text-sm text-error bg-error-container/50 rounded-2xl flex items-start gap-3 border border-error/20"
-            >
+            <div className="p-4 mb-8 text-sm text-error bg-error-container/50 rounded-2xl flex items-start gap-3 border border-error/20">
               <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
               <span className="font-medium leading-relaxed">{errorInfo}</span>
-            </motion.div>
+            </div>
           )}
 
           <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
@@ -196,7 +186,7 @@ export default function FirmaGirisPage() {
               Müşteri olarak aracınızı takip etmek için tıklayın
             </Link>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

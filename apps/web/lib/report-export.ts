@@ -1,7 +1,3 @@
-import { jsPDF } from "jspdf";
-import "jspdf-autotable";
-import * as XLSX from "xlsx";
-
 /**
  * Report Export Utility
  * Client-Side PDF ve Excel oluşturma / indirme fonksiyonları
@@ -23,6 +19,8 @@ export interface ExportOptions {
  * Verilen tablo verisini PDF olarak indirir
  */
 export async function exportToPdf(options: ExportOptions) {
+  const { jsPDF } = await import("jspdf");
+  const autoTableModule = await import("jspdf-autotable");
   const { title, filename, columns, data } = options;
 
   // jsPDF örneği oluştur
@@ -50,11 +48,7 @@ export async function exportToPdf(options: ExportOptions) {
     })
   );
 
-  // jspdf-autotable eklentisi jsPDF instance'ına .autoTable metodunu ekler
-  // TypeScript hata vermemesi için any cast kullanıyoruz:
-  const docAny = doc as any;
-  
-  docAny.autoTable({
+  autoTableModule.default(doc, {
     startY: 28,
     head: head,
     body: body,
@@ -70,6 +64,7 @@ export async function exportToPdf(options: ExportOptions) {
  * Verilen tablo verisini Excel (XLSX) olarak indirir
  */
 export async function exportToExcel(options: ExportOptions) {
+  const XLSX = await import("xlsx");
   const { filename, columns, data } = options;
 
   // Veriyi Excel objesi formatına dönüştür (sütun başlıklarına göre map'le)

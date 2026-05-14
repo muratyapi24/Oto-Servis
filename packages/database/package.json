@@ -10,7 +10,8 @@
     "db:seed": "prisma db seed",
     "db:seed:plans": "tsx prisma/seed-plans.ts",
     "db:seed:demo": "tsx prisma/seed-demo.ts",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "eslint . --max-warnings 0",
+    "postinstall": "prisma generate"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

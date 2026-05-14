@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
 import { signOut, useSession } from "next-auth/react"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 type NavItem = { name: string; href: string; icon: string }
 type NavGroup = { id: string; label: string; icon: string; items: NavItem[] }
@@ -151,17 +152,18 @@ export default function SuperAdminSidebar() {
   const userInitials = userName.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)
 
   return (
-    <aside className="w-64 bg-inverse-surface text-inverse-on-surface flex flex-col h-full border-r border-outline/20 shrink-0">
+    <aside className="w-64 bg-inverse-surface dark:bg-gray-950 text-inverse-on-surface dark:text-gray-100 flex flex-col h-full border-r border-outline/20 dark:border-gray-800 shrink-0">
       {/* Logo */}
-      <div className="p-4 flex flex-col justify-center border-b border-outline-variant/10 bg-black/10 h-16 shrink-0">
+      <div className="p-4 flex flex-col justify-center border-b border-outline-variant/10 dark:border-gray-800 bg-black/10 dark:bg-black/20 h-16 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-primary rounded flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 bg-primary dark:bg-blue-600 rounded flex items-center justify-center shrink-0">
             <span className="material-symbols-outlined text-white text-lg">analytics</span>
           </div>
-          <div className="overflow-hidden">
-            <h1 className="text-sm font-bold tracking-tight text-surface-bright uppercase truncate">BST COMMAND CENTER</h1>
-            <p className="text-[9px] font-bold text-tertiary-fixed opacity-80 uppercase tracking-widest">v4.2.0 Stable</p>
+          <div className="overflow-hidden flex-1">
+            <h1 className="text-sm font-bold tracking-tight text-surface-bright dark:text-white uppercase truncate">BST COMMAND CENTER</h1>
+            <p className="text-[9px] font-bold text-tertiary-fixed dark:text-blue-400 opacity-80 uppercase tracking-widest">v4.2.0 Stable</p>
           </div>
+          <ThemeToggle />
         </div>
       </div>
 
@@ -174,13 +176,13 @@ export default function SuperAdminSidebar() {
               {/* Grup başlığı */}
               <button
                 onClick={() => toggleGroup(group.id)}
-                className="w-full flex items-center justify-between px-3 py-2 hover:bg-white/5 transition-colors"
+                className="w-full flex items-center justify-between px-3 py-2 hover:bg-white/5 dark:hover:bg-white/10 transition-colors"
               >
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm text-outline/70">{group.icon}</span>
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-outline/70">{group.label}</span>
+                  <span className="material-symbols-outlined text-sm text-outline/70 dark:text-gray-400">{group.icon}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-outline/70 dark:text-gray-400">{group.label}</span>
                 </div>
-                <span className={`material-symbols-outlined text-sm text-outline/50 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}>
+                <span className={`material-symbols-outlined text-sm text-outline/50 dark:text-gray-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}>
                   expand_more
                 </span>
               </button>
@@ -196,8 +198,8 @@ export default function SuperAdminSidebar() {
                         href={item.href}
                         className={`flex items-center gap-3 px-3 py-1.5 mx-1 rounded transition-colors ${
                           active
-                            ? "bg-primary/20 text-white border-l-2 border-primary"
-                            : "hover:bg-white/5 text-surface-dim border-l-2 border-transparent"
+                            ? "bg-primary/20 dark:bg-blue-600/30 text-white border-l-2 border-primary dark:border-blue-500"
+                            : "hover:bg-white/5 dark:hover:bg-white/10 text-surface-dim dark:text-gray-300 border-l-2 border-transparent"
                         }`}
                       >
                         <span className="material-symbols-outlined text-base">{item.icon}</span>
@@ -213,18 +215,18 @@ export default function SuperAdminSidebar() {
       </nav>
 
       {/* Kullanıcı */}
-      <div className="p-3 border-t border-outline-variant/10 bg-black/5 shrink-0">
+      <div className="p-3 border-t border-outline-variant/10 dark:border-gray-800 bg-black/5 dark:bg-black/20 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded bg-primary-container text-white flex items-center justify-center text-xs font-bold shrink-0">
+          <div className="w-8 h-8 rounded bg-primary-container dark:bg-blue-600 text-white flex items-center justify-center text-xs font-bold shrink-0">
             {userInitials}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-bold truncate">{userName}</p>
-            <p className="text-[9px] text-outline uppercase truncate">Super Admin</p>
+            <p className="text-[9px] text-outline dark:text-gray-400 uppercase truncate">Super Admin</p>
           </div>
           <button
             onClick={() => signOut({ callbackUrl: "/superadmin-login" })}
-            className="material-symbols-outlined text-outline cursor-pointer hover:text-white text-lg transition-colors p-1 rounded hover:bg-white/5"
+            className="material-symbols-outlined text-outline dark:text-gray-400 cursor-pointer hover:text-white dark:hover:text-white text-lg transition-colors p-1 rounded hover:bg-white/5 dark:hover:bg-white/10"
           >
             logout
           </button>

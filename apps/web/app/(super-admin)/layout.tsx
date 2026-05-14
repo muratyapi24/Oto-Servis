@@ -2,8 +2,6 @@ import Sidebar from "@/components/super-admin/Sidebar";
 import type { Metadata } from "next";
 import { Providers } from "@/components/Providers";
 
-export const dynamic = 'force-dynamic';
-
 export const metadata: Metadata = {
   title: "BST Command Center",
   description: "Super Admin Yönetim Paneli",

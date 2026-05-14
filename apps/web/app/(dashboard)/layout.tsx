@@ -3,8 +3,6 @@ import DashboardHeader from "@/components/dashboard/Header";
 import { SessionProvider } from "next-auth/react";
 import { DASHBOARD_LAYOUT } from "@/lib/dashboard-ui-standards";
 
-export const dynamic = 'force-dynamic';
-
 export default function DashboardLayout({
   children,
 }: {

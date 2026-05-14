@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export default function LandingNavbar() {
   const pathname = usePathname();
@@ -40,6 +41,7 @@ export default function LandingNavbar() {
           })}
         </div>
         <div className="flex items-center gap-4">
+          <ThemeToggle />
           <Link
             href="/login"
             className="text-slate-600 font-medium hover:text-blue-700 transition-transform active:scale-90 px-4 py-2"
