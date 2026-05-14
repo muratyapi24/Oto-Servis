@@ -1,9 +1,15 @@
 import type { NextConfig } from "next";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { withSentryConfig } from "@sentry/nextjs";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
-  turbopack: {},
+  turbopack: {
+    root: path.resolve(__dirname, "../.."),
+  },
   transpilePackages: ["@repo/ui", "@repo/database"],
   serverExternalPackages: ["@prisma/client", "bcryptjs"],
   typescript: {
