@@ -48,3 +48,5 @@ everything-claude-code/
 
 # One-shot mobile theme migration script (tamamlandı)
 update-mobile-theme.mjs
+
+.vercel
