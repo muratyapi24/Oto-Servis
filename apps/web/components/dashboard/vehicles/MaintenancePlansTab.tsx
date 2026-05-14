@@ -99,7 +99,7 @@ export default function MaintenancePlansTab({ vehicleId }: MaintenancePlansTabPr
 
   if (error) {
     return (
-      <div className="flex items-center gap-2 text-red-600 bg-red-50 rounded-lg p-4 text-sm">
+      <div className="flex items-center gap-2 text-red-600 bg-red-50 dark:bg-red-900/30 rounded-lg p-4 text-sm">
         <AlertCircle className="w-4 h-4" /> {error}
       </div>
     );
@@ -112,7 +112,7 @@ export default function MaintenancePlansTab({ vehicleId }: MaintenancePlansTabPr
         <h3 className="text-sm font-bold text-gray-700 flex items-center gap-2">
           <Wrench className="w-4 h-4 text-gray-400" />
           Bakım Planları
-          <span className="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+          <span className="text-xs font-bold text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
             {plans.length}
           </span>
         </h3>
@@ -127,8 +127,8 @@ export default function MaintenancePlansTab({ vehicleId }: MaintenancePlansTabPr
 
       {/* Yeni Plan Formu */}
       {showForm && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3">
-          <h4 className="text-xs font-bold text-blue-700 uppercase tracking-wider">Yeni Bakım Planı</h4>
+        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 rounded-xl p-4 space-y-3">
+          <h4 className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider">Yeni Bakım Planı</h4>
           {formError && (
             <p className="text-xs text-red-600 flex items-center gap-1">
               <AlertCircle className="w-3.5 h-3.5" /> {formError}
@@ -141,7 +141,7 @@ export default function MaintenancePlansTab({ vehicleId }: MaintenancePlansTabPr
                 value={formTitle}
                 onChange={(e) => setFormTitle(e.target.value)}
                 placeholder="Yağ değişimi, Fren kontrolü..."
-                className="w-full p-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary"
+                className="w-full p-2 bg-white dark:bg-gray-800 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary"
               />
             </div>
             <div>
@@ -150,7 +150,7 @@ export default function MaintenancePlansTab({ vehicleId }: MaintenancePlansTabPr
                 type="date"
                 value={formDueDate}
                 onChange={(e) => setFormDueDate(e.target.value)}
-                className="w-full p-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary"
+                className="w-full p-2 bg-white dark:bg-gray-800 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary"
               />
             </div>
             <div>
@@ -160,7 +160,7 @@ export default function MaintenancePlansTab({ vehicleId }: MaintenancePlansTabPr
                 value={formDueMileage}
                 onChange={(e) => setFormDueMileage(e.target.value)}
                 placeholder="50000"
-                className="w-full p-2 bg-white border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary"
+                className="w-full p-2 bg-white dark:bg-gray-800 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary"
               />
             </div>
           </div>
@@ -175,7 +175,7 @@ export default function MaintenancePlansTab({ vehicleId }: MaintenancePlansTabPr
             </button>
             <button
               onClick={() => { setShowForm(false); setFormError(null); }}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 dark:bg-gray-800/50 transition-colors"
             >
               İptal
             </button>
@@ -235,7 +235,7 @@ export default function MaintenancePlansTab({ vehicleId }: MaintenancePlansTabPr
               <button
                 onClick={() => handleDelete(plan.id)}
                 disabled={deletingId === plan.id}
-                className="shrink-0 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                className="shrink-0 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:bg-red-900/30 rounded-lg transition-colors disabled:opacity-50"
               >
                 {deletingId === plan.id ? (
                   <Loader2 className="w-4 h-4 animate-spin" />

@@ -1,5 +1,6 @@
 import { getUpcomingMaintenances } from "@/lib/actions/crm.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
+import CustomerWorkspaceNav from "@/components/dashboard/customers/CustomerWorkspaceNav";
 import CrmBoardClient from "@/components/dashboard/crm/CrmBoardClient";
 
 export const metadata = {
@@ -19,6 +20,7 @@ export default async function CustomerMaintenancePage() {
       subtitle="Müşteri araçlarının bakım planlarını, yaklaşan servis tarihlerini ve hatırlatmalarını takip edin."
       sectionLabel="Müşteri & Araç"
     >
+      <CustomerWorkspaceNav />
       <CrmBoardClient
         plans={result.plans || []}
         stats={result.stats || { overdueCount: 0, upcomingCount: 0, totalPending: 0 }}

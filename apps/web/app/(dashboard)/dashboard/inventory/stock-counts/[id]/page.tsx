@@ -1,8 +1,7 @@
 import { getStockCountDetail } from "@/lib/actions/stock-count.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
+import InventoryWorkspaceNav from "@/components/dashboard/inventory/InventoryWorkspaceNav";
 import StockCountDetailClient from "./StockCountDetailClient";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata({
@@ -45,16 +44,8 @@ export default async function StockCountDetailPage({
       title={`Sayım #${id.slice(-6).toUpperCase()}`}
       subtitle={`${locationName} · ${count.items.length} kalem`}
       sectionLabel="Stok Sayımları"
-      actions={
-        <Link
-          href="/dashboard/inventory/stock-counts"
-          className="flex items-center gap-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-sm font-bold transition-all"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Sayımlara Dön
-        </Link>
-      }
     >
+      <InventoryWorkspaceNav />
       <StockCountDetailClient count={count} summary={summary} />
     </PageShell>
   );

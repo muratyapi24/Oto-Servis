@@ -2,10 +2,16 @@ import { getInventoryDashboard } from "@/lib/actions/inventory.actions";
 import { getSuppliers } from "@/lib/actions/supplier.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
 import InventoryBoardClient from "@/components/dashboard/inventory/InventoryBoardClient";
+import InventoryWorkspaceNav from "@/components/dashboard/inventory/InventoryWorkspaceNav";
 import StockMovementsTab from "@/components/dashboard/inventory/StockMovementsTab";
 
 export const metadata = {
   title: "Stok ve Envanter Yönetimi | MS Oto Servis"
+};
+
+type SupplierOption = {
+  id: string;
+  name: string;
 };
 
 export default async function InventoryPage() {
@@ -26,7 +32,7 @@ export default async function InventoryPage() {
     allParts: dashResponse.allParts || [],
     categories: dashResponse.categories || [],
     recentMovements: dashResponse.recentMovements || [],
-    suppliers: suppliers.map((s: any) => ({ id: s.id, name: s.name })),
+    suppliers: suppliers.map((s: SupplierOption) => ({ id: s.id, name: s.name })),
   };
 
   return (
@@ -35,6 +41,7 @@ export default async function InventoryPage() {
       subtitle="Depo stok seviyelerini, parça hareketlerini ve sipariş ihtiyaçlarını takip edin."
       sectionLabel="Garaj ve Depo"
     >
+      <InventoryWorkspaceNav />
       <InventoryBoardClient data={data} />
       <div className="mt-8">
         <StockMovementsTab />

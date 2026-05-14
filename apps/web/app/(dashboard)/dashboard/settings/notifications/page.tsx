@@ -1,6 +1,5 @@
 import { getNotificationProviders } from "@/lib/actions/notification-provider.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
-import NotificationWorkspaceNav from "@/components/dashboard/notifications/NotificationWorkspaceNav";
 import type { NotificationProviderListItem } from "@/components/dashboard/notifications/types";
 import SettingsWorkspaceNav from "@/components/dashboard/settings/SettingsWorkspaceNav";
 import NotificationSettingsClient from "./NotificationSettingsClient";
@@ -22,10 +21,9 @@ export default async function NotificationSettingsPage() {
     <PageShell
       title="Bildirim Sağlayıcıları"
       subtitle="SMS, WhatsApp ve e-posta sağlayıcılarını yapılandırın."
-      sectionLabel="İletişim"
+      sectionLabel="Ayarlar"
     >
       <SettingsWorkspaceNav />
-      <NotificationWorkspaceNav />
       <NotificationSettingsClient providers={providers} />
     </PageShell>
   );

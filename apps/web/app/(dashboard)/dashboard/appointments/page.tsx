@@ -1,6 +1,7 @@
 import { getAppointments, getAppointmentStats } from "@/lib/actions/appointment.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
 import AppointmentBoardClient from "@/components/dashboard/appointments/AppointmentBoardClient";
+import ServiceWorkspaceNav from "@/components/dashboard/services/ServiceWorkspaceNav";
 
 export const metadata = {
   title: "Randevu Yönetimi | MS Oto Servis",
@@ -26,6 +27,7 @@ export default async function AppointmentsPage() {
       subtitle="Müşteri randevularını planlayın, takvim üzerinden yönetin ve SMS hatırlatmaları gönderin."
       sectionLabel="Planlama"
     >
+      <ServiceWorkspaceNav />
       <AppointmentBoardClient
         appointments={appointments}
         customers={customers}

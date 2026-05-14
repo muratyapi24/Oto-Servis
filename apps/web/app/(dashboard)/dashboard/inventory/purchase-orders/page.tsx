@@ -1,12 +1,18 @@
 import { getPurchaseOrders } from "@/lib/actions/purchase-order.actions";
 import { getSuppliers } from "@/lib/actions/supplier.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
+import InventoryWorkspaceNav from "@/components/dashboard/inventory/InventoryWorkspaceNav";
 import PurchaseOrderList from "@/components/dashboard/inventory/PurchaseOrderList";
 import Link from "next/link";
 import { Plus, ShoppingCart } from "lucide-react";
 
 export const metadata = {
   title: "Satın Alma Siparişleri | MS Oto Servis",
+};
+
+type PurchaseOrderSupplierOption = {
+  id: string;
+  name: string;
 };
 
 export default async function PurchaseOrdersPage() {
@@ -38,6 +44,7 @@ export default async function PurchaseOrdersPage() {
         </Link>
       }
     >
+      <InventoryWorkspaceNav />
       {/* Özet Kartlar */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {(
@@ -107,7 +114,7 @@ export default async function PurchaseOrdersPage() {
         <PurchaseOrderList
           orders={orders}
           total={total}
-          suppliers={suppliers.map((s: any) => ({ id: s.id, name: s.name }))}
+          suppliers={suppliers.map((s: PurchaseOrderSupplierOption) => ({ id: s.id, name: s.name }))}
         />
       )}
     </PageShell>

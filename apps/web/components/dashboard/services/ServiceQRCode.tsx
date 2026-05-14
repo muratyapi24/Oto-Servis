@@ -85,8 +85,8 @@ export function ServiceQRCode({ serviceOrderId, orderNumber, plate }: ServiceQRC
   }
 
   return (
-    <div className="flex flex-col items-center gap-3 p-4 bg-white border border-slate-200 rounded-2xl">
-      <p className="text-xs font-bold uppercase text-slate-400">Müşteri Servis Takip QR</p>
+    <div className="flex flex-col items-center gap-3 p-4 bg-white dark:bg-gray-800 border border-slate-200 rounded-2xl">
+      <p className="text-xs font-bold uppercase text-slate-400 dark:text-slate-500">Müşteri Servis Takip QR</p>
 
       <div className="relative">
         <canvas
@@ -96,20 +96,20 @@ export function ServiceQRCode({ serviceOrderId, orderNumber, plate }: ServiceQRC
           height={200}
         />
         {!loaded && (
-          <div className="absolute inset-0 flex items-center justify-center bg-slate-100 rounded-lg w-[200px] h-[200px]">
-            <span className="text-slate-400 text-sm">Yükleniyor...</span>
+          <div className="absolute inset-0 flex items-center justify-center bg-slate-100 dark:bg-gray-700 rounded-lg w-[200px] h-[200px]">
+            <span className="text-slate-400 dark:text-slate-500 text-sm">Yükleniyor...</span>
           </div>
         )}
       </div>
 
-      <p className="text-xs text-slate-500 text-center max-w-[200px]">
+      <p className="text-xs text-slate-500 dark:text-slate-400 text-center max-w-[200px]">
         Müşteri bu kodu okutarak aracını takip eder — uygulama gerekmez
       </p>
 
       <div className="flex gap-2 w-full">
         <button
           onClick={handleCopy}
-          className="flex-1 text-xs py-2 px-3 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors font-medium"
+          className="flex-1 text-xs py-2 px-3 border border-slate-200 rounded-lg hover:bg-slate-50 dark:bg-gray-800/50 transition-colors font-medium"
         >
           {copied ? "✓ Kopyalandı" : "🔗 Link Kopyala"}
         </button>

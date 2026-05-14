@@ -1,7 +1,7 @@
 import { getMonthlyFinanceReport } from "@/lib/actions/finance.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
-import FinanceWorkspaceNav from "@/components/dashboard/finances/FinanceWorkspaceNav";
 import MonthlyReportClient from "@/components/dashboard/finances/MonthlyReportClient";
+import ReportWorkspaceNav from "@/components/dashboard/reports/ReportWorkspaceNav";
 
 export const metadata = {
   title: "Aylık Gelir/Gider Raporu | MS Oto Servis"
@@ -20,7 +20,7 @@ export default async function ReportsPage() {
       subtitle="Son 6 aylık gelir-gider trendlerini ve kârlılık performansınızı analiz edin."
       sectionLabel="Finans Raporları"
     >
-      <FinanceWorkspaceNav />
+      <ReportWorkspaceNav />
       <MonthlyReportClient data={reportRes.data || []} />
     </PageShell>
   );

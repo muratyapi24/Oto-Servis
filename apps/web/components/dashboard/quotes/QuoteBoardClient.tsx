@@ -1,13 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import "dayjs/locale/tr";
 import { FileText, Plus, Search, CheckCircle2, Clock, XCircle, Send, AlertCircle, Eye, Trash2, Settings, Loader2 } from "lucide-react";
-import QuoteFormModal from "./QuoteFormModal";
 import { updateQuoteStatus, deleteQuote, convertQuoteToServiceOrder } from "@/lib/actions/quote.actions";
+
+const QuoteFormModal = dynamic(() => import("./QuoteFormModal"), {
+  ssr: false,
+  loading: () => null,
+});
 
 const STATUS_MAP: Record<string, { label: string; className: string }> = {
   DRAFT:    { label: "Taslak",     className: "bg-gray-100 text-gray-700" },
@@ -73,9 +78,9 @@ export default function QuoteBoardClient({ quotes, customers, parts, categories 
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <div className="relative flex-1 sm:w-72">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Müşteri veya plaka ara..." className="w-full pl-9 pr-4 py-2 bg-gray-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none" />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Müşteri veya plaka ara..." className="w-full pl-9 pr-4 py-2 bg-gray-100 dark:bg-gray-700 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none" />
           </div>
-          <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="px-3 py-2 bg-gray-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none">
+          <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="px-3 py-2 bg-gray-100 dark:bg-gray-700 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none">
             <option value="ALL">Tüm Durumlar</option>
             {Object.entries(STATUS_MAP).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
           </select>
@@ -92,9 +97,9 @@ export default function QuoteBoardClient({ quotes, customers, parts, categories 
           <p className="text-sm font-bold text-gray-500">Teklif bulunamadı.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 shadow-sm overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b text-gray-400 text-xs uppercase tracking-wider">
+            <thead className="bg-gray-50 dark:bg-gray-800/50 border-b text-gray-400 text-xs uppercase tracking-wider">
               <tr>
                 <th className="px-5 py-3 text-left">Teklif No</th>
                 <th className="px-5 py-3 text-left">Müşteri</th>
@@ -112,9 +117,9 @@ export default function QuoteBoardClient({ quotes, customers, parts, categories 
                   ? q.customer?.companyName
                   : `${q.customer?.firstName ?? ""} ${q.customer?.lastName ?? ""}`.trim();
                 return (
-                  <tr key={q.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={q.id} className="hover:bg-gray-50 dark:bg-gray-800/50 transition-colors">
                     <td className="px-5 py-3">
-                      <Link href={`/dashboard/quotes/${q.id}`} className="font-bold text-blue-700 hover:underline">
+                      <Link href={`/dashboard/quotes/${q.id}`} className="font-bold text-blue-700 dark:text-blue-400 hover:underline">
                         #{q.quoteNumber}
                       </Link>
                     </td>
@@ -141,14 +146,14 @@ export default function QuoteBoardClient({ quotes, customers, parts, categories 
                           </button>
                         )}
                         {q.status === "DRAFT" && (
-                          <button onClick={() => handleSend(q.id)} disabled={updating === q.id} className="flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors disabled:opacity-50" title="Müşteriye Gönder">
+                          <button onClick={() => handleSend(q.id)} disabled={updating === q.id} className="flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors disabled:opacity-50" title="Müşteriye Gönder">
                             <Send className="w-3 h-3" />
                           </button>
                         )}
-                        <Link href={`/dashboard/quotes/${q.id}`} className="flex items-center gap-1 px-2.5 py-1.5 bg-gray-50 text-gray-700 rounded-lg text-xs font-bold hover:bg-gray-200 transition-colors" title="Görüntüle / Düzenle">
+                        <Link href={`/dashboard/quotes/${q.id}`} className="flex items-center gap-1 px-2.5 py-1.5 bg-gray-50 dark:bg-gray-800/50 text-gray-700 rounded-lg text-xs font-bold hover:bg-gray-200 transition-colors" title="Görüntüle / Düzenle">
                           <Eye className="w-3 h-3" />
                         </Link>
-                        <button onClick={() => handleDelete(q.id)} disabled={deleting === q.id} className="flex items-center gap-1 px-2.5 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-bold hover:bg-red-100 transition-colors disabled:opacity-50" title="Sil">
+                        <button onClick={() => handleDelete(q.id)} disabled={deleting === q.id} className="flex items-center gap-1 px-2.5 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 rounded-lg text-xs font-bold hover:bg-red-100 transition-colors disabled:opacity-50" title="Sil">
                           <Trash2 className="w-3 h-3" />
                         </button>
                       </div>
@@ -161,7 +166,15 @@ export default function QuoteBoardClient({ quotes, customers, parts, categories 
         </div>
       )}
 
-      <QuoteFormModal isOpen={modalOpen} onClose={() => setModalOpen(false)} customers={customers} parts={parts} categories={categories} />
+      {modalOpen && (
+        <QuoteFormModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          customers={customers}
+          parts={parts}
+          categories={categories}
+        />
+      )}
     </div>
   );
 }

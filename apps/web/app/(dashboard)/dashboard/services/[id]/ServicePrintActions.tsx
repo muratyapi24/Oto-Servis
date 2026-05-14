@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import { 
   Printer, 
   ChevronDown, 
@@ -10,27 +11,46 @@ import {
   Loader2,
   FileDown
 } from "lucide-react";
-import { exportElementToPdf } from "@/lib/pdf-utils";
-import { ServiceFormLayout, InvoiceLayout, ServiceLabelLayout } from "./PrintLayouts";
-import { Tenant } from "@repo/database";
+import type { Tenant } from "@repo/database";
+
+const PrintLayoutsHost = dynamic(() => import("./PrintLayoutsHost"), {
+  ssr: false,
+  loading: () => null,
+});
 
 interface ServicePrintActionsProps {
   order: any;
   tenant: Tenant;
 }
 
+async function waitForPrintElement(elementId: string) {
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    const element = document.getElementById(elementId);
+    if (element) return element;
+
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+  }
+
+  return null;
+}
+
 export function ServicePrintActions({ order, tenant }: ServicePrintActionsProps) {
   const [printing, setPrinting] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [renderPrintLayouts, setRenderPrintLayouts] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const toggleDropdown = () => {
+    setShowDropdown((current) => {
+      const next = !current;
+      if (next) setRenderPrintLayouts(true);
+      return next;
+    });
+  };
 
   const handlePrint = async (type: 'FORM' | 'INVOICE' | 'LABEL') => {
     setPrinting(type);
     setShowDropdown(false);
+    setRenderPrintLayouts(true);
     
     try {
       const elementId = type === 'FORM' ? 'print-service-form' : type === 'INVOICE' ? 'print-invoice' : 'print-service-label';
@@ -44,7 +64,12 @@ export function ServicePrintActions({ order, tenant }: ServicePrintActionsProps)
         ? { format: [60, 60] as [number, number], margin: 0, filename } 
         : { format: 'a4', margin: 10, filename };
 
-      // Elementin DOM'da olduğuna emin ol (hidden render alanı sayesinde var olacak)
+      const printElement = await waitForPrintElement(elementId);
+      if (!printElement) {
+        throw new Error(`Print element ${elementId} could not be prepared.`);
+      }
+
+      const { exportElementToPdf } = await import("@/lib/pdf-utils");
       await exportElementToPdf(elementId, options);
     } catch (err) {
       console.error("Yazdırma hatası:", err);
@@ -56,7 +81,7 @@ export function ServicePrintActions({ order, tenant }: ServicePrintActionsProps)
   return (
     <div className="relative inline-block text-left">
       <button
-        onClick={() => setShowDropdown(!showDropdown)}
+        onClick={toggleDropdown}
         disabled={!!printing}
         className="flex items-center gap-2 bg-gray-900 text-white px-5 py-2.5 rounded-xl hover:bg-black transition-all shadow-md font-bold text-sm whitespace-nowrap disabled:opacity-50"
       >
@@ -112,28 +137,7 @@ export function ServicePrintActions({ order, tenant }: ServicePrintActionsProps)
         </>
       )}
 
-      {/* RENDER AREA (Hidden from view) */}
-      {mounted && (
-      <div 
-        style={{ 
-          position: 'absolute', 
-          top: '-9999px', 
-          left: '-9999px', 
-          pointerEvents: 'none',
-          zIndex: -1000
-        }}
-      >
-        <div id="print-service-form">
-          <ServiceFormLayout order={order} tenant={tenant} />
-        </div>
-        <div id="print-invoice">
-          <InvoiceLayout order={order} tenant={tenant} />
-        </div>
-        <div id="print-service-label">
-          <ServiceLabelLayout order={order} tenant={tenant} />
-        </div>
-      </div>
-      )}
+      {renderPrintLayouts && <PrintLayoutsHost order={order} tenant={tenant} />}
     </div>
   );
 }

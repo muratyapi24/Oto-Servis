@@ -27,7 +27,7 @@ export function LanguageSelector() {
   return (
     <div className="relative group">
       <button
-        className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg hover:bg-gray-100 text-sm transition-colors"
+        className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg hover:bg-gray-100 dark:bg-gray-700 text-sm transition-colors"
         aria-label="Dil seç"
       >
         <span>{currentLocale.flag}</span>
@@ -38,7 +38,7 @@ export function LanguageSelector() {
       </button>
 
       {/* Dropdown */}
-      <div className="absolute right-0 top-full mt-1 bg-white border rounded-lg shadow-lg py-1 min-w-[130px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+      <div className="absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 border rounded-lg shadow-lg py-1 min-w-[130px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
         {LOCALES.map((locale) => (
           <button
             key={locale.code}

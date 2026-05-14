@@ -8,6 +8,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { updateVehicleSchema, UpdateVehicleInput } from "@/lib/validations/vehicles";
 import { updateVehicle, updateVehicleImage } from "@/lib/actions/vehicle.actions";
 import {
+  DASHBOARD_ACTIONS,
+  DASHBOARD_DETAIL,
+  DASHBOARD_FORMS,
+  DASHBOARD_MODAL,
+  dashboardStatusBadgeClass,
+  type DashboardStatusTone,
+} from "@/lib/dashboard-ui-standards";
+import {
   Car,
   Wrench,
   User,
@@ -72,38 +80,38 @@ type VehicleWithRelations = {
   _count: { serviceOrders: number };
 };
 
-const STATUS_MAP: Record<string, { label: string; className: string; icon: React.ReactNode }> = {
+const STATUS_MAP: Record<string, { label: string; tone: DashboardStatusTone; icon: React.ReactNode }> = {
   PENDING: {
     label: "Bekliyor",
-    className: "bg-gray-100 text-gray-700",
+    tone: "neutral",
     icon: <Clock className="w-3.5 h-3.5" />,
   },
   IN_PROGRESS: {
     label: "İşlemde",
-    className: "bg-blue-100 text-blue-800",
+    tone: "info",
     icon: <Wrench className="w-3.5 h-3.5" />,
   },
   WAITING_APPROVAL: {
     label: "Onay Bekliyor",
-    className: "bg-orange-100 text-orange-800",
+    tone: "warning",
     icon: <AlertCircle className="w-3.5 h-3.5" />,
   },
   COMPLETED: {
     label: "Tamamlandı",
-    className: "bg-green-100 text-green-800",
+    tone: "success",
     icon: <CheckCircle2 className="w-3.5 h-3.5" />,
   },
   CANCELLED: {
     label: "İptal",
-    className: "bg-red-100 text-red-800",
+    tone: "danger",
     icon: <XCircle className="w-3.5 h-3.5" />,
   },
 };
 
 function StatusBadge({ status }: { status: string }) {
-  const s = STATUS_MAP[status] ?? { label: status, className: "bg-gray-100 text-gray-700", icon: null };
+  const s = STATUS_MAP[status] ?? { label: status, tone: "neutral" satisfies DashboardStatusTone, icon: null };
   return (
-    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${s.className}`}>
+    <span className={dashboardStatusBadgeClass(s.tone, "px-2.5 py-1 text-xs")}>
       {s.icon}
       {s.label}
     </span>
@@ -209,14 +217,14 @@ export default function VehicleDetailClient({ vehicle }: { vehicle: VehicleWithR
   return (
     <div className="space-y-6">
       {/* ── Başlık Satırı ── */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-gray-200 rounded-xl shadow-sm p-5">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-            <Car className="w-6 h-6 text-blue-700" />
+      <div className={DASHBOARD_DETAIL.profileHeader}>
+        <div className={DASHBOARD_DETAIL.profileIdentity}>
+          <div className={DASHBOARD_DETAIL.profileAvatar}>
+            <Car className={DASHBOARD_DETAIL.profileIcon} />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900 font-mono">{vehicle.plate}</h2>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <h2 className={`${DASHBOARD_DETAIL.profileTitle} font-mono`}>{vehicle.plate}</h2>
+            <p className={DASHBOARD_DETAIL.infoMeta}>
               {vehicle.brand} {vehicle.model}
               {vehicle.year ? ` · ${vehicle.year}` : ""}
             </p>
@@ -224,7 +232,7 @@ export default function VehicleDetailClient({ vehicle }: { vehicle: VehicleWithR
         </div>
         <button
           onClick={() => setEditOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl text-sm font-bold hover:opacity-90 transition-opacity shadow-sm"
+          className={DASHBOARD_ACTIONS.primaryButton}
         >
           <Edit2 className="w-4 h-4" />
           Düzenle
@@ -232,7 +240,7 @@ export default function VehicleDetailClient({ vehicle }: { vehicle: VehicleWithR
       </div>
 
       {submitSuccess && (
-        <div className="flex items-center gap-2 bg-green-50 text-green-700 border border-green-200 rounded-xl p-4 text-sm font-medium">
+        <div className={DASHBOARD_FORMS.alertSuccess}>
           <CheckCircle2 className="w-5 h-5" />
           {submitSuccess}
         </div>
@@ -241,10 +249,11 @@ export default function VehicleDetailClient({ vehicle }: { vehicle: VehicleWithR
       {/* ── Üst Grid: Teknik Bilgiler + Özet ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Teknik Bilgi Kartı */}
-        <div className="lg:col-span-2 bg-white border border-gray-200 rounded-xl shadow-sm p-5 space-y-4">          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-2 flex items-center gap-2">
+        <div className={`${DASHBOARD_DETAIL.infoCard} lg:col-span-2 space-y-4`}>
+          <h3 className={DASHBOARD_DETAIL.sectionTitleRow}>
             <Car className="w-4 h-4" /> Teknik Bilgiler
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          <div className={DASHBOARD_DETAIL.infoRowsGrid}>
             <InfoRow icon={<Hash className="w-4 h-4" />} label="Plaka" value={vehicle.plate} />
             <InfoRow icon={<Car className="w-4 h-4" />} label="Marka / Model" value={`${vehicle.brand} ${vehicle.model}`} />
             {vehicle.year && (
@@ -277,10 +286,10 @@ export default function VehicleDetailClient({ vehicle }: { vehicle: VehicleWithR
 
           {(vehicle.insuranceCompany || vehicle.policyNumber) && (
             <>
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-2 flex items-center gap-2 pt-2">
+              <h3 className={`${DASHBOARD_DETAIL.sectionTitleRow} pt-2`}>
                 <Shield className="w-4 h-4" /> Sigorta Bilgileri
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+              <div className={DASHBOARD_DETAIL.infoRowsGrid}>
                 {vehicle.insuranceCompany && (
                   <InfoRow icon={<Shield className="w-4 h-4" />} label="Sigorta Şirketi" value={vehicle.insuranceCompany} />
                 )}
@@ -293,10 +302,10 @@ export default function VehicleDetailClient({ vehicle }: { vehicle: VehicleWithR
 
           {vehicle.notes && (
             <>
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-2 flex items-center gap-2 pt-2">
+              <h3 className={`${DASHBOARD_DETAIL.sectionTitleRow} pt-2`}>
                 <FileText className="w-4 h-4" /> Notlar
               </h3>
-              <p className="text-sm text-gray-600 bg-gray-50 rounded-lg p-3 leading-relaxed">{vehicle.notes}</p>
+              <p className={`${DASHBOARD_DETAIL.notePanel} ${DASHBOARD_DETAIL.noteText}`}>{vehicle.notes}</p>
             </>
           )}
         </div>
@@ -304,7 +313,7 @@ export default function VehicleDetailClient({ vehicle }: { vehicle: VehicleWithR
         {/* Sağ Kolon: Araç Fotoğrafı + Servis Özeti + Müşteri */}
         <div className="space-y-4">
           {/* Araç Fotoğrafı */}
-          <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+          <div className={DASHBOARD_DETAIL.tableShell}>
             <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
               {imageUrl ? (
                 <Image
@@ -315,9 +324,9 @@ export default function VehicleDetailClient({ vehicle }: { vehicle: VehicleWithR
                   sizes="(max-width: 768px) 100vw, 33vw"
                 />
               ) : (
-                <div className="absolute inset-0 bg-gray-100 flex flex-col items-center justify-center gap-2">
-                  <Car className="w-10 h-10 text-gray-300" />
-                  <span className="text-xs text-gray-400 font-medium">
+                <div className="absolute inset-0 bg-surface-container-low flex flex-col items-center justify-center gap-2">
+                  <Car className="w-10 h-10 text-on-surface-variant/40" />
+                  <span className="text-xs text-on-surface-variant font-medium">
                     {vehicle.brand.slice(0, 2).toUpperCase()}
                   </span>
                 </div>
@@ -325,7 +334,7 @@ export default function VehicleDetailClient({ vehicle }: { vehicle: VehicleWithR
             </div>
             <div className="p-3">
               {imageError && (
-                <p className="text-xs text-red-500 mb-2 flex items-center gap-1">
+                <p className="text-xs text-error mb-2 flex items-center gap-1">
                   <AlertCircle className="w-3.5 h-3.5" /> {imageError}
                 </p>
               )}
@@ -339,7 +348,7 @@ export default function VehicleDetailClient({ vehicle }: { vehicle: VehicleWithR
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={imageUploading}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-60"
+                className={`${DASHBOARD_ACTIONS.secondaryButton} w-full justify-center px-3 py-2 text-xs disabled:opacity-60`}
               >
                 {imageUploading ? (
                   <>
@@ -356,18 +365,18 @@ export default function VehicleDetailClient({ vehicle }: { vehicle: VehicleWithR
             </div>
           </div>
           {/* Servis Özeti */}
-          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-2 mb-4 flex items-center gap-2">
+          <div className={DASHBOARD_DETAIL.infoCard}>
+            <h3 className={`${DASHBOARD_DETAIL.sectionTitleRow} mb-4`}>
               <Wrench className="w-4 h-4" /> Servis Özeti
             </h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">Toplam Servis</span>
-                <span className="text-lg font-bold text-gray-800">{vehicle._count.serviceOrders}</span>
+            <div className={DASHBOARD_DETAIL.financeMetricGroup}>
+              <div className={DASHBOARD_DETAIL.financeMetricRow}>
+                <span className={DASHBOARD_DETAIL.financeMetricLabel}>Toplam Servis</span>
+                <span className={DASHBOARD_DETAIL.financeMetricValue}>{vehicle._count.serviceOrders}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">Toplam Tutar</span>
-                <span className="text-base font-bold font-mono text-gray-800">
+              <div className={DASHBOARD_DETAIL.financeMetricRow}>
+                <span className={DASHBOARD_DETAIL.financeMetricLabel}>Toplam Tutar</span>
+                <span className={`${DASHBOARD_DETAIL.financeMetricValue} font-mono`}>
                   ₺{totalServiceAmount.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
                 </span>
               </div>
@@ -375,31 +384,31 @@ export default function VehicleDetailClient({ vehicle }: { vehicle: VehicleWithR
           </div>
 
           {/* Müşteri Bilgisi */}
-          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-2 mb-4 flex items-center gap-2">
+          <div className={DASHBOARD_DETAIL.infoCard}>
+            <h3 className={`${DASHBOARD_DETAIL.sectionTitleRow} mb-4`}>
               <User className="w-4 h-4" /> Araç Sahibi
             </h3>
             <Link
               href={`/dashboard/customers/${vehicle.customer.id}`}
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-50 transition-colors group"
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-container-low transition-colors group"
             >
-              <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
                 {vehicle.customer.type === "CORPORATE" ? (
-                  <Building2 className="w-4 h-4 text-blue-700" />
+                  <Building2 className="w-4 h-4" />
                 ) : (
-                  <User className="w-4 h-4 text-blue-700" />
+                  <User className="w-4 h-4" />
                 )}
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-bold text-gray-800 truncate group-hover:text-blue-700 transition-colors">
+                <p className="text-sm font-bold text-on-surface truncate group-hover:text-primary transition-colors">
                   {customerName}
                 </p>
-                <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
+                <p className="text-xs text-on-surface-variant flex items-center gap-1 mt-0.5">
                   <Phone className="w-3 h-3" />
                   {vehicle.customer.phone}
                 </p>
               </div>
-              <span className="text-xs text-gray-400 group-hover:text-blue-600 transition-colors ml-auto shrink-0">
+              <span className="text-xs text-on-surface-variant/70 group-hover:text-primary transition-colors ml-auto shrink-0">
                 Detay →
               </span>
             </Link>
@@ -408,50 +417,50 @@ export default function VehicleDetailClient({ vehicle }: { vehicle: VehicleWithR
       </div>
 
       {/* ── Servis Geçmişi ── */}
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="flex items-center gap-2 px-5 py-4 border-b bg-gray-50">
-          <Wrench className="w-4 h-4 text-gray-500" />
-          <h3 className="text-sm font-bold text-gray-700 uppercase tracking-widest">Servis Geçmişi</h3>
-          <span className="ml-auto text-xs font-bold text-gray-400">{vehicle.serviceOrders.length} kayıt</span>
+      <div className={DASHBOARD_DETAIL.tableShell}>
+        <div className={DASHBOARD_DETAIL.tableToolbarRow}>
+          <Wrench className={DASHBOARD_DETAIL.tableTitleIcon} />
+          <h3 className={DASHBOARD_DETAIL.tableTitle}>Servis Geçmişi</h3>
+          <span className={DASHBOARD_DETAIL.tableCount}>{vehicle.serviceOrders.length} kayıt</span>
         </div>
         {vehicle.serviceOrders.length === 0 ? (
-          <div className="px-5 py-10 text-center text-gray-400 text-sm">
-            <Wrench className="w-8 h-8 mx-auto mb-2 text-gray-200" />
+          <div className={DASHBOARD_DETAIL.tableEmpty}>
+            <Wrench className={DASHBOARD_DETAIL.tableEmptyIcon} />
             Servis kaydı bulunmuyor.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-white border-b text-gray-400 text-xs uppercase tracking-wider">
+              <thead className={DASHBOARD_DETAIL.tableHead}>
                 <tr>
-                  <th className="px-5 py-3 text-left">İş Emri</th>
-                  <th className="px-5 py-3 text-left">Şikayet</th>
-                  <th className="px-5 py-3 text-left">Tarih</th>
-                  <th className="px-5 py-3 text-left">Durum</th>
-                  <th className="px-5 py-3 text-right">Tutar</th>
+                  <th className={DASHBOARD_DETAIL.tableHeaderCell}>İş Emri</th>
+                  <th className={DASHBOARD_DETAIL.tableHeaderCell}>Şikayet</th>
+                  <th className={DASHBOARD_DETAIL.tableHeaderCell}>Tarih</th>
+                  <th className={DASHBOARD_DETAIL.tableHeaderCell}>Durum</th>
+                  <th className={DASHBOARD_DETAIL.tableHeaderCellRight}>Tutar</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className={DASHBOARD_DETAIL.tableBody}>
                 {vehicle.serviceOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-5 py-3">
+                  <tr key={order.id} className={DASHBOARD_DETAIL.tableRow}>
+                    <td className={DASHBOARD_DETAIL.tableCell}>
                       <Link
                         href={`/dashboard/services/${order.id}`}
-                        className="font-bold text-blue-700 hover:underline"
+                        className={DASHBOARD_DETAIL.relatedLink}
                       >
                         #{order.orderNumber}
                       </Link>
                     </td>
-                    <td className="px-5 py-3 text-gray-600 max-w-xs truncate">
+                    <td className={`${DASHBOARD_DETAIL.tableCell} ${DASHBOARD_DETAIL.tableCellMuted} max-w-xs truncate`}>
                       {order.complaintDescription || "—"}
                     </td>
-                    <td className="px-5 py-3 text-gray-500 text-xs">
+                    <td className={`${DASHBOARD_DETAIL.tableCell} ${DASHBOARD_DETAIL.tableCellMutedSmall}`}>
                       {dayjs(order.receptionDate).locale("tr").format("DD MMM YYYY")}
                     </td>
-                    <td className="px-5 py-3">
+                    <td className={DASHBOARD_DETAIL.tableCell}>
                       <StatusBadge status={order.status} />
                     </td>
-                    <td className="px-5 py-3 text-right font-mono font-bold text-gray-800">
+                    <td className={`${DASHBOARD_DETAIL.tableCellRight} ${DASHBOARD_DETAIL.tableCellMoneyStrong}`}>
                       ₺{order.totalAmount.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
                     </td>
                   </tr>
@@ -463,24 +472,24 @@ export default function VehicleDetailClient({ vehicle }: { vehicle: VehicleWithR
       </div>
 
       {/* ── Bakım Planları ── */}
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
+      <div className={DASHBOARD_DETAIL.infoCard}>
         <MaintenancePlansTab vehicleId={vehicle.id} />
       </div>
 
       {/* ── Düzenleme Modalı ── */}
       {editOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col">
-            <div className="flex items-center justify-between p-6 border-b sticky top-0 bg-white z-10">
-              <h2 className="text-xl font-bold text-gray-800">Araç Bilgilerini Düzenle</h2>
-              <button onClick={() => setEditOpen(false)} className="text-gray-500 hover:text-gray-800 transition-colors">
+        <div className={`${DASHBOARD_MODAL.backdrop} backdrop-blur-sm`}>
+          <div className={DASHBOARD_MODAL.dialogWide}>
+            <div className={`${DASHBOARD_MODAL.header} sticky top-0 bg-surface-container-lowest z-10`}>
+              <h2 className={DASHBOARD_ACTIONS.pageTitle}>Araç Bilgilerini Düzenle</h2>
+              <button onClick={() => setEditOpen(false)} className={DASHBOARD_MODAL.closeButton}>
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             <div className="p-6">
               {submitError && (
-                <div className="mb-4 p-4 bg-red-50 text-red-600 rounded-lg flex items-center gap-2 text-sm border border-red-100">
+                <div className={DASHBOARD_FORMS.alertError}>
                   <AlertCircle className="w-5 h-5 shrink-0" />
                   {submitError}
                 </div>
@@ -566,18 +575,18 @@ export default function VehicleDetailClient({ vehicle }: { vehicle: VehicleWithR
                   <textarea {...form.register("notes")} rows={3} className={inputCls} placeholder="Araç hakkında notlar..." />
                 </FormField>
 
-                <div className="pt-4 border-t flex justify-end gap-3 sticky bottom-0 bg-white">
+                <div className="pt-4 border-t border-outline-variant/20 flex justify-end gap-3 sticky bottom-0 bg-surface-container-lowest">
                   <button
                     type="button"
                     onClick={() => setEditOpen(false)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                    className={DASHBOARD_ACTIONS.secondaryButton}
                   >
                     İptal
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-6 py-2 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity font-medium disabled:opacity-70"
+                    className={DASHBOARD_FORMS.primaryButton}
                   >
                     {submitting ? "Kaydediliyor..." : "Kaydet"}
                   </button>
@@ -593,8 +602,7 @@ export default function VehicleDetailClient({ vehicle }: { vehicle: VehicleWithR
 
 // ── Yardımcı bileşenler ──
 
-const inputCls =
-  "w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary";
+const inputCls = DASHBOARD_FORMS.control;
 
 function InfoRow({
   icon,
@@ -608,11 +616,11 @@ function InfoRow({
   className?: string;
 }) {
   return (
-    <div className={`flex items-start gap-2 ${className}`}>
-      <span className="text-gray-400 mt-0.5 shrink-0">{icon}</span>
+    <div className={`${DASHBOARD_DETAIL.infoRow} ${className}`}>
+      <span className={DASHBOARD_DETAIL.infoRowIcon}>{icon}</span>
       <div>
-        <p className="text-xs text-gray-400 font-medium">{label}</p>
-        <p className="text-sm font-medium text-gray-800">{value}</p>
+        <p className={DASHBOARD_DETAIL.infoRowLabel}>{label}</p>
+        <p className={DASHBOARD_DETAIL.infoRowValue}>{value}</p>
       </div>
     </div>
   );
@@ -631,9 +639,9 @@ function FormField({
 }) {
   return (
     <div className={className}>
-      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <label className={DASHBOARD_FORMS.label}>{label}</label>
       {children}
-      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+      {error && <p className="text-error text-xs mt-1">{error}</p>}
     </div>
   );
 }

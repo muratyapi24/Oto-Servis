@@ -2,47 +2,64 @@ import { getMechanics } from "@/lib/actions/mechanic.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
 import MechanicListClient from "@/components/dashboard/mechanics/MechanicListClient";
 import ShiftCalendarView from "@/components/dashboard/staff/ShiftCalendarView";
+import TeamWorkspaceNav from "@/components/dashboard/team/TeamWorkspaceNav";
 import dayjs from "dayjs";
 
 export const metadata = {
   title: "Personel Yönetimi | MS Oto Servis",
 };
 
+type MechanicDashboardItem = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  isActive: boolean;
+  shiftStart: string | null;
+  shiftEnd: string | null;
+  workDays: string[];
+  dailyTarget: number | null;
+  experienceYears: number | null;
+  _count?: { serviceOrders?: number };
+};
+
 export default async function MechanicsPage() {
-  const { mechanics = [], error } = await getMechanics();
+  const { mechanics: mechanicsData = [], error } = await getMechanics();
 
   if (error) {
     return <PageError message={error} />;
   }
 
-  const activeStaff = mechanics.filter((m: any) => m.isActive).length;
+  const mechanics = mechanicsData as MechanicDashboardItem[];
+  const activeStaff = mechanics.filter((m) => m.isActive).length;
   const totalStaff = mechanics.length;
-  const activeMechanics = mechanics.filter((m: any) => m.isActive);
+  const activeMechanics = mechanics.filter((m) => m.isActive);
 
   // Vardiya hesaplamaları — gerçek veriden
-  const morningShift = activeMechanics.filter((m: any) => {
+  const morningShift = activeMechanics.filter((m) => {
     if (!m.shiftStart) return false;
-    const hour = parseInt(m.shiftStart.split(":")[0], 10);
+    const [hourText] = m.shiftStart.split(":");
+    const hour = Number(hourText ?? 0);
     return hour < 12;
   });
-  const eveningShift = activeMechanics.filter((m: any) => {
+  const eveningShift = activeMechanics.filter((m) => {
     if (!m.shiftStart) return false;
-    const hour = parseInt(m.shiftStart.split(":")[0], 10);
+    const [hourText] = m.shiftStart.split(":");
+    const hour = Number(hourText ?? 0);
     return hour >= 12;
   });
   const noShiftAssigned = activeMechanics.filter(
-    (m: any) => !m.shiftStart || !m.shiftEnd
+    (m) => !m.shiftStart || !m.shiftEnd
   ).length;
 
   // İş yükü hesaplama: aktif servis emirleri / toplam günlük hedef
-  const totalActiveOrders = activeMechanics.reduce((sum: number, m: any) => sum + (m._count?.serviceOrders ?? 0), 0);
-  const totalDailyTarget = activeMechanics.reduce((sum: number, m: any) => sum + (m.dailyTarget ?? 3), 0);
+  const totalActiveOrders = activeMechanics.reduce((sum, m) => sum + (m._count?.serviceOrders ?? 0), 0);
+  const totalDailyTarget = activeMechanics.reduce((sum, m) => sum + (m.dailyTarget ?? 3), 0);
   const workloadPercent = totalDailyTarget > 0 ? Math.min(Math.round((totalActiveOrders / totalDailyTarget) * 100), 100) : 0;
 
   // Verimlilik hesaplama (deneyim yılına dayalı)
-  const calcEfficiency = (years: number) => Math.min((years || 1) * 5 + 75 + Math.random() * 5, 99).toFixed(1);
+  const calcEfficiency = (years: number | null) => Math.min((years || 1) * 5 + 75, 99).toFixed(1);
 
-  const leaderboard = [...mechanics].sort((a: any, b: any) => {
+  const leaderboard = [...mechanics].sort((a, b) => {
     return Number(calcEfficiency(b.experienceYears)) - Number(calcEfficiency(a.experienceYears));
   }).slice(0, 3);
 
@@ -56,7 +73,10 @@ export default async function MechanicsPage() {
     <PageShell
       title="Personel & Usta Yönetimi"
       subtitle="Çalışan kadronuzu, vardiya planlamasını ve performans metriklerini izleyin."
+      sectionLabel="Ekip"
     >
+      <TeamWorkspaceNav />
+
       {/* Metric Bento Grid */}
       <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-surface-container-highest p-6 rounded-2xl ambient-shadow border-b-4 border-primary">
@@ -156,7 +176,7 @@ export default async function MechanicsPage() {
               Verimlilik Liderleri
             </h3>
             <div className="space-y-6 mt-6">
-              {leaderboard.map((m: any, index: number) => {
+              {leaderboard.map((m, index) => {
                 const eff = calcEfficiency(m.experienceYears);
                 return (
                   <div key={m.id} className="flex items-center gap-4">
@@ -200,7 +220,7 @@ export default async function MechanicsPage() {
       </div>
       {/* Vardiya Takvimi */}
       <div id="vardiya-takvimi">
-        <ShiftCalendarView mechanics={mechanics as any[]} />
+        <ShiftCalendarView mechanics={mechanics} />
       </div>
     </PageShell>
   );

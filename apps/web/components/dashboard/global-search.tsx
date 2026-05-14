@@ -68,19 +68,19 @@ export function GlobalSearch() {
       {/* Arama tetikleyici */}
       <button
         onClick={() => { setOpen(true); setTimeout(() => inputRef.current?.focus(), 50); }}
-        className="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full min-w-[320px] text-sm text-slate-400 hover:bg-slate-100 transition-colors"
+        className="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full min-w-[320px] text-sm text-slate-400 hover:bg-slate-100 dark:bg-gray-700 transition-colors"
         aria-label="Ara (Ctrl+K)"
       >
         <span className="material-symbols-outlined text-sm">search</span>
         <span className="flex-1 text-left">Servis, müşteri, plaka ara...</span>
-        <kbd className="hidden sm:inline-flex px-1.5 py-0.5 text-[10px] border rounded bg-gray-100 text-gray-400 font-mono">Ctrl+K</kbd>
+        <kbd className="hidden sm:inline-flex px-1.5 py-0.5 text-[10px] border rounded bg-gray-100 dark:bg-gray-700 text-gray-400 font-mono">Ctrl+K</kbd>
       </button>
 
       {/* Modal */}
       {open && (
         <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4">
           <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
-          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg">
+          <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg">
             <div className="flex items-center gap-3 p-4 border-b">
               <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -106,7 +106,7 @@ export function GlobalSearch() {
                       <button
                         key={c.id}
                         onClick={() => { router.push(`/dashboard/customers/${c.id}`); setOpen(false); }}
-                        className="w-full text-left px-3 py-2 rounded hover:bg-gray-50 text-sm"
+                        className="w-full text-left px-3 py-2 rounded hover:bg-gray-50 dark:bg-gray-800/50 text-sm"
                       >
                         {c.companyName ?? `${c.firstName ?? ""} ${c.lastName ?? ""}`.trim()} · {c.phone}
                       </button>
@@ -120,7 +120,7 @@ export function GlobalSearch() {
                       <button
                         key={v.id}
                         onClick={() => { router.push(`/dashboard/vehicles/${v.id}`); setOpen(false); }}
-                        className="w-full text-left px-3 py-2 rounded hover:bg-gray-50 text-sm"
+                        className="w-full text-left px-3 py-2 rounded hover:bg-gray-50 dark:bg-gray-800/50 text-sm"
                       >
                         {v.plate} · {v.brand} {v.model}
                       </button>
@@ -134,7 +134,7 @@ export function GlobalSearch() {
                       <button
                         key={o.id}
                         onClick={() => { router.push(`/dashboard/services/${o.id}`); setOpen(false); }}
-                        className="w-full text-left px-3 py-2 rounded hover:bg-gray-50 text-sm"
+                        className="w-full text-left px-3 py-2 rounded hover:bg-gray-50 dark:bg-gray-800/50 text-sm"
                       >
                         #{o.orderNumber} · {o.complaintDescription.slice(0, 50)}
                       </button>
@@ -148,7 +148,7 @@ export function GlobalSearch() {
                       <button
                         key={p.id}
                         onClick={() => { router.push(`/dashboard/inventory`); setOpen(false); }}
-                        className="w-full text-left px-3 py-2 rounded hover:bg-gray-50 text-sm"
+                        className="w-full text-left px-3 py-2 rounded hover:bg-gray-50 dark:bg-gray-800/50 text-sm"
                       >
                         {p.name} · {p.partNumber}
                       </button>

@@ -154,18 +154,18 @@ export default function ReturnDialog({
       />
 
       {/* Dialog */}
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+      <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-gray-700">
           <div className="flex items-center gap-2">
             <RotateCcw
               className={`w-5 h-5 ${isServiceReturn ? "text-amber-500" : "text-blue-500"}`}
             />
-            <h2 className="text-base font-black text-slate-900">{title}</h2>
+            <h2 className="text-base font-black text-slate-900 dark:text-white">{title}</h2>
           </div>
           <button
             onClick={handleClose}
-            className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+            className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 dark:bg-gray-700 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -190,7 +190,7 @@ export default function ReturnDialog({
 
               {/* Parça seçimi */}
               <div className="space-y-2">
-                <label className="text-xs font-black text-slate-700 uppercase tracking-widest">
+                <label className="text-xs font-black text-slate-700 dark:text-gray-300 uppercase tracking-widest">
                   İade Edilecek Parça
                 </label>
                 <div className="relative">
@@ -201,7 +201,7 @@ export default function ReturnDialog({
                       setQuantity(1);
                     }}
                     required
-                    className="w-full appearance-none px-4 py-2.5 bg-slate-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none pr-10"
+                    className="w-full appearance-none px-4 py-2.5 bg-slate-100 dark:bg-gray-700 border-none rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none pr-10"
                   >
                     <option value="">Parça seçin...</option>
                     {parts.map((part) => (
@@ -211,19 +211,19 @@ export default function ReturnDialog({
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <ChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none" />
                 </div>
               </div>
 
               {/* Seçilen parça bilgisi */}
               {selectedPart && (
-                <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 flex items-center gap-3">
-                  <Package className="w-8 h-8 text-slate-300 shrink-0" />
+                <div className="bg-slate-50 dark:bg-gray-800/50 rounded-xl p-3 border border-slate-200 flex items-center gap-3">
+                  <Package className="w-8 h-8 text-slate-300 dark:text-slate-600 shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-sm font-black text-slate-900 truncate">
+                    <p className="text-sm font-black text-slate-900 dark:text-white truncate">
                       {selectedPart.name}
                     </p>
-                    <p className="text-[10px] text-slate-500 font-medium">
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
                       Mevcut Stok: {selectedPart.currentStock} {selectedPart.unit}
                     </p>
                   </div>
@@ -232,14 +232,14 @@ export default function ReturnDialog({
 
               {/* Miktar */}
               <div className="space-y-2">
-                <label className="text-xs font-black text-slate-700 uppercase tracking-widest">
+                <label className="text-xs font-black text-slate-700 dark:text-gray-300 uppercase tracking-widest">
                   İade Miktarı
                 </label>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 font-black text-lg hover:bg-slate-200 transition-colors flex items-center justify-center"
+                    className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-gray-700 text-slate-700 font-black text-lg hover:bg-slate-200 transition-colors flex items-center justify-center"
                   >
                     −
                   </button>
@@ -255,7 +255,7 @@ export default function ReturnDialog({
                     onChange={(e) =>
                       setQuantity(Math.max(1, parseInt(e.target.value) || 1))
                     }
-                    className="flex-1 text-center px-4 py-2.5 bg-slate-100 border-none rounded-xl text-sm font-black focus:ring-2 focus:ring-amber-500/50 outline-none"
+                    className="flex-1 text-center px-4 py-2.5 bg-slate-100 dark:bg-gray-700 border-none rounded-xl text-sm font-black focus:ring-2 focus:ring-amber-500/50 outline-none"
                   />
                   <button
                     type="button"
@@ -266,7 +266,7 @@ export default function ReturnDialog({
                           : q + 1
                       )
                     }
-                    className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 font-black text-lg hover:bg-slate-200 transition-colors flex items-center justify-center"
+                    className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-gray-700 text-slate-700 font-black text-lg hover:bg-slate-200 transition-colors flex items-center justify-center"
                   >
                     +
                   </button>
@@ -282,7 +282,7 @@ export default function ReturnDialog({
               {/* Tedarikçi seçimi (sadece tedarikçi iadesi için) */}
               {!isServiceReturn && (
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-slate-700 uppercase tracking-widest">
+                  <label className="text-xs font-black text-slate-700 dark:text-gray-300 uppercase tracking-widest">
                     Tedarikçi
                   </label>
                   <div className="relative">
@@ -290,7 +290,7 @@ export default function ReturnDialog({
                       value={selectedSupplierId}
                       onChange={(e) => setSelectedSupplierId(e.target.value)}
                       required
-                      className="w-full appearance-none px-4 py-2.5 bg-slate-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none pr-10"
+                      className="w-full appearance-none px-4 py-2.5 bg-slate-100 dark:bg-gray-700 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none pr-10"
                     >
                       <option value="">Tedarikçi seçin...</option>
                       {suppliers.map((supplier) => (
@@ -299,10 +299,10 @@ export default function ReturnDialog({
                         </option>
                       ))}
                     </select>
-                    <ChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                    <ChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none" />
                   </div>
                   {suppliers.length === 0 && (
-                    <p className="text-xs text-slate-400 font-medium">
+                    <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">
                       Sistemde kayıtlı tedarikçi bulunamadı.
                     </p>
                   )}
@@ -340,7 +340,7 @@ export default function ReturnDialog({
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="flex-1 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-sm font-black hover:bg-slate-200 transition-colors"
+                  className="flex-1 py-2.5 bg-slate-100 dark:bg-gray-700 text-slate-700 rounded-xl text-sm font-black hover:bg-slate-200 transition-colors"
                 >
                   İptal
                 </button>
@@ -375,18 +375,18 @@ export default function ReturnDialog({
           {/* STEP: success */}
           {step === "success" && (
             <div className="space-y-5 text-center py-4">
-              <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto">
+              <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-8 h-8 text-emerald-500" />
               </div>
               <div>
-                <h3 className="font-black text-slate-900 text-sm">İade Başarılı</h3>
-                <p className="text-xs text-slate-500 mt-1">{successMessage}</p>
+                <h3 className="font-black text-slate-900 dark:text-white text-sm">İade Başarılı</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{successMessage}</p>
               </div>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="flex-1 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-sm font-black hover:bg-slate-200 transition-colors"
+                  className="flex-1 py-2.5 bg-slate-100 dark:bg-gray-700 text-slate-700 rounded-xl text-sm font-black hover:bg-slate-200 transition-colors"
                 >
                   Yeni İade
                 </button>
@@ -404,25 +404,25 @@ export default function ReturnDialog({
           {/* STEP: error */}
           {step === "error" && (
             <div className="space-y-5 text-center py-4">
-              <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto">
+              <div className="w-16 h-16 bg-red-50 dark:bg-red-900/30 rounded-2xl flex items-center justify-center mx-auto">
                 <AlertCircle className="w-8 h-8 text-red-500" />
               </div>
               <div>
-                <h3 className="font-black text-slate-900 text-sm">Hata Oluştu</h3>
-                <p className="text-xs text-slate-500 mt-1">{errorMessage}</p>
+                <h3 className="font-black text-slate-900 dark:text-white text-sm">Hata Oluştu</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{errorMessage}</p>
               </div>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="flex-1 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-sm font-black hover:bg-slate-200 transition-colors"
+                  className="flex-1 py-2.5 bg-slate-100 dark:bg-gray-700 text-slate-700 rounded-xl text-sm font-black hover:bg-slate-200 transition-colors"
                 >
                   Tekrar Dene
                 </button>
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="flex-1 py-2.5 bg-red-100 text-red-700 rounded-xl text-sm font-black hover:bg-red-200 transition-colors"
+                  className="flex-1 py-2.5 bg-red-100 text-red-700 dark:text-red-400 rounded-xl text-sm font-black hover:bg-red-200 transition-colors"
                 >
                   Kapat
                 </button>

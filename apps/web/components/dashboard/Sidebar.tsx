@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
-import { filterNavItems } from "@/lib/permissions";
+import { filterNavItems, resolveNavItemHref } from "@/lib/permissions";
 import { useEffect, useState } from "react";
 import { getTenantProfile } from "@/lib/actions/tenant.actions";
 import {
   DASHBOARD_NAV_GROUPS,
   flattenDashboardNavGroups,
+  isDashboardNavItemActive,
 } from "@/lib/dashboard-navigation";
-import { DASHBOARD_LAYOUT } from "@/lib/dashboard-ui-standards";
+import { DASHBOARD_CHROME } from "@/lib/dashboard-ui-standards";
 
 // Flatten all items for permission filtering
 const allMenuItems = flattenDashboardNavGroups(DASHBOARD_NAV_GROUPS);
@@ -47,12 +48,10 @@ export function Sidebar() {
   }, [tenantId]);
 
   return (
-    <aside
-      className={`h-screen ${DASHBOARD_LAYOUT.sidebarWidth} fixed left-0 top-0 bg-blue-50/50 flex flex-col py-4 z-50 overflow-y-auto border-r border-outline-variant/15`}
-    >
+    <aside className={DASHBOARD_CHROME.sidebarShell}>
       {/* Brand */}
-      <div className="px-6 mb-6 flex items-center space-x-3 shrink-0">
-        <div className="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+      <div className={DASHBOARD_CHROME.sidebarBrand}>
+        <div className={DASHBOARD_CHROME.sidebarLogo}>
           {tenantInfo?.logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -70,11 +69,11 @@ export function Sidebar() {
           )}
         </div>
         <div className="flex-1 overflow-hidden" title={tenantInfo?.name}>
-          <h1 className="text-lg font-black text-blue-800 leading-tight truncate">
+          <h1 className={DASHBOARD_CHROME.sidebarBrandTitle}>
             {tenantInfo?.name || "Yükleniyor..."}
           </h1>
           <p
-            className="text-[10px] uppercase tracking-widest text-slate-500 font-bold truncate"
+            className={DASHBOARD_CHROME.sidebarBrandSubtitle}
             title={tenantInfo?.slogan || ""}
           >
             {tenantInfo
@@ -85,7 +84,7 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-2 space-y-0.5">
+      <nav className={DASHBOARD_CHROME.sidebarNav}>
         {DASHBOARD_NAV_GROUPS.map((group) => {
           const visibleItems = group.items.filter((item) =>
             accessibleHrefs.has(item.href)
@@ -93,26 +92,24 @@ export function Sidebar() {
           if (visibleItems.length === 0) return null;
 
           return (
-            <div key={group.label || "home"} className="mb-2">
+            <div key={group.label || "home"} className={DASHBOARD_CHROME.sidebarGroup}>
               {group.label && (
-                <p className="px-4 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 select-none">
+                <p className={DASHBOARD_CHROME.sidebarGroupLabel}>
                   {group.label}
                 </p>
               )}
               {visibleItems.map((item) => {
-                const isActive =
-                  pathname === item.href ||
-                  (item.href !== "/dashboard" &&
-                    pathname?.startsWith(item.href));
+                const targetHref = resolveNavItemHref(userRole, item);
+                const isActive = isDashboardNavItemActive(item, pathname);
 
                 return (
                   <Link
                     key={item.href}
-                    href={item.href}
-                    className={`flex items-center px-4 py-2.5 rounded-lg mx-1 transition-all ${
+                    href={targetHref}
+                    className={`${DASHBOARD_CHROME.sidebarItem} ${
                       isActive
-                        ? "bg-blue-100 text-blue-800 font-semibold translate-x-1"
-                        : "text-slate-600 hover:bg-white/60 hover:translate-x-1"
+                        ? DASHBOARD_CHROME.sidebarItemActive
+                        : DASHBOARD_CHROME.sidebarItemIdle
                     }`}
                   >
                     <span
@@ -135,10 +132,10 @@ export function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="shrink-0 mt-2 px-4 pb-2">
+      <div className={DASHBOARD_CHROME.sidebarFooter}>
         <Link
           href="/dashboard/settings/billing"
-          className="block bg-primary-container p-4 rounded-xl text-white mb-3 group hover:shadow-lg transition-all"
+          className={DASHBOARD_CHROME.sidebarUpgradeCard}
         >
           <p className="text-xs font-semibold opacity-80 mb-1">ABONELİK</p>
           <p className="text-sm font-bold mb-3">Paketinizi Yönetin</p>
@@ -150,21 +147,21 @@ export function Sidebar() {
         <div className="space-y-0.5">
           <Link
             href="/dashboard/settings/billing"
-            className="flex items-center px-3 py-2 text-slate-500 text-sm hover:text-primary transition-colors rounded-lg hover:bg-white/40"
+            className={DASHBOARD_CHROME.sidebarFooterLink}
           >
             <span className="material-symbols-outlined text-[16px] mr-2.5">credit_card</span>
             Abonelik & Fatura
           </Link>
           <Link
             href="#"
-            className="flex items-center px-3 py-2 text-slate-500 text-sm hover:text-primary transition-colors rounded-lg hover:bg-white/40"
+            className={DASHBOARD_CHROME.sidebarFooterLink}
           >
             <span className="material-symbols-outlined text-[16px] mr-2.5">help</span>
             Yardım Merkezi
           </Link>
           <button
             onClick={() => signOut()}
-            className="flex items-center w-full px-3 py-2 text-slate-500 text-sm hover:text-error transition-colors rounded-lg hover:bg-white/40"
+            className={DASHBOARD_CHROME.sidebarFooterDanger}
           >
             <span className="material-symbols-outlined text-[16px] mr-2.5">logout</span>
             Çıkış Yap

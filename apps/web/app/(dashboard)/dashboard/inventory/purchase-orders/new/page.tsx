@@ -1,12 +1,25 @@
 import { getParts } from "@/lib/actions/inventory.actions";
 import { getSuppliers } from "@/lib/actions/supplier.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
+import InventoryWorkspaceNav from "@/components/dashboard/inventory/InventoryWorkspaceNav";
 import NewPurchaseOrderForm from "./NewPurchaseOrderForm";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
   title: "Yeni Satın Alma Siparişi | MS Oto Servis",
+};
+
+type PurchaseOrderPartOption = {
+  id: string;
+  name: string;
+  partNumber: string | null;
+  unit: string;
+  purchasePrice: unknown;
+};
+
+type PurchaseOrderSupplierOption = {
+  id: string;
+  name: string;
+  email: string | null;
 };
 
 export default async function NewPurchaseOrderPage() {
@@ -19,15 +32,15 @@ export default async function NewPurchaseOrderPage() {
     return <PageError message={partsResult.error} />;
   }
 
-  const parts = (partsResult.parts ?? []).map((p: any) => ({
+  const parts = (partsResult.parts ?? []).map((p: PurchaseOrderPartOption) => ({
     id: p.id,
     name: p.name,
-    partNumber: p.partNumber,
+    partNumber: p.partNumber ?? "",
     unit: p.unit,
     purchasePrice: Number(p.purchasePrice),
   }));
 
-  const suppliers = (suppliersResult.suppliers ?? []).map((s: any) => ({
+  const suppliers = (suppliersResult.suppliers ?? []).map((s: PurchaseOrderSupplierOption) => ({
     id: s.id,
     name: s.name,
     email: s.email ?? null,
@@ -38,16 +51,8 @@ export default async function NewPurchaseOrderPage() {
       title="Yeni Satın Alma Siparişi"
       subtitle="Tedarikçi seçin, parça ekleyin ve sipariş oluşturun."
       sectionLabel="Stok & Envanter"
-      actions={
-        <Link
-          href="/dashboard/inventory/purchase-orders"
-          className="flex items-center gap-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-sm font-bold transition-all"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Geri Dön
-        </Link>
-      }
     >
+      <InventoryWorkspaceNav />
       <NewPurchaseOrderForm parts={parts} suppliers={suppliers} />
     </PageShell>
   );

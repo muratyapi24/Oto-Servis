@@ -55,7 +55,7 @@ export default function QualityControlSection({
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 p-5">
       <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-2 mb-4 flex items-center gap-2">
         <ClipboardCheck className="w-4 h-4" /> Kalite Kontrol
       </h3>
@@ -68,7 +68,7 @@ export default function QualityControlSection({
       )}
 
       {error && (
-        <div className="mb-3 flex items-center gap-2 text-red-600 bg-red-50 border border-red-200 rounded-lg p-3 text-sm">
+        <div className="mb-3 flex items-center gap-2 text-red-600 bg-red-50 dark:bg-red-900/30 border border-red-200 rounded-lg p-3 text-sm">
           <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </div>
@@ -76,7 +76,7 @@ export default function QualityControlSection({
 
       {savedNotes ? (
         <div className="space-y-3">
-          <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-700 leading-relaxed">
+          <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 text-sm text-gray-700 leading-relaxed">
             {savedNotes}
           </div>
           {(qualityCheckedAt || qualityCheckedBy) && (
@@ -115,7 +115,7 @@ export default function QualityControlSection({
             onChange={(e) => setNotes(e.target.value)}
             rows={4}
             placeholder="Kalite kontrol notlarını girin..."
-            className="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary resize-none"
+            className="w-full p-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary resize-none"
           />
           <div className="flex gap-2">
             <button
@@ -129,7 +129,7 @@ export default function QualityControlSection({
             {editing && (
               <button
                 onClick={() => { setEditing(false); setNotes(savedNotes ?? ""); setError(null); }}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 dark:bg-gray-800/50 transition-colors"
               >
                 İptal
               </button>

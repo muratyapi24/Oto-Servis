@@ -99,14 +99,14 @@ export default function CustomerFormModal({ isOpen, onClose, customerData }: Cus
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         
         {errorMsg && (
-          <div className="bg-red-50 text-red-600 p-4 rounded-xl flex items-start gap-3 text-sm font-bold border border-red-100">
+          <div className="bg-red-50 dark:bg-red-900/30 text-red-600 p-4 rounded-xl flex items-start gap-3 text-sm font-bold border border-red-100">
             <AlertCircle className="w-5 h-5 shrink-0" />
             <p>{errorMsg}</p>
           </div>
         )}
         
         {/* Type Selection */}
-        <div className="flex bg-slate-100 p-1 rounded-xl">
+        <div className="flex bg-slate-100 dark:bg-gray-700 p-1 rounded-xl">
            <button 
              type="button"
              onClick={() => form.setValue("type", "INDIVIDUAL")}
@@ -128,66 +128,66 @@ export default function CustomerFormModal({ isOpen, onClose, customerData }: Cus
           {watchType === "INDIVIDUAL" ? (
             <>
               <div className="space-y-1">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Ad</label>
-                <input {...form.register("firstName")} className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
+                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Ad</label>
+                <input {...form.register("firstName")} className="w-full bg-slate-50 dark:bg-gray-800/50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
                 {form.formState.errors.firstName && <p className="text-red-500 text-xs mt-1">{form.formState.errors.firstName.message}</p>}
               </div>
               <div className="space-y-1">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Soyad</label>
-                <input {...form.register("lastName")} className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
+                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Soyad</label>
+                <input {...form.register("lastName")} className="w-full bg-slate-50 dark:bg-gray-800/50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
                 {form.formState.errors.lastName && <p className="text-red-500 text-xs mt-1">{form.formState.errors.lastName.message}</p>}
               </div>
             </>
           ) : (
             <>
               <div className="space-y-1 md:col-span-2">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Firma Adı</label>
-                <input {...form.register("companyName")} className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
+                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Firma Adı</label>
+                <input {...form.register("companyName")} className="w-full bg-slate-50 dark:bg-gray-800/50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
                 {form.formState.errors.companyName && <p className="text-red-500 text-xs mt-1">{form.formState.errors.companyName.message}</p>}
               </div>
               <div className="space-y-1 md:col-span-2">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Yetkili Kişi (Opsiyonel)</label>
-                <input {...form.register("contactPerson")} className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
+                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Yetkili Kişi (Opsiyonel)</label>
+                <input {...form.register("contactPerson")} className="w-full bg-slate-50 dark:bg-gray-800/50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
               </div>
             </>
           )}
 
           <div className="space-y-1">
-            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Telefon *</label>
-            <input {...form.register("phone")} className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
+            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Telefon *</label>
+            <input {...form.register("phone")} className="w-full bg-slate-50 dark:bg-gray-800/50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
             {form.formState.errors.phone && <p className="text-red-500 text-xs mt-1">{form.formState.errors.phone.message}</p>}
           </div>
           <div className="space-y-1">
-            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">E-Posta (Opsiyonel)</label>
-            <input {...form.register("email")} className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
+            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">E-Posta (Opsiyonel)</label>
+            <input {...form.register("email")} className="w-full bg-slate-50 dark:bg-gray-800/50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
             {form.formState.errors.email && <p className="text-red-500 text-xs mt-1">{form.formState.errors.email.message}</p>}
           </div>
 
         </div>
         
-        <hr className="border-slate-100" />
+        <hr className="border-slate-100 dark:border-gray-700" />
         
         {/* Billing */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Vergi Dairesi</label>
-            <input {...form.register("taxOffice")} className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
+            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Vergi Dairesi</label>
+            <input {...form.register("taxOffice")} className="w-full bg-slate-50 dark:bg-gray-800/50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
           </div>
           <div className="space-y-1">
-            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Vergi/TC No</label>
-            <input {...form.register("taxNumber")} className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
+            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Vergi/TC No</label>
+            <input {...form.register("taxNumber")} className="w-full bg-slate-50 dark:bg-gray-800/50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
           </div>
           <div className="space-y-1 md:col-span-2">
-            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Açık Adres</label>
-            <textarea {...form.register("address")} rows={2} className="w-full bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold resize-none" />
+            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Açık Adres</label>
+            <textarea {...form.register("address")} rows={2} className="w-full bg-slate-50 dark:bg-gray-800/50 border border-slate-200 px-4 py-2.5 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold resize-none" />
           </div>
         </div>
         
-        <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
+        <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 dark:border-gray-700">
            <button 
              type="button"
              onClick={onClose}
-             className="px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest text-slate-500 bg-slate-100 hover:bg-slate-200:bg-slate-700 transition-colors"
+             className="px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest text-slate-500 bg-slate-100 dark:bg-gray-700 hover:bg-slate-200:bg-slate-700 transition-colors"
            >
              İPTAL
            </button>

@@ -131,7 +131,7 @@ export default function OnboardingWizardClient({
             Kurulum Sihirbazı
           </div>
           <h1 className="text-3xl font-black text-on-surface">Hoş Geldiniz!</h1>
-          <p className="text-sm text-slate-400 mt-2">
+          <p className="text-sm text-slate-400 dark:text-slate-500 mt-2">
             Birkaç adımda firmanızı hazırlayalım. Tüm ayarlar sonradan değiştirilebilir.
           </p>
         </div>
@@ -166,14 +166,14 @@ export default function OnboardingWizardClient({
 
         {/* Error */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 text-sm font-medium px-4 py-3 rounded-2xl mb-6 flex items-center gap-2">
+          <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 text-red-600 text-sm font-medium px-4 py-3 rounded-2xl mb-6 flex items-center gap-2">
             <span className="material-symbols-outlined text-[18px]">error</span>
             {error}
           </div>
         )}
 
         {/* Card */}
-        <div className="bg-white rounded-3xl shadow-xl p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8">
           {/* Step 0: Firma Bilgileri */}
           {step === 0 && (
             <div className="space-y-5">
@@ -183,50 +183,50 @@ export default function OnboardingWizardClient({
                 </div>
                 <div>
                   <h2 className="text-lg font-black text-on-surface">Firma Bilgileri</h2>
-                  <p className="text-xs text-slate-400">Temel firma bilgilerinizi girin</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500">Temel firma bilgilerinizi girin</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Firma Adı *</label>
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1.5">Firma Adı *</label>
                   <input
                     type="text"
                     value={s1.name}
                     onChange={(e) => setS1({ ...s1, name: e.target.value })}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    className="w-full px-4 py-3 border border-slate-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                     placeholder="Örn: Yıldız Oto Servis"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Telefon</label>
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1.5">Telefon</label>
                   <input type="tel" value={s1.phone} onChange={(e) => setS1({ ...s1, phone: e.target.value })}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="0 (5XX) XXX XX XX" />
+                    className="w-full px-4 py-3 border border-slate-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="0 (5XX) XXX XX XX" />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5">E-posta</label>
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1.5">E-posta</label>
                   <input type="email" value={s1.email} onChange={(e) => setS1({ ...s1, email: e.target.value })}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="info@firmaadi.com" />
+                    className="w-full px-4 py-3 border border-slate-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="info@firmaadi.com" />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Vergi No</label>
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1.5">Vergi No</label>
                   <input type="text" value={s1.taxNumber} onChange={(e) => setS1({ ...s1, taxNumber: e.target.value })}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="12345678901" />
+                    className="w-full px-4 py-3 border border-slate-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="12345678901" />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Vergi Dairesi</label>
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1.5">Vergi Dairesi</label>
                   <input type="text" value={s1.taxOffice} onChange={(e) => setS1({ ...s1, taxOffice: e.target.value })}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="Merkez VD" />
+                    className="w-full px-4 py-3 border border-slate-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="Merkez VD" />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Şehir</label>
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1.5">Şehir</label>
                   <input type="text" value={s1.city} onChange={(e) => setS1({ ...s1, city: e.target.value })}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="İstanbul" />
+                    className="w-full px-4 py-3 border border-slate-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="İstanbul" />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Adres</label>
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1.5">Adres</label>
                   <textarea value={s1.address} onChange={(e) => setS1({ ...s1, address: e.target.value })}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none h-16" placeholder="Açık adres..." />
+                    className="w-full px-4 py-3 border border-slate-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none h-16" placeholder="Açık adres..." />
                 </div>
               </div>
             </div>
@@ -241,25 +241,25 @@ export default function OnboardingWizardClient({
                 </div>
                 <div>
                   <h2 className="text-lg font-black text-on-surface">Logo & Tema</h2>
-                  <p className="text-xs text-slate-400">Markanızı özelleştirin</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500">Markanızı özelleştirin</p>
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Logo URL (Opsiyonel)</label>
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1.5">Logo URL (Opsiyonel)</label>
                 <input type="url" value={s2.logoUrl} onChange={(e) => setS2({ ...s2, logoUrl: e.target.value })}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="https://... (.png, .jpg)" />
-                <p className="text-[10px] text-slate-300 mt-1">Logo yüklemek için Ayarlar sayfasını da kullanabilirsiniz.</p>
+                  className="w-full px-4 py-3 border border-slate-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="https://... (.png, .jpg)" />
+                <p className="text-[10px] text-slate-300 dark:text-slate-600 mt-1">Logo yüklemek için Ayarlar sayfasını da kullanabilirsiniz.</p>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Slogan</label>
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1.5">Slogan</label>
                 <input type="text" value={s2.slogan} onChange={(e) => setS2({ ...s2, slogan: e.target.value })}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="Güvenilir Servis, Kaliteli Hizmet" />
+                  className="w-full px-4 py-3 border border-slate-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="Güvenilir Servis, Kaliteli Hizmet" />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-3">Tema Tercihi</label>
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-3">Tema Tercihi</label>
                 <div className="grid grid-cols-3 gap-3">
                   {[
                     { value: "light", label: "Açık", icon: "light_mode" },
@@ -295,12 +295,12 @@ export default function OnboardingWizardClient({
                 </div>
                 <div>
                   <h2 className="text-lg font-black text-on-surface">Hizmetler & Çalışma Saatleri</h2>
-                  <p className="text-xs text-slate-400">Sunduğunuz hizmetleri belirleyin</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500">Sunduğunuz hizmetleri belirleyin</p>
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-3">Hizmet Türleri</label>
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-3">Hizmet Türleri</label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   {SERVICE_TYPE_OPTIONS.map((service) => (
                     <button
@@ -322,22 +322,22 @@ export default function OnboardingWizardClient({
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-3">Çalışma Saatleri</label>
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-3">Çalışma Saatleri</label>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 block mb-1">Hafta İçi</label>
+                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 block mb-1">Hafta İçi</label>
                     <input type="text" value={s3.weekdays} onChange={(e) => setS3({ ...s3, weekdays: e.target.value })}
-                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 block mb-1">Cumartesi</label>
+                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 block mb-1">Cumartesi</label>
                     <input type="text" value={s3.saturday} onChange={(e) => setS3({ ...s3, saturday: e.target.value })}
-                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 block mb-1">Pazar</label>
+                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 block mb-1">Pazar</label>
                     <input type="text" value={s3.sunday} onChange={(e) => setS3({ ...s3, sunday: e.target.value })}
-                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                   </div>
                 </div>
               </div>
@@ -354,48 +354,48 @@ export default function OnboardingWizardClient({
                   </span>
                 </div>
                 <h2 className="text-2xl font-black text-on-surface mb-2">Temel Kurulum Tamamlandı!</h2>
-                <p className="text-sm text-slate-400 max-w-md mx-auto leading-relaxed">
+                <p className="text-sm text-slate-400 dark:text-slate-500 max-w-md mx-auto leading-relaxed">
                   Firmanız yapılandırıldı. Aşağıdaki entegrasyonları tamamlayarak platformu tam kapasiteyle kullanabilirsiniz.
                 </p>
               </div>
 
               {/* Sonraki Adımlar */}
               <div className="space-y-3">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Önerilen Sonraki Adımlar</p>
-                <Link href="/dashboard/settings/notifications" className="flex items-center gap-4 p-4 rounded-2xl border border-slate-100 hover:border-primary/30 hover:bg-primary/5 transition-all group">
-                  <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Önerilen Sonraki Adımlar</p>
+                <Link href="/dashboard/settings/notifications" className="flex items-center gap-4 p-4 rounded-2xl border border-slate-100 dark:border-gray-700 hover:border-primary/30 hover:bg-primary/5 transition-all group">
+                  <div className="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 rounded-xl flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors">
                     <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>sms</span>
                   </div>
                   <div className="flex-1 text-left">
-                    <p className="font-bold text-slate-800 text-sm">SMS & WhatsApp Kanalı Kur</p>
-                    <p className="text-xs text-slate-400">NetGSM, İleti Merkezi veya Twilio bağlayın</p>
+                    <p className="font-bold text-slate-800 dark:text-gray-200 text-sm">SMS & WhatsApp Kanalı Kur</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500">NetGSM, İleti Merkezi veya Twilio bağlayın</p>
                   </div>
-                  <span className="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors">arrow_forward</span>
+                  <span className="material-symbols-outlined text-slate-300 dark:text-slate-600 group-hover:text-primary transition-colors">arrow_forward</span>
                 </Link>
 
-                <Link href="/dashboard/settings#payment" className="flex items-center gap-4 p-4 rounded-2xl border border-slate-100 hover:border-primary/30 hover:bg-primary/5 transition-all group">
+                <Link href="/dashboard/settings#payment" className="flex items-center gap-4 p-4 rounded-2xl border border-slate-100 dark:border-gray-700 hover:border-primary/30 hover:bg-primary/5 transition-all group">
                   <div className="w-10 h-10 bg-violet-50 text-violet-600 rounded-xl flex items-center justify-center group-hover:bg-violet-600 group-hover:text-white transition-colors">
                     <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>credit_card</span>
                   </div>
                   <div className="flex-1 text-left">
-                    <p className="font-bold text-slate-800 text-sm">Ödeme Sağlayıcısı Ekle</p>
-                    <p className="text-xs text-slate-400">iyzico veya PayTR ile online ödeme alın</p>
+                    <p className="font-bold text-slate-800 dark:text-gray-200 text-sm">Ödeme Sağlayıcısı Ekle</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500">iyzico veya PayTR ile online ödeme alın</p>
                   </div>
-                  <span className="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors">arrow_forward</span>
+                  <span className="material-symbols-outlined text-slate-300 dark:text-slate-600 group-hover:text-primary transition-colors">arrow_forward</span>
                 </Link>
               </div>
 
               {/* Quick Actions */}
-              <div className="border-t border-slate-100 pt-4">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Hemen Başla</p>
+              <div className="border-t border-slate-100 dark:border-gray-700 pt-4">
+                <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">Hemen Başla</p>
                 <div className="grid grid-cols-2 gap-3">
                   <Link href="/dashboard/services" className="bg-primary/5 hover:bg-primary/10 p-4 rounded-2xl transition-colors text-center group">
                     <span className="material-symbols-outlined text-primary text-2xl mb-2 block" style={{ fontVariationSettings: "'FILL' 1" }}>build</span>
-                    <p className="text-xs font-bold text-slate-600 group-hover:text-primary transition-colors">Servis Emri Aç</p>
+                    <p className="text-xs font-bold text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors">Servis Emri Aç</p>
                   </Link>
                   <Link href="/dashboard/customers" className="bg-primary/5 hover:bg-primary/10 p-4 rounded-2xl transition-colors text-center group">
                     <span className="material-symbols-outlined text-primary text-2xl mb-2 block" style={{ fontVariationSettings: "'FILL' 1" }}>people</span>
-                    <p className="text-xs font-bold text-slate-600 group-hover:text-primary transition-colors">Müşteri Ekle</p>
+                    <p className="text-xs font-bold text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors">Müşteri Ekle</p>
                   </Link>
                 </div>
               </div>
@@ -403,12 +403,12 @@ export default function OnboardingWizardClient({
           )}
 
           {/* Navigation Buttons */}
-          <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-100">
+          <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-100 dark:border-gray-700">
             {step > 0 ? (
               <button
                 onClick={handleBack}
                 disabled={isPending}
-                className="flex items-center gap-2 px-5 py-2.5 text-slate-500 text-sm font-bold hover:text-slate-700 transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-5 py-2.5 text-slate-500 text-sm font-bold hover:text-slate-700 dark:text-gray-300 transition-colors disabled:opacity-50"
               >
                 <span className="material-symbols-outlined text-[18px]">arrow_back</span>
                 Geri
@@ -453,7 +453,7 @@ export default function OnboardingWizardClient({
                 });
               }}
               disabled={isPending}
-              className="text-xs text-slate-400 hover:text-slate-600 font-medium transition-colors"
+              className="text-xs text-slate-400 hover:text-slate-600 dark:text-slate-400 font-medium transition-colors"
             >
               Atla, sonra tamamlarım →
             </button>

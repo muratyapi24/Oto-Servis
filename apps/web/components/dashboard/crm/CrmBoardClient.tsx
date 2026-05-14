@@ -105,15 +105,15 @@ export default function CrmBoardClient({ plans, stats }: CrmBoardProps) {
 
   const getStatusBadge = (plan: MaintenancePlan) => {
     if (plan.isOverdue) {
-      return <span className="px-2 py-1 bg-red-50 text-red-600 border border-red-200 rounded-lg text-[10px] font-black tracking-wider uppercase">Gecikmiş</span>;
+      return <span className="px-2 py-1 bg-red-50 dark:bg-red-900/30 text-red-600 border border-red-200 rounded-lg text-[10px] font-black tracking-wider uppercase">Gecikmiş</span>;
     }
     if (plan.isMileageDue) {
-      return <span className="px-2 py-1 bg-orange-50 text-orange-600 border border-orange-200 rounded-lg text-[10px] font-black tracking-wider uppercase">KM Aşıldı</span>;
+      return <span className="px-2 py-1 bg-orange-50 dark:bg-orange-900/30 text-orange-600 border border-orange-200 rounded-lg text-[10px] font-black tracking-wider uppercase">KM Aşıldı</span>;
     }
     if (plan.isUpcoming) {
       return <span className="px-2 py-1 bg-amber-50 text-amber-600 border border-amber-200 rounded-lg text-[10px] font-black tracking-wider uppercase">Yaklaşıyor</span>;
     }
-    return <span className="px-2 py-1 bg-slate-50 text-slate-500 border border-slate-200 rounded-lg text-[10px] font-black tracking-wider uppercase">Planlandı</span>;
+    return <span className="px-2 py-1 bg-slate-50 dark:bg-gray-800/50 text-slate-500 border border-slate-200 rounded-lg text-[10px] font-black tracking-wider uppercase">Planlandı</span>;
   };
 
   const filterButtons: { key: FilterType; label: string; count: number; color: string }[] = [
@@ -149,9 +149,9 @@ export default function CrmBoardClient({ plans, stats }: CrmBoardProps) {
           <div className="absolute right-4 bottom-2 opacity-10">
             <ClipboardList className="w-24 h-24" />
           </div>
-          <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase">Toplam Bekleyen Bakım</span>
+          <span className="text-[10px] font-black tracking-widest text-slate-400 dark:text-slate-500 uppercase">Toplam Bekleyen Bakım</span>
           <p className="text-4xl font-black mt-2">{stats.totalPending}</p>
-          <p className="text-xs text-slate-400 mt-1">Tamamlanmamış tüm bakım planları</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Tamamlanmamış tüm bakım planları</p>
         </div>
       </div>
 
@@ -177,12 +177,12 @@ export default function CrmBoardClient({ plans, stats }: CrmBoardProps) {
 
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none w-64"
+              className="pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none w-64"
               placeholder="Müşteri, plaka, bakım ara..."
             />
           </div>
@@ -199,52 +199,52 @@ export default function CrmBoardClient({ plans, stats }: CrmBoardProps) {
 
       {/* Bakım Planları Listesi */}
       {filteredPlans.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-200 p-12 text-center">
           <CheckCircle2 className="w-12 h-12 mx-auto text-emerald-400 mb-3" />
-          <p className="text-lg font-bold text-slate-700">Bu filtredeki tüm bakımlar güncel!</p>
-          <p className="text-sm text-slate-400 mt-1">Gecikmiş veya yaklaşan bakım planı bulunamadı.</p>
+          <p className="text-lg font-bold text-slate-700 dark:text-gray-300">Bu filtredeki tüm bakımlar güncel!</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Gecikmiş veya yaklaşan bakım planı bulunamadı.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200">
-                  <th className="text-left py-3.5 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">Durum</th>
-                  <th className="text-left py-3.5 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">Bakım Planı</th>
-                  <th className="text-left py-3.5 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                <tr className="bg-slate-50 dark:bg-gray-800/50 border-b border-slate-200">
+                  <th className="text-left py-3.5 px-4 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">Durum</th>
+                  <th className="text-left py-3.5 px-4 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">Bakım Planı</th>
+                  <th className="text-left py-3.5 px-4 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     <span className="flex items-center gap-1"><User className="w-3 h-3" /> Müşteri</span>
                   </th>
-                  <th className="text-left py-3.5 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                  <th className="text-left py-3.5 px-4 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     <span className="flex items-center gap-1"><Car className="w-3 h-3" /> Araç</span>
                   </th>
-                  <th className="text-left py-3.5 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">Tarih</th>
-                  <th className="text-left py-3.5 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                  <th className="text-left py-3.5 px-4 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">Tarih</th>
+                  <th className="text-left py-3.5 px-4 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     <span className="flex items-center gap-1"><Gauge className="w-3 h-3" /> KM</span>
                   </th>
-                  <th className="text-right py-3.5 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">İşlem</th>
+                  <th className="text-right py-3.5 px-4 text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">İşlem</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredPlans.map((plan) => (
-                  <tr key={plan.id} className="hover:bg-slate-50/50 transition-colors">
+                  <tr key={plan.id} className="hover:bg-slate-50 dark:bg-gray-800/50/50 transition-colors">
                     <td className="py-3.5 px-4">{getStatusBadge(plan)}</td>
                     <td className="py-3.5 px-4">
-                      <span className="font-bold text-slate-900">{plan.title}</span>
+                      <span className="font-bold text-slate-900 dark:text-white">{plan.title}</span>
                     </td>
                     <td className="py-3.5 px-4">
                       <Link href={`/dashboard/customers/${plan.customerId}`} className="text-primary font-semibold hover:underline">
                         {plan.customerName}
                       </Link>
                       {plan.customerPhone && (
-                        <p className="text-xs text-slate-400 mt-0.5">{plan.customerPhone}</p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{plan.customerPhone}</p>
                       )}
                     </td>
                     <td className="py-3.5 px-4">
                       <Link href={`/dashboard/vehicles/${plan.vehicleId}`} className="text-primary font-mono font-bold text-xs hover:underline">
                         {plan.plate}
                       </Link>
-                      <p className="text-xs text-slate-400 mt-0.5">{plan.vehicleName}{plan.vehicleYear ? ` (${plan.vehicleYear})` : ""}</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{plan.vehicleName}{plan.vehicleYear ? ` (${plan.vehicleYear})` : ""}</p>
                     </td>
                     <td className="py-3.5 px-4">
                       {plan.dueDate ? (
@@ -252,7 +252,7 @@ export default function CrmBoardClient({ plans, stats }: CrmBoardProps) {
                           {dayjs(plan.dueDate).format("DD MMM YYYY")}
                         </span>
                       ) : (
-                        <span className="text-xs text-slate-300">—</span>
+                        <span className="text-xs text-slate-300 dark:text-slate-600">—</span>
                       )}
                     </td>
                     <td className="py-3.5 px-4">
@@ -261,10 +261,10 @@ export default function CrmBoardClient({ plans, stats }: CrmBoardProps) {
                           <span className={`text-xs font-bold ${plan.isMileageDue ? "text-orange-600" : "text-slate-700"}`}>
                             {plan.dueMileage.toLocaleString("tr-TR")} km
                           </span>
-                          <p className="text-[10px] text-slate-400">Mevcut: {plan.currentMileage.toLocaleString("tr-TR")} km</p>
+                          <p className="text-[10px] text-slate-400 dark:text-slate-500">Mevcut: {plan.currentMileage.toLocaleString("tr-TR")} km</p>
                         </div>
                       ) : (
-                        <span className="text-xs text-slate-300">—</span>
+                        <span className="text-xs text-slate-300 dark:text-slate-600">—</span>
                       )}
                     </td>
                     <td className="py-3.5 px-4 text-right">

@@ -57,7 +57,7 @@ export default function InvoiceFormModal({ isOpen, onClose, customers }: Invoice
       maxWidth="max-w-[550px]"
     >
       {errorMessage && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
+        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 text-red-600 rounded-lg text-sm">
           {errorMessage}
         </div>
       )}
@@ -66,9 +66,9 @@ export default function InvoiceFormModal({ isOpen, onClose, customers }: Invoice
         
         <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-sm font-bold text-slate-700">Cari Hesap (Müşteri)</label>
+              <label className="text-sm font-bold text-slate-700 dark:text-gray-300">Cari Hesap (Müşteri)</label>
               <select 
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 {...register("customerId")}
               >
                 <option value="">Seçiniz...</option>
@@ -81,9 +81,9 @@ export default function InvoiceFormModal({ isOpen, onClose, customers }: Invoice
               {errors.customerId && <p className="text-xs text-red-500">{errors.customerId.message}</p>}
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-bold text-slate-700">Türü</label>
+              <label className="text-sm font-bold text-slate-700 dark:text-gray-300">Türü</label>
               <select 
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 {...register("type")}
               >
                 <option value="SALES">Satış (Alacaklandırma)</option>
@@ -94,19 +94,19 @@ export default function InvoiceFormModal({ isOpen, onClose, customers }: Invoice
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-sm font-bold text-slate-700">Fatura Tarihi</label>
+            <label className="text-sm font-bold text-slate-700 dark:text-gray-300">Fatura Tarihi</label>
             <input 
               type="date" 
-              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               {...register("issueDate")} 
             />
             {errors.issueDate && <p className="text-xs text-red-500">{errors.issueDate.message}</p>}
           </div>
           <div className="space-y-1">
-            <label className="text-sm font-bold text-slate-700">Vade Tarihi</label>
+            <label className="text-sm font-bold text-slate-700 dark:text-gray-300">Vade Tarihi</label>
             <input 
               type="date" 
-              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               {...register("dueDate")} 
             />
           </div>
@@ -114,41 +114,41 @@ export default function InvoiceFormModal({ isOpen, onClose, customers }: Invoice
 
         <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-sm font-bold text-slate-700">Vergisiz Tutar (SubTotal)</label>
+              <label className="text-sm font-bold text-slate-700 dark:text-gray-300">Vergisiz Tutar (SubTotal)</label>
               <input 
                 type="number" 
                 step="0.01" 
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 {...register("subTotal", { valueAsNumber: true })} 
               />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-bold text-slate-700">KDV Tutarı</label>
+              <label className="text-sm font-bold text-slate-700 dark:text-gray-300">KDV Tutarı</label>
               <input 
                 type="number" 
                 step="0.01" 
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 {...register("taxAmount", { valueAsNumber: true })} 
               />
             </div>
         </div>
 
         <div className="space-y-1">
-            <label className="text-sm font-bold text-slate-700">Genel Toplam Tutar (₺)</label>
+            <label className="text-sm font-bold text-slate-700 dark:text-gray-300">Genel Toplam Tutar (₺)</label>
             <input 
               type="number" 
               step="0.01" 
-              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-black text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-lg text-sm font-black text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               {...register("totalAmount", { valueAsNumber: true })} 
             />
             {errors.totalAmount && <p className="text-xs text-red-500">{errors.totalAmount.message}</p>}
         </div>
 
         <div className="space-y-1">
-            <label className="text-sm font-bold text-slate-700">Açıklama / Notlar</label>
+            <label className="text-sm font-bold text-slate-700 dark:text-gray-300">Açıklama / Notlar</label>
             <textarea 
               rows={2} 
-              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               {...register("notes")} 
               placeholder="Hizmet detayı vb." 
             />
@@ -159,7 +159,7 @@ export default function InvoiceFormModal({ isOpen, onClose, customers }: Invoice
               type="button" 
               onClick={onClose} 
               disabled={isPending}
-              className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors"
+              className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 dark:bg-gray-800/50 transition-colors"
             >
               İptal
             </button>

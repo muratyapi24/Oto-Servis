@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  DASHBOARD_CHROME,
   DASHBOARD_TYPOGRAPHY,
   dashboardPageContainerClass,
 } from "@/lib/dashboard-ui-standards";
@@ -59,7 +60,7 @@ export default function PageShell({
               <p className={DASHBOARD_TYPOGRAPHY.pageSubtitle}>{subtitle}</p>
             )}
           </div>
-          {actions && <div className="flex space-x-3 flex-shrink-0">{actions}</div>}
+          {actions && <div className={DASHBOARD_CHROME.pageActions}>{actions}</div>}
         </section>
 
         {/* Page Content */}
@@ -68,16 +69,16 @@ export default function PageShell({
 
       {/* Footer — Dashboard ile aynı */}
       {showFooter && (
-        <footer className="w-full mt-auto bg-white border-t border-slate-100">
-          <div className="flex flex-col md:flex-row justify-between items-center px-8 py-8 w-full max-w-7xl mx-auto">
-            <div className="mb-4 md:mb-0">
-              <p className="text-sm font-bold text-slate-900 mb-1">MS OTO SERVİS</p>
-              <p className="text-xs font-normal text-slate-500">© 2026 MS OTO SERVİS. All rights reserved.</p>
+        <footer className={DASHBOARD_CHROME.pageFooter}>
+          <div className={DASHBOARD_CHROME.pageFooterInner}>
+            <div className={DASHBOARD_CHROME.pageFooterBrandBlock}>
+              <p className={DASHBOARD_CHROME.pageFooterBrand}>MS OTO SERVİS</p>
+              <p className={DASHBOARD_CHROME.pageFooterMeta}>© 2026 MS OTO SERVİS. All rights reserved.</p>
             </div>
-            <div className="flex space-x-6">
-              <Link href="#" className="text-xs font-normal text-slate-400 hover:text-blue-500 transition-opacity">Privacy Policy</Link>
-              <Link href="#" className="text-xs font-normal text-slate-400 hover:text-blue-500 transition-opacity">Terms of Service</Link>
-              <Link href="#" className="text-xs font-normal text-slate-400 hover:text-blue-500 transition-opacity">Contact Support</Link>
+            <div className={DASHBOARD_CHROME.pageFooterLinks}>
+              <Link href="#" className={DASHBOARD_CHROME.pageFooterLink}>Privacy Policy</Link>
+              <Link href="#" className={DASHBOARD_CHROME.pageFooterLink}>Terms of Service</Link>
+              <Link href="#" className={DASHBOARD_CHROME.pageFooterLink}>Contact Support</Link>
             </div>
           </div>
         </footer>
@@ -89,14 +90,14 @@ export default function PageShell({
 /** Standart hata durumu bileşeni — tüm moüller için ortak */
 export function PageError({ message }: { message: string }) {
   return (
-    <div className="flex flex-col items-center justify-center p-12 text-center h-[50vh]">
+    <div className={DASHBOARD_CHROME.pageErrorShell}>
       <span
         className="material-symbols-outlined text-5xl text-error mb-4 opacity-50"
       >
         error
       </span>
       <h2 className="text-xl font-bold text-on-surface">Veri Yükleme Hatası</h2>
-      <p className="text-slate-500 mt-2">{message}</p>
+      <p className={DASHBOARD_CHROME.pageErrorMessage}>{message}</p>
     </div>
   );
 }

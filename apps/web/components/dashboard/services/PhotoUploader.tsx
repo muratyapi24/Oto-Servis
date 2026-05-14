@@ -72,13 +72,13 @@ export default function PhotoUploader({ serviceOrderId, initialDocuments = [] }:
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 space-y-4">
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 rounded-xl shadow-sm p-5 space-y-4">
       <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
         <ImageIcon className="w-4 h-4" /> Fotoğraflar & Belgeler
       </h3>
 
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 text-red-600 rounded-lg text-sm border border-red-100">
+        <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/30 text-red-600 rounded-lg text-sm border border-red-100">
           <AlertCircle className="w-4 h-4 shrink-0" />{error}
         </div>
       )}
@@ -123,7 +123,7 @@ export default function PhotoUploader({ serviceOrderId, initialDocuments = [] }:
       {documents.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {documents.map(doc => (
-            <div key={doc.id} className="relative group rounded-xl overflow-hidden border border-gray-200 bg-gray-50 aspect-square">
+            <div key={doc.id} className="relative group rounded-xl overflow-hidden border border-gray-200 bg-gray-50 dark:bg-gray-800/50 aspect-square">
               {doc.fileType.startsWith("image/") ? (
                 <img
                   src={doc.fileUrl}

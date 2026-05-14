@@ -144,12 +144,12 @@ export default function StockTransferDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-gray-700">
           <div className="flex items-center gap-2">
             <ArrowRightLeft className="w-5 h-5 text-blue-500" />
-            <h2 className="text-base font-black text-slate-900">
+            <h2 className="text-base font-black text-slate-900 dark:text-white">
               Yeni Transfer Talebi
             </h2>
           </div>
@@ -157,7 +157,7 @@ export default function StockTransferDialog({
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+              className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:bg-gray-700 hover:text-slate-600 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -166,20 +166,20 @@ export default function StockTransferDialog({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium">
+            <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium">
               {error}
             </div>
           )}
 
           {/* Lokasyon Seçimi */}
-          <div className="bg-slate-50 rounded-xl p-4 space-y-4">
-            <h3 className="text-xs font-black text-slate-600 uppercase tracking-widest flex items-center gap-1.5">
+          <div className="bg-slate-50 dark:bg-gray-800/50 rounded-xl p-4 space-y-4">
+            <h3 className="text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
               <MapPin className="w-3.5 h-3.5" />
               Lokasyonlar
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-1.5">
+                <label className="block text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-1.5">
                   Kaynak Lokasyon <span className="text-red-500">*</span>
                 </label>
                 <select
@@ -191,7 +191,7 @@ export default function StockTransferDialog({
                     }
                   }}
                   required
-                  className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none"
+                  className="w-full px-3 py-2.5 bg-white dark:bg-gray-800 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none"
                 >
                   <option value="">Lokasyon seçin...</option>
                   {locations.map((l) => (
@@ -203,7 +203,7 @@ export default function StockTransferDialog({
               </div>
 
               <div>
-                <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-1.5">
+                <label className="block text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-1.5">
                   Hedef Lokasyon <span className="text-red-500">*</span>
                 </label>
                 <select
@@ -211,7 +211,7 @@ export default function StockTransferDialog({
                   onChange={(e) => setToLocationId(e.target.value)}
                   required
                   disabled={!fromLocationId}
-                  className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-3 py-2.5 bg-white dark:bg-gray-800 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <option value="">Lokasyon seçin...</option>
                   {availableToLocations.map((l) => (
@@ -221,7 +221,7 @@ export default function StockTransferDialog({
                   ))}
                 </select>
                 {!fromLocationId && (
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                     Önce kaynak lokasyon seçin.
                   </p>
                 )}
@@ -232,14 +232,14 @@ export default function StockTransferDialog({
           {/* Parça Listesi */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-black text-slate-600 uppercase tracking-widest flex items-center gap-1.5">
+              <h3 className="text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
                 <Package className="w-3.5 h-3.5" />
                 Transfer Kalemleri
               </h3>
               <button
                 type="button"
                 onClick={handleAddItem}
-                className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Parça Ekle
@@ -252,7 +252,7 @@ export default function StockTransferDialog({
                 return (
                   <div
                     key={index}
-                    className="flex items-start gap-2 bg-slate-50 rounded-xl p-3"
+                    className="flex items-start gap-2 bg-slate-50 dark:bg-gray-800/50 rounded-xl p-3"
                   >
                     <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-2">
                       <div>
@@ -261,7 +261,7 @@ export default function StockTransferDialog({
                           onChange={(e) =>
                             handleItemChange(index, "partId", e.target.value)
                           }
-                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none"
+                          className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none"
                         >
                           <option value="">Parça seçin...</option>
                           {parts.map((p) => (
@@ -272,9 +272,9 @@ export default function StockTransferDialog({
                           ))}
                         </select>
                         {selectedPart && (
-                          <p className="text-xs text-slate-400 mt-1 pl-1">
+                          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 pl-1">
                             Mevcut stok:{" "}
-                            <span className="font-bold text-slate-600">
+                            <span className="font-bold text-slate-600 dark:text-slate-400">
                               {selectedPart.currentStock} {selectedPart.unit}
                             </span>
                           </p>
@@ -294,7 +294,7 @@ export default function StockTransferDialog({
                             )
                           }
                           placeholder="Miktar"
-                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none"
+                          className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none"
                         />
                         {selectedPart && item.quantity > selectedPart.currentStock && (
                           <p className="text-xs text-red-500 mt-1 pl-1">
@@ -307,7 +307,7 @@ export default function StockTransferDialog({
                       <button
                         type="button"
                         onClick={() => handleRemoveItem(index)}
-                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors mt-0.5"
+                        className="p-2 text-slate-400 dark:text-slate-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors mt-0.5"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -320,9 +320,9 @@ export default function StockTransferDialog({
 
           {/* Notlar */}
           <div>
-            <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-1.5">
+            <label className="block text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-1.5">
               Notlar{" "}
-              <span className="text-slate-400 font-normal normal-case">
+              <span className="text-slate-400 dark:text-slate-500 font-normal normal-case">
                 (opsiyonel)
               </span>
             </label>
@@ -331,14 +331,14 @@ export default function StockTransferDialog({
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
               placeholder="Transfer hakkında notlar..."
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none resize-none"
+              className="w-full px-3 py-2.5 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none resize-none"
             />
           </div>
 
           {/* Bilgi */}
-          <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 flex gap-2">
+          <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-100 rounded-xl p-3 flex gap-2">
             <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
-            <p className="text-xs text-blue-700 leading-relaxed">
+            <p className="text-xs text-blue-700 dark:text-blue-400 leading-relaxed">
               Transfer talebi oluşturulduktan sonra yönetici onayına gönderilir.
               Onaylandığında stok hareketleri otomatik olarak gerçekleştirilir.
             </p>
@@ -350,7 +350,7 @@ export default function StockTransferDialog({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100 dark:bg-gray-700 rounded-xl transition-colors"
               >
                 İptal
               </button>

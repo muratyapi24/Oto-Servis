@@ -109,7 +109,7 @@ export default function BarcodeScanner({ onScan, onError, mode = "camera" }: Bar
   return (
     <div className="flex flex-col gap-4">
       {/* Mode toggle */}
-      <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl w-fit">
+      <div className="flex items-center gap-2 bg-slate-100 dark:bg-gray-700 p-1 rounded-xl w-fit">
         <button
           type="button"
           onClick={() => setActiveMode("camera")}
@@ -180,7 +180,7 @@ export default function BarcodeScanner({ onScan, onError, mode = "camera" }: Bar
             onChange={(e) => setManualInput(e.target.value)}
             placeholder="Barkod / parça numarası girin..."
             autoFocus
-            className="flex-1 px-4 py-2.5 bg-slate-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none font-medium"
+            className="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-gray-700 border-none rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none font-medium"
           />
           <button
             type="submit"

@@ -32,7 +32,7 @@ export function LocationSelector({ locations }: { locations: Location[] }) {
     <select
       value={selected}
       onChange={(e) => handleChange(e.target.value)}
-      className="text-sm border rounded px-2 py-1 bg-white"
+      className="text-sm border rounded px-2 py-1 bg-white dark:bg-gray-800"
       aria-label="Lokasyon seç"
     >
       <option value="">Tüm Lokasyonlar</option>

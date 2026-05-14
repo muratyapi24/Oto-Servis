@@ -1,16 +1,15 @@
 import { getPurchaseInvoices } from "@/lib/actions/stock.actions";
+import PageShell, { PageError } from "@/components/dashboard/PageShell";
+import InventoryWorkspaceNav from "@/components/dashboard/inventory/InventoryWorkspaceNav";
 import { PurchaseDialog } from "./PurchaseDialog";
 import {
   ShoppingCart,
   FileText,
   Building2,
   Calendar,
-  ArrowLeft,
   Filter,
   ArrowDownLeft,
-  AlertCircle
 } from "lucide-react";
-import Link from "next/link";
 import dayjs from "dayjs";
 import 'dayjs/locale/tr';
 
@@ -18,39 +17,30 @@ export const metadata = {
   title: "Stok Alım Faturaları | MS Oto Servis",
 };
 
+type PurchaseInvoiceRow = {
+  id: string;
+  invoiceNumber: string | null;
+  issueDate: Date | string;
+  totalAmount: unknown;
+  supplier?: { name: string | null } | null;
+};
+
 export default async function PurchasesPage() {
   const { invoices, error } = await getPurchaseInvoices();
 
-  return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/dashboard/inventory"
-            className="w-10 h-10 bg-white border border-gray-100 rounded-xl flex items-center justify-center text-gray-400 hover:text-primary hover:border-primary transition-all shadow-sm"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <ShoppingCart className="w-8 h-8 text-primary" />
-              Stok Alım Faturaları
-            </h1>
-            <p className="text-gray-500 text-sm mt-1">
-              Tedarikçilerden alınan ürünlerin fatura ve irsaliye kayıtları.
-            </p>
-          </div>
-        </div>
-        <PurchaseDialog />
-      </div>
+  if (error) {
+    return <PageError message={error} />;
+  }
 
-      {error ? (
-        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-3">
-          <AlertCircle className="w-5 h-5" />
-          {error}
-        </div>
-      ) : (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+  return (
+    <PageShell
+      title="Stok Alım Faturaları"
+      subtitle="Tedarikçilerden alınan ürünlerin fatura ve irsaliye kayıtları."
+      sectionLabel="Stok & Tedarik"
+      actions={<PurchaseDialog />}
+    >
+      <InventoryWorkspaceNav />
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="p-5 border-b border-gray-50 flex flex-col md:flex-row justify-between items-center gap-4">
             <h3 className="font-bold text-gray-800 flex items-center gap-2">
               <FileText className="w-5 h-5 text-gray-400" /> Kayıtlı Faturalar
@@ -74,7 +64,7 @@ export default async function PurchasesPage() {
                 </div>
                 <h3 className="text-lg font-bold text-gray-800">Fatura Kaydı Bulunamadı</h3>
                 <p className="text-gray-500 max-w-xs mx-auto mt-2">
-                  Henüz bir stok girişi yapmamışsınız. "Stok Girişi Yap" butonu ile ilk alım kaydını oluşturabilirsiniz.
+                  Henüz bir stok girişi yapmamışsınız. Stok Girişi Yap butonu ile ilk alım kaydını oluşturabilirsiniz.
                 </p>
               </div>
             ) : (
@@ -89,7 +79,7 @@ export default async function PurchasesPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {invoices.map((inv: any) => (
+                  {invoices.map((inv: PurchaseInvoiceRow) => (
                     <tr key={inv.id} className="hover:bg-gray-50/50 transition-colors group">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
@@ -108,7 +98,7 @@ export default async function PurchasesPage() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <Building2 className="w-4 h-4 text-gray-400" />
-                          <span className="text-sm font-semibold text-gray-700">{(inv as any).supplier?.name || "Bilinmiyor"}</span>
+                          <span className="text-sm font-semibold text-gray-700">{inv.supplier?.name || "Bilinmiyor"}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right">
@@ -133,8 +123,7 @@ export default async function PurchasesPage() {
               </table>
             )}
           </div>
-        </div>
-      )}
-    </div>
+      </div>
+    </PageShell>
   );
 }

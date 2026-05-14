@@ -15,7 +15,7 @@ interface ServiceRatingSectionProps {
 
 export default function ServiceRatingSection({ rating }: ServiceRatingSectionProps) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 p-5">
       <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-2 mb-4 flex items-center gap-2">
         <Star className="w-4 h-4" /> Müşteri Değerlendirmesi
       </h3>
@@ -39,7 +39,7 @@ export default function ServiceRatingSection({ rating }: ServiceRatingSectionPro
 
           {/* Yorum */}
           {rating.comment && (
-            <div className="bg-gray-50 rounded-lg p-3 text-sm text-gray-600 leading-relaxed italic">
+            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 text-sm text-gray-600 leading-relaxed italic">
               "{rating.comment}"
             </div>
           )}

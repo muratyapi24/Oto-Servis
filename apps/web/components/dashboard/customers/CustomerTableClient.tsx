@@ -1,12 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
-import CustomerFormModal from "./CustomerFormModal";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { deleteCustomer } from "@/lib/actions/customer.actions";
 import { History, Star, Edit, Trash2, UserPlus, Search } from "lucide-react";
 import { getCustomerDisplayName, type CustomerListItem } from "./types";
+import {
+  DASHBOARD_ACTIONS,
+  DASHBOARD_FORMS,
+  DASHBOARD_LIST,
+} from "@/lib/dashboard-ui-standards";
+
+const CustomerFormModal = dynamic(() => import("./CustomerFormModal"), {
+  ssr: false,
+  loading: () => null,
+});
 
 export default function CustomerTableClient({ initialCustomers }: { initialCustomers: CustomerListItem[] }) {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -52,15 +62,15 @@ export default function CustomerTableClient({ initialCustomers }: { initialCusto
   });
 
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200">
+    <div className={DASHBOARD_LIST.shell}>
       
-      <div className="p-4 border-b border-slate-200 flex justify-between items-center gap-4 bg-slate-50/30">
-        <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+      <div className={DASHBOARD_LIST.toolbar}>
+        <div className={DASHBOARD_LIST.searchWrapper}>
+          <span className={DASHBOARD_LIST.searchIcon}>
              <Search className="w-4 h-4" />
           </span>
           <input 
-             className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600/20 w-72 text-sm font-medium outline-none text-slate-900 shadow-sm" 
+             className={`${DASHBOARD_FORMS.control} ${DASHBOARD_LIST.searchInput}`}
              placeholder="Müşteri adı veya plaka ara..." 
              type="text"
              value={searchTerm}
@@ -69,27 +79,27 @@ export default function CustomerTableClient({ initialCustomers }: { initialCusto
         </div>
         <button 
           onClick={handleCreate}
-          className="bg-orange-600 text-white px-5 py-2.5 rounded-lg font-bold flex items-center gap-2 transition-all hover:bg-orange-700 active:scale-95 shadow-sm"
+          className={`${DASHBOARD_ACTIONS.primaryButton} active:scale-95`}
         >
-          <UserPlus className="w-4 h-4" />
+          <UserPlus className={DASHBOARD_ACTIONS.icon} />
           Yeni Müşteri
         </button>
       </div>
       
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
+      <div className={DASHBOARD_LIST.tableScroll}>
+        <table className={DASHBOARD_LIST.table}>
           <thead>
-            <tr className="bg-slate-50/50 text-slate-500 uppercase text-[10px] font-black tracking-widest border-b border-slate-200">
-              <th className="px-6 py-4">Müşteri Profili</th>
-              <th className="px-6 py-4">Araçlar</th>
-              <th className="px-6 py-4">Puan / Tip</th>
-              <th className="px-6 py-4">Bakiye</th>
-              <th className="px-6 py-4 text-right">İşlemler</th>
+            <tr className={DASHBOARD_LIST.headRow}>
+              <th className={DASHBOARD_LIST.headerCell}>Müşteri Profili</th>
+              <th className={DASHBOARD_LIST.headerCell}>Araçlar</th>
+              <th className={DASHBOARD_LIST.headerCell}>Puan / Tip</th>
+              <th className={DASHBOARD_LIST.headerCell}>Bakiye</th>
+              <th className={DASHBOARD_LIST.headerCellRight}>İşlemler</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className={DASHBOARD_LIST.body}>
             {filteredCustomers.length === 0 ? (
-              <tr><td colSpan={5} className="p-8 text-center text-sm font-bold text-slate-400">Sistemde aramayla eşleşen müşteri yok.</td></tr>
+              <tr><td colSpan={5} className={DASHBOARD_LIST.empty}>Sistemde aramayla eşleşen müşteri yok.</td></tr>
             ) : (
               filteredCustomers.map((customer) => {
                 const name = getCustomerDisplayName(customer);
@@ -97,70 +107,70 @@ export default function CustomerTableClient({ initialCustomers }: { initialCusto
                 const vehicle = customer.vehicles?.[0];
                 
                 return (
-                  <tr key={customer.id} className="hover:bg-slate-50:bg-slate-800/30 transition-colors group">
-                    <td className="px-6 py-5">
+                  <tr key={customer.id} className={DASHBOARD_LIST.row}>
+                    <td className={DASHBOARD_LIST.cell}>
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-black text-lg shadow-sm">
+                        <div className={DASHBOARD_LIST.avatar}>
                           {initial}
                         </div>
                         <div>
-                          <div className="font-bold text-slate-900 leading-tight">{name}</div>
-                          <div className="text-xs text-slate-500 font-medium">{customer.phone}</div>
+                          <div className={DASHBOARD_LIST.primaryText}>{name}</div>
+                          <div className={DASHBOARD_LIST.secondaryText}>{customer.phone}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-5">
+                    <td className={DASHBOARD_LIST.cell}>
                       {vehicle ? (
                         <div className="flex flex-col gap-1 items-start">
-                          <span className="inline-flex items-center px-2.5 py-1 rounded bg-slate-100 text-slate-700 text-[10px] font-black border border-slate-200 uppercase tracking-widest">
+                          <span className={DASHBOARD_LIST.badge}>
                             {vehicle.plate}
                           </span>
-                          <span className="text-xs font-bold text-slate-500">{vehicle.brand} {vehicle.model}</span>
+                          <span className={`${DASHBOARD_LIST.secondaryText} font-bold`}>{vehicle.brand} {vehicle.model}</span>
                         </div>
                       ) : (
-                        <span className="text-xs font-medium text-slate-400">Araç Kaydı Yok</span>
+                        <span className={DASHBOARD_LIST.mutedText}>Araç Kaydı Yok</span>
                       )}
                     </td>
                     
-                    <td className="px-6 py-5">
+                    <td className={DASHBOARD_LIST.cell}>
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-1.5">
-                          <Star className="w-4 h-4 text-orange-500 fill-orange-500" />
-                          <span className="text-sm font-bold text-slate-900">Standart</span>
+                          <Star className={DASHBOARD_LIST.scoreIcon} />
+                          <span className="text-sm font-bold text-on-surface">Standart</span>
                         </div>
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                        <span className={DASHBOARD_LIST.typeLabel}>
                           {customer.type === 'CORPORATE' ? 'KURUMSAL' : 'BİREYSEL'}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-5">
+                    <td className={DASHBOARD_LIST.cell}>
                       {customer.balance > 0 ? (
                         <div>
-                          <div className="text-sm font-black text-red-600">₺ {customer.balance.toLocaleString('tr-TR')}</div>
-                          <div className="text-[10px] font-bold text-red-600/70 uppercase">Tahsil Edilecek</div>
+                          <div className={DASHBOARD_LIST.balanceDueValue}>₺ {customer.balance.toLocaleString('tr-TR')}</div>
+                          <div className={DASHBOARD_LIST.balanceDueLabel}>Tahsil Edilecek</div>
                         </div>
                       ) : customer.balance < 0 ? (
                         <div>
-                          <div className="text-sm font-black text-emerald-600">₺ {(Math.abs(customer.balance)).toLocaleString('tr-TR')}</div>
-                          <div className="text-[10px] font-bold text-emerald-600/70 uppercase">Bakiyeli (Alacak)</div>
+                          <div className={DASHBOARD_LIST.balanceCreditValue}>₺ {(Math.abs(customer.balance)).toLocaleString('tr-TR')}</div>
+                          <div className={DASHBOARD_LIST.balanceCreditLabel}>Bakiyeli (Alacak)</div>
                         </div>
                       ) : (
                         <div>
-                          <div className="text-sm font-black text-slate-900">₺ 0</div>
-                          <div className="text-[10px] font-bold text-slate-500 uppercase">Temiz</div>
+                          <div className={DASHBOARD_LIST.balanceNeutralValue}>₺ 0</div>
+                          <div className={DASHBOARD_LIST.balanceNeutralLabel}>Temiz</div>
                         </div>
                       )}
                     </td>
                     
-                    <td className="px-6 py-5 text-right">
-                      <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Link href={`/dashboard/customers/${customer.id}`} className="p-2 rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-600 hover:text-white transition-all border border-slate-200" title="Detay">
+                    <td className={DASHBOARD_LIST.cellRight}>
+                      <div className={DASHBOARD_LIST.actionGroup}>
+                        <Link href={`/dashboard/customers/${customer.id}`} className={DASHBOARD_ACTIONS.iconButton} title="Detay">
                           <History className="w-4 h-4" />
                         </Link>
-                        <button onClick={() => handleEdit(customer)} className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white:bg-blue-600 transition-all border border-blue-100">
+                        <button onClick={() => handleEdit(customer)} className={DASHBOARD_ACTIONS.iconButtonPrimary}>
                           <Edit className="w-4 h-4" />
                         </button>
-                        <button onClick={() => handleDeleteClick(customer)} className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white:bg-red-600 transition-all border border-red-100">
+                        <button onClick={() => handleDeleteClick(customer)} className={DASHBOARD_ACTIONS.iconButtonDanger}>
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
@@ -174,11 +184,13 @@ export default function CustomerTableClient({ initialCustomers }: { initialCusto
         </table>
       </div>
       
-      <CustomerFormModal 
-         isOpen={isFormModalOpen} 
-         onClose={() => setIsFormModalOpen(false)} 
-         customerData={selectedCustomer} 
-      />
+      {isFormModalOpen && (
+        <CustomerFormModal
+           isOpen={isFormModalOpen}
+           onClose={() => setIsFormModalOpen(false)}
+           customerData={selectedCustomer}
+        />
+      )}
       
       <ConfirmDialog 
          isOpen={isDeleteModalOpen}

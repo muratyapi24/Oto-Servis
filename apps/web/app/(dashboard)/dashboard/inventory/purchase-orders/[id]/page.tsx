@@ -1,8 +1,7 @@
 import { getPurchaseOrderById } from "@/lib/actions/purchase-order.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
+import InventoryWorkspaceNav from "@/components/dashboard/inventory/InventoryWorkspaceNav";
 import PODetailClient from "./PODetailClient";
-import Link from "next/link";
-import { ArrowLeft, ShoppingCart } from "lucide-react";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata({
@@ -42,16 +41,8 @@ export default async function PurchaseOrderDetailPage({
       title={order.poNumber}
       subtitle={`${order.supplier.name} · ${order.items.length} kalem`}
       sectionLabel="Satın Alma Siparişleri"
-      actions={
-        <Link
-          href="/dashboard/inventory/purchase-orders"
-          className="flex items-center gap-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-sm font-bold transition-all"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Siparişlere Dön
-        </Link>
-      }
     >
+      <InventoryWorkspaceNav />
       <PODetailClient order={order} />
     </PageShell>
   );

@@ -1,12 +1,21 @@
 import { getLocations } from "@/lib/actions/location.actions";
 import { getPartCategories } from "@/lib/actions/inventory.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
+import InventoryWorkspaceNav from "@/components/dashboard/inventory/InventoryWorkspaceNav";
 import NewStockCountForm from "./NewStockCountForm";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
   title: "Yeni Stok Sayımı | MS Oto Servis",
+};
+
+type LocationOption = {
+  id: string;
+  name: string;
+};
+
+type CategoryOption = {
+  id: string;
+  name: string;
 };
 
 export default async function NewStockCountPage() {
@@ -19,12 +28,12 @@ export default async function NewStockCountPage() {
     return <PageError message={locationsResult.error} />;
   }
 
-  const locations = (locationsResult.locations ?? []).map((l: any) => ({
+  const locations = (locationsResult.locations ?? []).map((l: LocationOption) => ({
     id: l.id,
     name: l.name,
   }));
 
-  const categories = (categoriesResult.categories ?? []).map((c: any) => ({
+  const categories = (categoriesResult.categories ?? []).map((c: CategoryOption) => ({
     id: c.id,
     name: c.name,
   }));
@@ -34,16 +43,8 @@ export default async function NewStockCountPage() {
       title="Yeni Stok Sayımı"
       subtitle="Lokasyon ve kategori seçerek sayım oturumu başlatın."
       sectionLabel="Stok & Envanter"
-      actions={
-        <Link
-          href="/dashboard/inventory/stock-counts"
-          className="flex items-center gap-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2.5 rounded-xl text-sm font-bold transition-all"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Geri Dön
-        </Link>
-      }
     >
+      <InventoryWorkspaceNav />
       <NewStockCountForm locations={locations} categories={categories} />
     </PageShell>
   );

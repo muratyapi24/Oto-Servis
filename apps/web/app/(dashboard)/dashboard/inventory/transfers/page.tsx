@@ -1,12 +1,22 @@
 import { getStockTransfers } from "@/lib/actions/stock-transfer.actions";
 import { getLocations } from "@/lib/actions/location.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
+import InventoryWorkspaceNav from "@/components/dashboard/inventory/InventoryWorkspaceNav";
 import TransferList from "@/components/dashboard/inventory/TransferList";
 import Link from "next/link";
 import { Plus, ArrowRightLeft } from "lucide-react";
 
 export const metadata = {
   title: "Stok Transferleri | MS Oto Servis",
+};
+
+type LocationOption = {
+  id: string;
+  name: string;
+};
+
+type TransferSummary = {
+  status: string;
 };
 
 export default async function StockTransfersPage() {
@@ -23,22 +33,19 @@ export default async function StockTransfersPage() {
 
   const transfers = transfersResult.data?.transfers ?? [];
   const total = transfersResult.data?.total ?? 0;
-  const locations = ('locations' in locationsResult ? locationsResult.locations ?? [] : []).map((l: any) => ({
+  const locations = ('locations' in locationsResult ? locationsResult.locations ?? [] : []).map((l: LocationOption) => ({
     id: l.id,
     name: l.name,
   }));
 
   const pendingCount = transfers.filter(
-    (t: any) => t.status === "PENDING"
-  ).length;
-  const approvedCount = transfers.filter(
-    (t: any) => t.status === "APPROVED"
+    (t: TransferSummary) => t.status === "PENDING"
   ).length;
   const completedCount = transfers.filter(
-    (t: any) => t.status === "COMPLETED"
+    (t: TransferSummary) => t.status === "COMPLETED"
   ).length;
   const rejectedCount = transfers.filter(
-    (t: any) => t.status === "REJECTED"
+    (t: TransferSummary) => t.status === "REJECTED"
   ).length;
 
   return (
@@ -56,6 +63,7 @@ export default async function StockTransfersPage() {
         </Link>
       }
     >
+      <InventoryWorkspaceNav />
       {/* Özet Kartlar */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {(

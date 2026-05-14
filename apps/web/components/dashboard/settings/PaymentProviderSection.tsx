@@ -84,13 +84,13 @@ export default function PaymentProviderSection({
 
       {provider !== "NONE" && (
         <div className="space-y-3 pt-2">
-          <p className="text-xs text-slate-500 font-medium">
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
             {provider === "IYZICO"
               ? "iyzico Merchant Portal'dan API anahtarlarınızı alın."
               : "PayTR Mağaza panelinden Mağaza ID ve API anahtarlarınızı alın."}
           </p>
           <div>
-            <label className="block text-xs font-bold text-slate-600 mb-1">
+            <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
               API Key
             </label>
             <input
@@ -100,11 +100,11 @@ export default function PaymentProviderSection({
               placeholder={
                 provider === "IYZICO" ? "sandbox-..." : "paytr_api_key"
               }
-              className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-violet-500 focus:border-violet-500"
+              className="w-full p-2.5 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-lg text-sm focus:ring-violet-500 focus:border-violet-500"
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-600 mb-1">
+            <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
               {provider === "IYZICO" ? "Secret Key" : "API Secret"}
             </label>
             <input
@@ -112,12 +112,12 @@ export default function PaymentProviderSection({
               value={secretKey}
               onChange={(e) => setSecretKey(e.target.value)}
               placeholder="••••••••"
-              className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-violet-500 focus:border-violet-500"
+              className="w-full p-2.5 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-lg text-sm focus:ring-violet-500 focus:border-violet-500"
             />
           </div>
           {provider === "PAYTR" && (
             <div>
-              <label className="block text-xs font-bold text-slate-600 mb-1">
+              <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
                 Mağaza ID (Merchant ID)
               </label>
               <input
@@ -125,7 +125,7 @@ export default function PaymentProviderSection({
                 value={merchantId}
                 onChange={(e) => setMerchantId(e.target.value)}
                 placeholder="123456"
-                className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-violet-500 focus:border-violet-500"
+                className="w-full p-2.5 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-lg text-sm focus:ring-violet-500 focus:border-violet-500"
               />
             </div>
           )}

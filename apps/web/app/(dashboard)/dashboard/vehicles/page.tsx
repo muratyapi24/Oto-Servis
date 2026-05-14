@@ -1,6 +1,7 @@
 import { getVehicleDashboard } from "@/lib/actions/vehicle.actions";
 import { getCustomers } from "@/lib/actions/customer.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
+import CustomerWorkspaceNav from "@/components/dashboard/customers/CustomerWorkspaceNav";
 import VehicleBoardClient from "@/components/dashboard/vehicles/VehicleBoardClient";
 
 export const metadata = {
@@ -34,6 +35,7 @@ export default async function VehiclesPage() {
       subtitle="Müşteri filolarının profesyonel yönetimi; teknik bakım geçmişlerinin, randevu pencerelerinin takip edilmesi."
       sectionLabel="Araç Filo Envanteri"
     >
+      <CustomerWorkspaceNav />
       <VehicleBoardClient data={safeData} customers={formattedCustomers} />
     </PageShell>
   );

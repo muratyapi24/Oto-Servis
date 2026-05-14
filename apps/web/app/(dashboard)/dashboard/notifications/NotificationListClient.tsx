@@ -9,16 +9,24 @@ import {
 } from "lucide-react";
 import { exportToCsv } from "@/lib/csv-utils";
 import { getNotificationCustomerName, type NotificationListItem } from "@/components/dashboard/notifications/types";
+import {
+  DASHBOARD_ACTIONS,
+  DASHBOARD_FORMS,
+  DASHBOARD_LIST,
+  DASHBOARD_SURFACES,
+  dashboardStatusBadgeClass,
+  type DashboardStatusTone,
+} from "@/lib/dashboard-ui-standards";
 
 dayjs.locale("tr");
 
-const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  PENDING: { label: "Bekliyor", className: "bg-amber-50 text-amber-700 border border-amber-200" },
-  SENT: { label: "Gönderildi", className: "bg-emerald-50 text-emerald-700 border border-emerald-200" },
-  FAILED: { label: "Başarısız", className: "bg-red-50 text-red-700 border border-red-200" },
-  SKIPPED: { label: "Atlandı", className: "bg-slate-100 text-slate-600 border border-slate-200" },
-  DELIVERED: { label: "İletildi", className: "bg-blue-50 text-blue-700 border border-blue-200" },
-  READ: { label: "Okundu", className: "bg-purple-50 text-purple-700 border border-purple-200" },
+const STATUS_CONFIG: Record<string, { label: string; tone: DashboardStatusTone }> = {
+  PENDING: { label: "Bekliyor", tone: "warning" },
+  SENT: { label: "Gönderildi", tone: "success" },
+  FAILED: { label: "Başarısız", tone: "danger" },
+  SKIPPED: { label: "Atlandı", tone: "neutral" },
+  DELIVERED: { label: "İletildi", tone: "info" },
+  READ: { label: "Okundu", tone: "info" },
 };
 
 const CHANNEL_ICONS: Record<string, string> = {
@@ -87,24 +95,24 @@ export default function NotificationListClient({
   return (
     <div className="space-y-4">
       {/* Filtreler */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+      <div className={`${DASHBOARD_SURFACES.panel} p-4`}>
         <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/70" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
               placeholder="Müşteri, alıcı veya mesaj ara..."
-              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
+              className={`${DASHBOARD_FORMS.control} pl-9 pr-4 py-2`}
             />
           </div>
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-slate-400 shrink-0" />
+            <Filter className="w-4 h-4 text-on-surface-variant/70 shrink-0" />
             <select
               value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-              className="py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
+              className={`${DASHBOARD_FORMS.select} md:w-auto py-2 px-3`}
             >
               <option value="ALL">Tüm Durumlar</option>
               {Object.entries(STATUS_CONFIG).map(([key, val]) => (
@@ -114,7 +122,7 @@ export default function NotificationListClient({
             <select
               value={channelFilter}
               onChange={(e) => { setChannelFilter(e.target.value); setPage(1); }}
-              className="py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
+              className={`${DASHBOARD_FORMS.select} md:w-auto py-2 px-3`}
             >
               <option value="ALL">Tüm Kanallar</option>
               <option value="SMS">SMS</option>
@@ -124,7 +132,7 @@ export default function NotificationListClient({
             </select>
             <button
               onClick={handleExportCsv}
-              className="flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-3 py-2 rounded-xl text-xs font-bold transition-colors"
+              className="flex items-center gap-1.5 bg-tertiary-fixed/30 hover:bg-tertiary-fixed/40 text-on-tertiary-fixed-variant border border-tertiary-fixed-dim/40 px-3 py-2 rounded-xl text-xs font-bold transition-colors"
             >
               <Download className="w-3.5 h-3.5" />
               CSV
@@ -134,52 +142,52 @@ export default function NotificationListClient({
       </div>
 
       {/* Tablo */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className={DASHBOARD_LIST.shell}>
+        <div className={DASHBOARD_LIST.tableScroll}>
           <table className="w-full text-sm text-left">
-            <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
+            <thead className={DASHBOARD_LIST.headRow}>
               <tr>
-                <th className="px-6 py-4">Tarih</th>
-                <th className="px-6 py-4">Müşteri</th>
-                <th className="px-6 py-4">Kanal</th>
-                <th className="px-6 py-4">Alıcı</th>
-                <th className="px-6 py-4">Mesaj</th>
-                <th className="px-6 py-4">Durum</th>
-                <th className="px-6 py-4 text-right">İşlem</th>
+                <th className={DASHBOARD_LIST.headerCell}>Tarih</th>
+                <th className={DASHBOARD_LIST.headerCell}>Müşteri</th>
+                <th className={DASHBOARD_LIST.headerCell}>Kanal</th>
+                <th className={DASHBOARD_LIST.headerCell}>Alıcı</th>
+                <th className={DASHBOARD_LIST.headerCell}>Mesaj</th>
+                <th className={DASHBOARD_LIST.headerCell}>Durum</th>
+                <th className={DASHBOARD_LIST.headerCellRight}>İşlem</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className={DASHBOARD_LIST.body}>
               {paginated.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-16 text-center">
-                    <Bell className="w-10 h-10 mx-auto text-slate-300 mb-3" />
-                    <p className="text-slate-400 font-medium">Bildirim bulunamadı.</p>
+                    <Bell className="w-10 h-10 mx-auto text-on-surface-variant/40 mb-3" />
+                    <p className="text-on-surface-variant font-medium">Bildirim bulunamadı.</p>
                   </td>
                 </tr>
               ) : (
                 paginated.map((n) => {
-                  const statusCfg = STATUS_CONFIG[n.status] || { label: n.status || "Bilinmiyor", className: "bg-slate-100 text-slate-600 border border-slate-200" };
+                  const statusCfg = STATUS_CONFIG[n.status] || { label: n.status || "Bilinmiyor", tone: "neutral" as const };
                   const channelIcon = CHANNEL_ICONS[n.channel] ?? "🔔";
                   return (
-                    <tr key={n.id} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">
+                    <tr key={n.id} className={DASHBOARD_LIST.row}>
+                      <td className="px-6 py-4 text-on-surface-variant text-xs whitespace-nowrap">
                         {dayjs(n.createdAt).format("DD MMM HH:mm")}
                       </td>
-                      <td className="px-6 py-4 font-medium text-slate-700">
+                      <td className="px-6 py-4 font-medium text-on-surface">
                         {getNotificationCustomerName(n.customer)}
                       </td>
                       <td className="px-6 py-4">
                         <span className="text-base">{channelIcon}</span>
-                        <span className="ml-1.5 text-xs font-bold text-slate-500">
+                        <span className="ml-1.5 text-xs font-bold text-on-surface-variant">
                           {n.channel.toUpperCase()}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-slate-600 text-xs">{n.recipient}</td>
-                      <td className="px-6 py-4 text-slate-600 text-xs max-w-xs truncate">
+                      <td className="px-6 py-4 text-on-surface-variant text-xs">{n.recipient}</td>
+                      <td className="px-6 py-4 text-on-surface-variant text-xs max-w-xs truncate">
                         {n.body}
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-black ${statusCfg.className}`}>
+                        <span className={dashboardStatusBadgeClass(statusCfg.tone, "text-xs")}>
                           {statusCfg.label}
                         </span>
                       </td>
@@ -188,7 +196,7 @@ export default function NotificationListClient({
                           <button
                             onClick={() => handleResend(n.id)}
                             disabled={resendingId === n.id}
-                            className="flex items-center gap-1 bg-amber-50 hover:bg-amber-100 text-amber-700 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors disabled:opacity-50 ml-auto"
+                            className="flex items-center gap-1 bg-secondary-container/20 hover:bg-secondary-container/30 text-on-secondary-container border border-secondary-container/40 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors disabled:opacity-50 ml-auto"
                           >
                             {resendingId === n.id ? (
                               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -208,8 +216,8 @@ export default function NotificationListClient({
         </div>
 
         {totalPages > 1 && (
-          <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
-            <p className="text-xs text-slate-500">
+          <div className="px-6 py-4 border-t border-outline-variant/20 flex items-center justify-between">
+            <p className="text-xs text-on-surface-variant">
               {total} kayıt içinde {filtered.length} sonuçtan {(page - 1) * PAGE_SIZE + 1}–
               {Math.min(page * PAGE_SIZE, filtered.length)} gösteriliyor
             </p>
@@ -217,15 +225,15 @@ export default function NotificationListClient({
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-40"
+                className={`${DASHBOARD_ACTIONS.iconButton} p-1.5 disabled:opacity-40`}
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <span className="text-xs font-bold text-slate-700">{page} / {totalPages}</span>
+              <span className="text-xs font-bold text-on-surface">{page} / {totalPages}</span>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-1.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-40"
+                className={`${DASHBOARD_ACTIONS.iconButton} p-1.5 disabled:opacity-40`}
               >
                 <ChevronRight className="w-4 h-4" />
               </button>

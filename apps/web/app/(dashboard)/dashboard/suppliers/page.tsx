@@ -1,5 +1,6 @@
 import { getSuppliers } from "@/lib/actions/supplier.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
+import InventoryWorkspaceNav from "@/components/dashboard/inventory/InventoryWorkspaceNav";
 import { SupplierDialog } from "./SupplierDialog";
 import { Supplier } from "@repo/database";
 
@@ -21,6 +22,7 @@ export default async function SuppliersPage() {
       sectionLabel="Satın Alma"
       actions={<SupplierDialog />}
     >
+      <InventoryWorkspaceNav />
       {!suppliers || suppliers.length === 0 ? (
         <div className="py-20 bg-white rounded-3xl border-2 border-dashed border-outline-variant/30 text-center flex flex-col items-center justify-center ambient-shadow">
           <div className="w-16 h-16 bg-surface-container-low rounded-full flex items-center justify-center mb-4">

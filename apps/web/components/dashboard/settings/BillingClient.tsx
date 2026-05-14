@@ -141,11 +141,11 @@ export default function BillingClient({ subscription, currentPlan, usage, plans 
       {/* Mevcut Plan Kartı */}
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Plan Bilgisi */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-3xl ambient-shadow">
+        <div className="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-3xl ambient-shadow">
           <div className="flex items-start justify-between mb-6">
             <div>
               <h3 className="text-xl font-black text-on-surface">Mevcut Paketiniz</h3>
-              <p className="text-xs text-slate-400 mt-1">Abonelik detayları ve kullanım durumu</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Abonelik detayları ve kullanım durumu</p>
             </div>
             {subscription && (
               <span className={`text-xs font-bold px-3 py-1.5 rounded-lg ${statusInfo.color}`}>
@@ -159,19 +159,19 @@ export default function BillingClient({ subscription, currentPlan, usage, plans 
               {/* Plan adı & fiyat */}
               <div className="flex items-end justify-between bg-surface-container-lowest p-5 rounded-2xl">
                 <div>
-                  <p className="text-sm font-bold text-slate-500 uppercase tracking-wider">Plan</p>
+                  <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Plan</p>
                   <p className="text-2xl font-black text-on-surface mt-1">{currentPlan.name}</p>
                   {currentPlan.description && (
-                    <p className="text-xs text-slate-400 mt-1">{currentPlan.description}</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{currentPlan.description}</p>
                   )}
                 </div>
                 <div className="text-right">
                   <p className="text-3xl font-black text-primary">
                     {formatCurrency(currentPlan.priceMonthly, currentPlan.currency)}
                   </p>
-                  <p className="text-[11px] text-slate-400 font-medium">/ ay</p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">/ ay</p>
                   {currentPlan.priceYearly && (
-                    <p className="text-xs text-slate-500 mt-1">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                       Yıllık: {formatCurrency(currentPlan.priceYearly, currentPlan.currency)}
                     </p>
                   )}
@@ -182,7 +182,7 @@ export default function BillingClient({ subscription, currentPlan, usage, plans 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {subscription?.currentPeriodEnd && (
                   <div className="bg-surface-container-low p-3 rounded-xl">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Dönem Sonu</p>
+                    <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Dönem Sonu</p>
                     <p className="text-sm font-black text-on-surface mt-1">
                       {new Date(subscription.currentPeriodEnd).toLocaleDateString("tr-TR")}
                     </p>
@@ -190,7 +190,7 @@ export default function BillingClient({ subscription, currentPlan, usage, plans 
                 )}
                 {subscription?.daysRemaining !== undefined && (
                   <div className="bg-surface-container-low p-3 rounded-xl">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kalan Gün</p>
+                    <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Kalan Gün</p>
                     <p className={`text-sm font-black mt-1 ${subscription.daysRemaining <= 7 ? "text-error" : "text-on-surface"}`}>
                       {subscription.daysRemaining} gün
                     </p>
@@ -198,14 +198,14 @@ export default function BillingClient({ subscription, currentPlan, usage, plans 
                 )}
                 {subscription?.startDate && (
                   <div className="bg-surface-container-low p-3 rounded-xl">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Başlangıç</p>
+                    <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Başlangıç</p>
                     <p className="text-sm font-black text-on-surface mt-1">
                       {new Date(subscription.startDate).toLocaleDateString("tr-TR")}
                     </p>
                   </div>
                 )}
                 {subscription?.cancelAtPeriodEnd && (
-                  <div className="bg-red-50 p-3 rounded-xl border border-red-200">
+                  <div className="bg-red-50 dark:bg-red-900/30 p-3 rounded-xl border border-red-200">
                     <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider">İptal Talebi</p>
                     <p className="text-sm font-bold text-red-600 mt-1">Dönem sonunda iptal</p>
                   </div>
@@ -215,8 +215,8 @@ export default function BillingClient({ subscription, currentPlan, usage, plans 
           ) : (
             <div className="text-center py-10">
               <span className="material-symbols-outlined text-5xl text-slate-200 mb-3 block">credit_card_off</span>
-              <p className="text-sm text-slate-400">Henüz bir abonelik paketiniz bulunmuyor.</p>
-              <p className="text-xs text-slate-300 mt-1">Aşağıdan bir paket seçerek başlayın.</p>
+              <p className="text-sm text-slate-400 dark:text-slate-500">Henüz bir abonelik paketiniz bulunmuyor.</p>
+              <p className="text-xs text-slate-300 dark:text-slate-600 mt-1">Aşağıdan bir paket seçerek başlayın.</p>
             </div>
           )}
         </div>
@@ -234,7 +234,7 @@ export default function BillingClient({ subscription, currentPlan, usage, plans 
                       {item.current}/{item.limit === 0 ? "∞" : item.limit}
                     </span>
                   </div>
-                  <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-white dark:bg-gray-800/10 rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all ${
                         item.percentage >= 90
@@ -280,7 +280,7 @@ export default function BillingClient({ subscription, currentPlan, usage, plans 
       {/* Mevcut Planlar — Yükseltme Seçenekleri */}
       <section>
         <h3 className="text-xl font-black text-on-surface mb-2">Paket Seçenekleri</h3>
-        <p className="text-xs text-slate-400 mb-6">İhtiyacınıza en uygun paketi seçin</p>
+        <p className="text-xs text-slate-400 dark:text-slate-500 mb-6">İhtiyacınıza en uygun paketi seçin</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {plans.map((plan) => {
@@ -308,7 +308,7 @@ export default function BillingClient({ subscription, currentPlan, usage, plans 
 
                 <h4 className="text-lg font-black text-on-surface">{plan.name}</h4>
                 {plan.description && (
-                  <p className="text-xs text-slate-400 mt-1 line-clamp-2">{plan.description}</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 line-clamp-2">{plan.description}</p>
                 )}
 
                 {/* Fiyat */}
@@ -316,7 +316,7 @@ export default function BillingClient({ subscription, currentPlan, usage, plans 
                   <span className="text-3xl font-black text-primary">
                     {formatCurrency(plan.priceMonthly, plan.currency)}
                   </span>
-                  <span className="text-xs text-slate-400 font-medium"> / ay</span>
+                  <span className="text-xs text-slate-400 dark:text-slate-500 font-medium"> / ay</span>
                 </div>
 
                 {/* Limitler */}
@@ -335,7 +335,7 @@ export default function BillingClient({ subscription, currentPlan, usage, plans 
                         maxWhatsappPerMonth: "WhatsApp/ay",
                       };
                       return (
-                        <div key={key} className="flex items-center gap-2 text-xs text-slate-600">
+                        <div key={key} className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
                           <span className="material-symbols-outlined text-[14px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
                             check
                           </span>
@@ -349,7 +349,7 @@ export default function BillingClient({ subscription, currentPlan, usage, plans 
                 {isCurrentPlan ? (
                   <button
                     disabled
-                    className="w-full py-3 rounded-xl bg-slate-100 text-slate-400 text-sm font-bold cursor-not-allowed"
+                    className="w-full py-3 rounded-xl bg-slate-100 dark:bg-gray-700 text-slate-400 text-sm font-bold cursor-not-allowed"
                   >
                     Aktif Plan
                   </button>
@@ -364,7 +364,7 @@ export default function BillingClient({ subscription, currentPlan, usage, plans 
                 ) : (
                   <button
                     disabled
-                    className="w-full py-3 rounded-xl bg-slate-50 text-slate-300 text-sm font-bold cursor-not-allowed"
+                    className="w-full py-3 rounded-xl bg-slate-50 dark:bg-gray-800/50 text-slate-300 text-sm font-bold cursor-not-allowed"
                   >
                     Alt Plan
                   </button>
@@ -380,14 +380,14 @@ export default function BillingClient({ subscription, currentPlan, usage, plans 
         <section className="bg-surface-container-low p-6 rounded-3xl">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="text-sm font-bold text-slate-600">Aboneliği İptal Et</h4>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <h4 className="text-sm font-bold text-slate-600 dark:text-slate-400">Aboneliği İptal Et</h4>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
                 Mevcut dönem sonuna kadar tüm özellikleri kullanmaya devam edebilirsiniz.
               </p>
             </div>
             <button
               onClick={() => setShowCancelModal(true)}
-              className="px-5 py-2.5 rounded-xl border border-red-200 text-red-500 text-sm font-bold hover:bg-red-50 transition-colors"
+              className="px-5 py-2.5 rounded-xl border border-red-200 text-red-500 text-sm font-bold hover:bg-red-50 dark:bg-red-900/30 transition-colors"
             >
               İptal Et
             </button>
@@ -398,7 +398,7 @@ export default function BillingClient({ subscription, currentPlan, usage, plans 
       {/* İptal Modal */}
       {showCancelModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md w-full shadow-2xl">
             <div className="text-center mb-6">
               <span
                 className="material-symbols-outlined text-5xl text-red-400 mb-3 block"
@@ -407,19 +407,19 @@ export default function BillingClient({ subscription, currentPlan, usage, plans 
                 warning
               </span>
               <h3 className="text-xl font-black text-on-surface">Aboneliği İptal Et</h3>
-              <p className="text-sm text-slate-400 mt-2">
+              <p className="text-sm text-slate-400 dark:text-slate-500 mt-2">
                 İptal işlemi dönem sonunda geçerli olacaktır. Verileriniz korunur.
               </p>
             </div>
 
             <div className="mb-6">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">
+              <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">
                 İptal Nedeni (Opsiyonel)
               </label>
               <textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
-                className="w-full p-3 border border-slate-200 rounded-xl text-sm resize-none h-20 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="w-full p-3 border border-slate-200 dark:border-gray-700 rounded-xl text-sm resize-none h-20 focus:outline-none focus:ring-2 focus:ring-primary/30"
                 placeholder="Deneyiminizi iyileştirmemize yardımcı olun..."
               />
             </div>
@@ -427,7 +427,7 @@ export default function BillingClient({ subscription, currentPlan, usage, plans 
             <div className="flex gap-3">
               <button
                 onClick={() => setShowCancelModal(false)}
-                className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 text-sm font-bold hover:bg-slate-200 transition-colors"
+                className="flex-1 py-3 rounded-xl bg-slate-100 dark:bg-gray-700 text-slate-600 text-sm font-bold hover:bg-slate-200 transition-colors"
               >
                 Vazgeç
               </button>

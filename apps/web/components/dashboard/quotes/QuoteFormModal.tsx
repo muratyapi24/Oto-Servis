@@ -92,14 +92,14 @@ export default function QuoteFormModal({ isOpen, onClose, customers, parts, cate
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b sticky top-0 bg-white z-10">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b sticky top-0 bg-white dark:bg-gray-800 z-10">
           <h2 className="text-xl font-bold text-gray-800">{step === "header" ? "Yeni Teklif" : "Teklif Kalemleri"}</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-800"><X className="w-6 h-6" /></button>
         </div>
 
         <div className="p-6">
-          {error && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg flex items-center gap-2 text-sm border border-red-100"><AlertCircle className="w-4 h-4 shrink-0" />{error}</div>}
+          {error && <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 text-red-600 rounded-lg flex items-center gap-2 text-sm border border-red-100"><AlertCircle className="w-4 h-4 shrink-0" />{error}</div>}
 
           {step === "header" && (
             <form onSubmit={handleCreateHeader} className="space-y-4">
@@ -134,7 +134,7 @@ export default function QuoteFormModal({ isOpen, onClose, customers, parts, cate
                 <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} className={inputCls} placeholder="Teklif notları..." />
               </div>
               <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm font-medium">İptal</button>
+                <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 dark:bg-gray-800/50 text-sm font-medium">İptal</button>
                 <button type="submit" disabled={submitting} className="px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 disabled:opacity-70">
                   {submitting ? "Oluşturuluyor..." : "Devam Et →"}
                 </button>
@@ -145,7 +145,7 @@ export default function QuoteFormModal({ isOpen, onClose, customers, parts, cate
           {step === "items" && (
             <div className="space-y-5">
               {/* Kalem ekleme formu */}
-              <div className="bg-gray-50 rounded-xl p-5 space-y-4 border border-gray-200 shadow-sm">
+              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 space-y-4 border border-gray-200 shadow-sm">
                 <h3 className="text-sm font-bold text-gray-800 border-b pb-2 mb-2 flex items-center gap-2">
                   <Plus className="w-4 h-4 text-blue-600" /> Kalem Ekle
                 </h3>
@@ -236,7 +236,7 @@ export default function QuoteFormModal({ isOpen, onClose, customers, parts, cate
                   </div>
                 </div>
                 {itemQty && itemPrice && (
-                  <div className="text-xs text-gray-500 bg-white rounded-lg p-2 border border-gray-200">
+                  <div className="text-xs text-gray-500 bg-white dark:bg-gray-800 rounded-lg p-2 border border-gray-200">
                     {(() => { const c = calcLine(parseFloat(itemQty)||0, parseFloat(itemPrice)||0, parseFloat(itemTax)||20, parseFloat(itemDiscount)||0); return `Satır Toplamı: ₺${c.totalPrice.toFixed(2)} (KDV: ₺${c.taxAmount.toFixed(2)})`; })()}
                   </div>
                 )}
@@ -252,7 +252,7 @@ export default function QuoteFormModal({ isOpen, onClose, customers, parts, cate
                 <div className="space-y-2">
                   <h3 className="text-sm font-bold text-gray-700">Eklenen Kalemler ({items.length})</h3>
                   {items.map((item, i) => (
-                    <div key={i} className="flex items-center justify-between bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-sm">
+                    <div key={i} className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 rounded-lg px-4 py-2.5 text-sm">
                       <div>
                         <span className="font-bold text-gray-800">{item.name}</span>
                         <span className="text-gray-400 ml-2 text-xs">{item.qty} × ₺{item.price}</span>
@@ -268,7 +268,7 @@ export default function QuoteFormModal({ isOpen, onClose, customers, parts, cate
               )}
 
               <div className="flex justify-between gap-3 pt-2">
-                <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm font-medium">Kapat</button>
+                <button type="button" onClick={onClose} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 dark:bg-gray-800/50 text-sm font-medium">Kapat</button>
                 <button type="button" onClick={handleFinish} className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg text-sm font-bold hover:bg-green-700">
                   <CheckCircle2 className="w-4 h-4" /> Teklifi Tamamla
                 </button>

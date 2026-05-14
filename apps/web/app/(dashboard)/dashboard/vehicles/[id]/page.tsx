@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getVehicleById } from "@/lib/actions/vehicle.actions";
 import PageShell from "@/components/dashboard/PageShell";
-import Link from "next/link";
+import CustomerWorkspaceNav from "@/components/dashboard/customers/CustomerWorkspaceNav";
 import VehicleDetailClient from "./VehicleDetailClient";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -29,17 +29,9 @@ export default async function VehicleDetailPage({
   return (
     <PageShell
       title="Araç Detayı"
-      sectionLabel="Araç Yönetimi"
-      actions={
-        <Link
-          href="/dashboard/vehicles"
-          className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-50 transition-colors shadow-sm"
-        >
-          <span className="material-symbols-outlined text-base">arrow_back</span>
-          Araçlara Dön
-        </Link>
-      }
+      sectionLabel="Müşteri & Araç"
     >
+      <CustomerWorkspaceNav />
       <VehicleDetailClient vehicle={vehicle} />
     </PageShell>
   );

@@ -1,6 +1,7 @@
 import { getMechanics, getCommissionRules, getMechanicPerformance } from "@/lib/actions/mechanic.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
 import MechanicAnalyticsClient from "@/components/dashboard/analytics/MechanicAnalyticsClient";
+import TeamWorkspaceNav from "@/components/dashboard/team/TeamWorkspaceNav";
 
 export const metadata = {
   title: "Teknisyen Performans Raporları | MS Oto Servis",
@@ -36,8 +37,9 @@ export default async function MechanicAnalyticsPage() {
     <PageShell
       title="Teknisyen Performansı"
       subtitle="Teknisyenlerin çözdüğü iş emri sayısı, komisyon hesaplamaları ve genel başarı raporları."
-      sectionLabel="İş Zekası & IK"
+      sectionLabel="Ekip"
     >
+      <TeamWorkspaceNav />
       <MechanicAnalyticsClient mechanics={mechanicsWithPerformance} rules={rules} />
     </PageShell>
   );

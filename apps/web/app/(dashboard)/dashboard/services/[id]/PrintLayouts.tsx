@@ -2,7 +2,7 @@
 
 import React from "react";
 import dayjs from "dayjs";
-import { ServiceOrder, Tenant, Customer, Vehicle, ServiceItem } from "@repo/database";
+import type { Tenant } from "@repo/database";
 
 interface LayoutProps {
   order: any; // Mapped order with items

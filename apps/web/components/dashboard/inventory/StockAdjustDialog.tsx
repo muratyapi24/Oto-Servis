@@ -33,54 +33,54 @@ export default function StockAdjustDialog({ part, onClose, onSuccess }: StockAdj
 
   return (
     <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden relative animate-in fade-in zoom-in duration-200">
-        <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden relative animate-in fade-in zoom-in duration-200">
+        <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50 dark:bg-gray-800/50/50">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-amber-100 text-amber-700 rounded-xl flex items-center justify-center shadow-inner">
               <Target className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-800">Stok Düzeltme</h2>
-              <p className="text-xs text-slate-500 font-medium">Manuel sayım ve stok ayarlama</p>
+              <h2 className="text-lg font-bold text-slate-800 dark:text-gray-200">Stok Düzeltme</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Manuel sayım ve stok ayarlama</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+          <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:bg-gray-700 rounded-lg transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="p-6">
           {error && (
-            <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-xl text-sm font-bold flex items-center gap-2 border border-red-100">
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 text-red-600 rounded-xl text-sm font-bold flex items-center gap-2 border border-red-100">
               <AlertTriangle className="w-4 h-4 shrink-0" /> {error}
             </div>
           )}
 
-          <div className="mb-6 p-4 bg-slate-50 border border-slate-100 rounded-xl">
-            <p className="text-sm font-bold text-slate-800">{part.name}</p>
-            <p className="text-xs text-slate-500 mt-1">Stok Kodu: {part.partNumber} / Mevcut Stok: {part.currentStock} {part.unit}</p>
+          <div className="mb-6 p-4 bg-slate-50 dark:bg-gray-800/50 border border-slate-100 rounded-xl">
+            <p className="text-sm font-bold text-slate-800 dark:text-gray-200">{part.name}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Stok Kodu: {part.partNumber} / Mevcut Stok: {part.currentStock} {part.unit}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wide">Yeni Gerçek Stok Miktarı</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5 uppercase tracking-wide">Yeni Gerçek Stok Miktarı</label>
               <input
                 type="number"
                 min="0"
                 value={quantity}
                 onChange={(e) => setQuantity(Number(e.target.value))}
-                className="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-800 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all outline-none"
+                className="w-full p-3 bg-white dark:bg-gray-800 border border-slate-200 rounded-xl font-bold text-slate-800 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all outline-none"
                 required
               />
             </div>
             
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wide">Değişim Nedeni</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1.5 uppercase tracking-wide">Değişim Nedeni</label>
               <input
                 type="text"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                className="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all outline-none text-slate-800"
+                className="w-full p-3 bg-white dark:bg-gray-800 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all outline-none text-slate-800"
                 placeholder="Örn: Sayım eksiği, hatalı giriş düzeltme..."
                 required
               />
@@ -90,7 +90,7 @@ export default function StockAdjustDialog({ part, onClose, onSuccess }: StockAdj
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 py-3 text-slate-600 font-bold hover:bg-slate-50 border border-slate-200 rounded-xl transition-colors text-sm"
+                className="flex-1 py-3 text-slate-600 font-bold hover:bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-xl transition-colors text-sm"
               >
                 İptal
               </button>

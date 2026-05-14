@@ -1,12 +1,22 @@
 import { getStockCounts } from "@/lib/actions/stock-count.actions";
 import { getLocations } from "@/lib/actions/location.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
+import InventoryWorkspaceNav from "@/components/dashboard/inventory/InventoryWorkspaceNav";
 import StockCountList from "@/components/dashboard/inventory/StockCountList";
 import Link from "next/link";
 import { Plus, ClipboardList } from "lucide-react";
 
 export const metadata = {
   title: "Stok Sayımları | MS Oto Servis",
+};
+
+type LocationOption = {
+  id: string;
+  name: string;
+};
+
+type StockCountSummary = {
+  status: string;
 };
 
 export default async function StockCountsPage() {
@@ -21,17 +31,17 @@ export default async function StockCountsPage() {
 
   const counts = countsResult.data?.counts ?? [];
   const total = countsResult.data?.total ?? 0;
-  const locations = ('locations' in locationsResult ? locationsResult.locations ?? [] : []).map((l: any) => ({
+  const locations = ('locations' in locationsResult ? locationsResult.locations ?? [] : []).map((l: LocationOption) => ({
     id: l.id,
     name: l.name,
   }));
 
-  const draftCount = counts.filter((c: any) => c.status === "DRAFT").length;
+  const draftCount = counts.filter((c: StockCountSummary) => c.status === "DRAFT").length;
   const inProgressCount = counts.filter(
-    (c: any) => c.status === "IN_PROGRESS"
+    (c: StockCountSummary) => c.status === "IN_PROGRESS"
   ).length;
   const completedCount = counts.filter(
-    (c: any) => c.status === "COMPLETED"
+    (c: StockCountSummary) => c.status === "COMPLETED"
   ).length;
 
   return (
@@ -49,6 +59,7 @@ export default async function StockCountsPage() {
         </Link>
       }
     >
+      <InventoryWorkspaceNav />
       {/* Özet Kartlar */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {(

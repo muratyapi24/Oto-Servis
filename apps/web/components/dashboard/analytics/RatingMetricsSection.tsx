@@ -16,16 +16,16 @@ export default function RatingMetricsSection({
   const maxCount = Math.max(...Object.values(distribution), 1);
 
   return (
-    <div className="bg-white p-6 rounded-3xl ambient-shadow">
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl ambient-shadow">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-bold text-on-surface">Müşteri Memnuniyeti</h3>
-        <span className="text-xs font-bold text-slate-400">Son 30 Gün</span>
+        <span className="text-xs font-bold text-slate-400 dark:text-slate-500">Son 30 Gün</span>
       </div>
 
       {total === 0 ? (
         <div className="text-center py-8">
           <Star className="w-8 h-8 mx-auto text-slate-200 mb-2" />
-          <p className="text-sm text-slate-400">Henüz değerlendirme yok.</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500">Henüz değerlendirme yok.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -60,7 +60,7 @@ export default function RatingMetricsSection({
               return (
                 <div key={star} className="flex items-center gap-3">
                   <div className="flex items-center gap-1 w-12 shrink-0">
-                    <span className="text-xs font-bold text-slate-600">{star}</span>
+                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400">{star}</span>
                     <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                   </div>
                   <div className="flex-1 bg-surface-container-high h-2 rounded-full overflow-hidden">
@@ -69,7 +69,7 @@ export default function RatingMetricsSection({
                       style={{ width: `${pct}%` }}
                     />
                   </div>
-                  <span className="text-xs font-bold text-slate-500 w-6 text-right shrink-0">
+                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400 w-6 text-right shrink-0">
                     {count}
                   </span>
                 </div>

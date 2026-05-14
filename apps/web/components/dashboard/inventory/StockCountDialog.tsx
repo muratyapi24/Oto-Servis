@@ -89,49 +89,49 @@ export default function StockCountDialog({
       />
 
       {/* Dialog */}
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-slate-100 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 bg-blue-500 rounded-xl flex items-center justify-center">
               <ClipboardList className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-slate-900">
+              <h2 className="text-lg font-black text-slate-900 dark:text-white">
                 Yeni Stok Sayımı
               </h2>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Lokasyon ve kategori seçerek sayım başlatın
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-slate-100 rounded-xl transition-colors"
+            className="p-2 hover:bg-slate-100 dark:bg-gray-700 rounded-xl transition-colors"
           >
-            <X className="w-5 h-5 text-slate-500" />
+            <X className="w-5 h-5 text-slate-500 dark:text-slate-400" />
           </button>
         </div>
 
         <div className="p-6 space-y-5">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium">
+            <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium">
               {error}
             </div>
           )}
 
           {/* Lokasyon Seçimi */}
           <div>
-            <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-2">
+            <label className="block text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">
               Lokasyon{" "}
-              <span className="text-slate-400 font-normal normal-case">
+              <span className="text-slate-400 dark:text-slate-500 font-normal normal-case">
                 (opsiyonel)
               </span>
             </label>
             <select
               value={locationId}
               onChange={(e) => setLocationId(e.target.value)}
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none"
+              className="w-full px-3 py-2.5 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none"
             >
               <option value="">Tüm Lokasyonlar</option>
               {locations.map((l) => (
@@ -140,7 +140,7 @@ export default function StockCountDialog({
                 </option>
               ))}
             </select>
-            <p className="text-xs text-slate-400 mt-1.5">
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5">
               Boş bırakırsanız tüm lokasyonlardaki parçalar sayıma dahil edilir.
             </p>
           </div>
@@ -148,9 +148,9 @@ export default function StockCountDialog({
           {/* Kategori Filtresi */}
           {categories.length > 0 && (
             <div>
-              <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-2">
+              <label className="block text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">
                 Kategori Filtresi{" "}
-                <span className="text-slate-400 font-normal normal-case">
+                <span className="text-slate-400 dark:text-slate-500 font-normal normal-case">
                   (opsiyonel, çoklu seçim)
                 </span>
               </label>
@@ -179,7 +179,7 @@ export default function StockCountDialog({
                 </p>
               )}
               {selectedCategoryIds.length === 0 && (
-                <p className="text-xs text-slate-400 mt-1.5">
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5">
                   Seçim yapılmazsa tüm kategoriler dahil edilir.
                 </p>
               )}
@@ -188,7 +188,7 @@ export default function StockCountDialog({
 
           {/* Notlar */}
           <div>
-            <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-2">
+            <label className="block text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">
               Notlar
             </label>
             <textarea
@@ -196,13 +196,13 @@ export default function StockCountDialog({
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
               placeholder="Sayım hakkında notlar..."
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none resize-none"
+              className="w-full px-3 py-2.5 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 outline-none resize-none"
             />
           </div>
 
           {/* Bilgi Kutusu */}
-          <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-            <p className="text-xs text-blue-700 font-medium leading-relaxed">
+          <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-100 rounded-xl p-4">
+            <p className="text-xs text-blue-700 dark:text-blue-400 font-medium leading-relaxed">
               Sayım başlatıldığında seçilen filtrelerle eşleşen tüm aktif
               parçalar listeye eklenir. Sistem miktarları anlık olarak
               kaydedilir.
@@ -211,10 +211,10 @@ export default function StockCountDialog({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-white border-t border-slate-100 px-6 py-4 flex items-center justify-end gap-3 rounded-b-2xl">
+        <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-slate-100 px-6 py-4 flex items-center justify-end gap-3 rounded-b-2xl">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+            className="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 dark:bg-gray-700 rounded-xl transition-colors"
           >
             İptal
           </button>

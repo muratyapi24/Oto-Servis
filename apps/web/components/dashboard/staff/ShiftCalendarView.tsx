@@ -94,7 +94,7 @@ export default function ShiftCalendarView({ mechanics }: ShiftCalendarViewProps)
   const activeMechanics = mechanics.filter((m) => m.isActive);
 
   return (
-    <div className="bg-white rounded-2xl border border-outline-variant/20 overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl border border-outline-variant/20 overflow-hidden">
       <div className="px-6 py-4 border-b border-outline-variant/10 flex items-center gap-2">
         <span className="material-symbols-outlined text-primary">calendar_month</span>
         <h3 className="font-bold text-on-surface">Vardiya Takvimi</h3>
@@ -229,7 +229,7 @@ export default function ShiftCalendarView({ mechanics }: ShiftCalendarViewProps)
                           </button>
                           <button
                             onClick={() => setEditingId(null)}
-                            className="px-3 py-1.5 border border-gray-300 rounded-lg text-xs text-gray-600 hover:bg-gray-50"
+                            className="px-3 py-1.5 border border-gray-300 rounded-lg text-xs text-gray-600 hover:bg-gray-50 dark:bg-gray-800/50"
                           >
                             İptal
                           </button>

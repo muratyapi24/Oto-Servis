@@ -107,10 +107,10 @@ export default function TopUsedPartsReport({
   return (
     <div className="space-y-6">
       {/* Tarih Aralığı Seçimi */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-100 shadow-sm p-4">
         <div className="flex items-center gap-2 mb-4">
-          <Calendar className="w-4 h-4 text-slate-400" />
-          <span className="text-sm font-black text-slate-600">Tarih Aralığı</span>
+          <Calendar className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+          <span className="text-sm font-black text-slate-600 dark:text-slate-400">Tarih Aralığı</span>
         </div>
         <div className="flex flex-wrap gap-2 mb-4">
           {PRESET_RANGES.map((preset) => (
@@ -129,25 +129,25 @@ export default function TopUsedPartsReport({
         </div>
         <div className="flex flex-wrap gap-4 items-end">
           <div>
-            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">
+            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-1.5">
               Başlangıç
             </label>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+              className="border border-slate-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
             />
           </div>
           <div>
-            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">
+            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-1.5">
               Bitiş
             </label>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+              className="border border-slate-200 dark:border-gray-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
             />
           </div>
           <button
@@ -181,18 +181,18 @@ export default function TopUsedPartsReport({
       </div>
 
       {/* Bar Chart + Tablo */}
-      <div id="top-used-parts-content" className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-slate-100 bg-slate-50">
-          <h3 className="font-black text-slate-700 text-sm">En Çok Kullanılan Parçalar</h3>
-          <p className="text-xs text-slate-400 mt-0.5">
+      <div id="top-used-parts-content" className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-slate-100 bg-slate-50 dark:bg-gray-800/50">
+          <h3 className="font-black text-slate-700 dark:text-gray-300 text-sm">En Çok Kullanılan Parçalar</h3>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
             {new Date(startDate).toLocaleDateString("tr-TR")} — {new Date(endDate).toLocaleDateString("tr-TR")}
           </p>
         </div>
 
         {isPending ? (
-          <div className="py-16 text-center text-slate-400 text-sm">Yükleniyor...</div>
+          <div className="py-16 text-center text-slate-400 dark:text-slate-500 text-sm">Yükleniyor...</div>
         ) : parts.length === 0 ? (
-          <div className="py-16 text-center text-slate-400 text-sm">
+          <div className="py-16 text-center text-slate-400 dark:text-slate-500 text-sm">
             Bu tarih aralığında kullanım verisi bulunamadı.
           </div>
         ) : (
@@ -211,17 +211,17 @@ export default function TopUsedPartsReport({
               return (
                 <div key={part.partId} className="flex items-center gap-4">
                   {/* Sıra */}
-                  <span className="w-6 text-right text-xs font-black text-slate-400 flex-shrink-0">
+                  <span className="w-6 text-right text-xs font-black text-slate-400 dark:text-slate-500 flex-shrink-0">
                     {index + 1}
                   </span>
                   {/* Parça Bilgisi */}
                   <div className="w-48 flex-shrink-0">
-                    <p className="text-sm font-bold text-slate-700 truncate">{part.name}</p>
-                    <p className="text-xs text-slate-400">#{part.partNumber}</p>
+                    <p className="text-sm font-bold text-slate-700 dark:text-gray-300 truncate">{part.name}</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500">#{part.partNumber}</p>
                   </div>
                   {/* Bar */}
                   <div className="flex-1 flex items-center gap-3">
-                    <div className="flex-1 bg-slate-100 rounded-full h-6 overflow-hidden">
+                    <div className="flex-1 bg-slate-100 dark:bg-gray-700 rounded-full h-6 overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all duration-500 ${barColor} flex items-center justify-end pr-2`}
                         style={{ width: `${Math.max(barWidth, 2)}%` }}
@@ -234,14 +234,14 @@ export default function TopUsedPartsReport({
                       </div>
                     </div>
                     {barWidth <= 15 && (
-                      <span className="text-sm font-black text-slate-700 w-12 text-right">
+                      <span className="text-sm font-black text-slate-700 dark:text-gray-300 w-12 text-right">
                         {part.totalUsedQuantity}
                       </span>
                     )}
                   </div>
                   {/* Hareket Sayısı */}
                   <div className="w-24 text-right flex-shrink-0">
-                    <span className="text-xs text-slate-400">{part.movementCount} hareket</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-500">{part.movementCount} hareket</span>
                   </div>
                   {/* Mevcut Stok */}
                   <div className="w-24 text-right flex-shrink-0">

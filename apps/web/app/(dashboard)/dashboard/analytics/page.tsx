@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
 import AnalyticsBoardClient from "@/components/dashboard/analytics/AnalyticsBoardClient";
 import RatingMetricsSection from "@/components/dashboard/analytics/RatingMetricsSection";
+import ReportWorkspaceNav from "@/components/dashboard/reports/ReportWorkspaceNav";
 
 export const metadata = {
   title: "Analitik & Raporlar | MS Oto Servis",
@@ -57,6 +58,7 @@ export default async function AnalyticsPage() {
       subtitle="Aylık performans göstergeleri, gelir trendi ve operasyonel istatistikleriniz."
       sectionLabel="İş Zekası"
     >
+      <ReportWorkspaceNav />
       <AnalyticsBoardClient data={data} />
       <div className="mt-8">
         <RatingMetricsSection

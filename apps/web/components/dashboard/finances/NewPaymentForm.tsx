@@ -103,24 +103,24 @@ export default function NewPaymentForm({ customers, invoices, defaultInvoiceId }
   return (
     <div className="max-w-2xl space-y-6">
       {error && (
-        <div className="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium">
+        <div className="flex items-center gap-3 bg-red-50 dark:bg-red-900/30 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium">
           <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </div>
       )}
       {success && (
-        <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-sm font-medium">
+        <div className="flex items-center gap-3 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-sm font-medium">
           <CheckCircle2 className="w-4 h-4 shrink-0" />
           {success}
         </div>
       )}
 
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-4">
-        <h2 className="text-sm font-black text-slate-700 uppercase tracking-widest">Ödeme Bilgileri</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-100 shadow-sm p-6 space-y-4">
+        <h2 className="text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-widest">Ödeme Bilgileri</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-2">Müşteri (Opsiyonel)</label>
+            <label className="block text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">Müşteri (Opsiyonel)</label>
             <select
               value={customerId}
               onChange={(event) => {
@@ -134,7 +134,7 @@ export default function NewPaymentForm({ customers, invoices, defaultInvoiceId }
                   }
                 }
               }}
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
+              className="w-full px-3 py-2.5 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
             >
               <option value="">Müşteri seçin...</option>
               {customers.map((customer) => (
@@ -145,7 +145,7 @@ export default function NewPaymentForm({ customers, invoices, defaultInvoiceId }
             </select>
           </div>
           <div>
-            <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-2">Fatura (Opsiyonel)</label>
+            <label className="block text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">Fatura (Opsiyonel)</label>
             <select
               value={invoiceId}
               onChange={(event) => {
@@ -161,7 +161,7 @@ export default function NewPaymentForm({ customers, invoices, defaultInvoiceId }
                   setAmount("");
                 }
               }}
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
+              className="w-full px-3 py-2.5 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
             >
               <option value="">Fatura seçin...</option>
               {invoices
@@ -179,11 +179,11 @@ export default function NewPaymentForm({ customers, invoices, defaultInvoiceId }
             )}
           </div>
           <div>
-            <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-2">Ödeme Yöntemi *</label>
+            <label className="block text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">Ödeme Yöntemi *</label>
             <select
               value={paymentMethod}
               onChange={(event) => setPaymentMethod(event.target.value as PaymentMethod)}
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
+              className="w-full px-3 py-2.5 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
             >
               {PAYMENT_METHODS.map((method) => (
                 <option key={method.value} value={method.value}>
@@ -193,7 +193,7 @@ export default function NewPaymentForm({ customers, invoices, defaultInvoiceId }
             </select>
           </div>
           <div>
-            <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-2">Tutar (TL) *</label>
+            <label className="block text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">Tutar (TL) *</label>
             <input
               type="number"
               value={amount}
@@ -201,74 +201,74 @@ export default function NewPaymentForm({ customers, invoices, defaultInvoiceId }
               min={0.01}
               step={0.01}
               placeholder="0.00"
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
+              className="w-full px-3 py-2.5 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
             />
           </div>
           <div>
-            <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-2">Ödeme Tarihi</label>
+            <label className="block text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">Ödeme Tarihi</label>
             <input
               type="date"
               value={paymentDate}
               onChange={(event) => setPaymentDate(event.target.value)}
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
+              className="w-full px-3 py-2.5 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
             />
           </div>
           <div>
-            <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-2">Notlar</label>
+            <label className="block text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">Notlar</label>
             <input
               type="text"
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
               placeholder="Ödeme notu..."
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
+              className="w-full px-3 py-2.5 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
             />
           </div>
         </div>
       </div>
 
       {isCheckOrNote && (
-        <div className="bg-white rounded-2xl border border-amber-200 shadow-sm p-6 space-y-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-amber-200 shadow-sm p-6 space-y-4">
           <h2 className="text-sm font-black text-amber-700 uppercase tracking-widest">
             {paymentMethod === "CHECK" ? "Çek" : "Senet"} Detayları
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-2">
+              <label className="block text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">
                 {paymentMethod === "CHECK" ? "Çek No" : "Senet No"} *
               </label>
               <input
                 type="text"
                 value={checkNumber}
                 onChange={(event) => setCheckNumber(event.target.value)}
-                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
+                className="w-full px-3 py-2.5 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-2">Banka *</label>
+              <label className="block text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">Banka *</label>
               <input
                 type="text"
                 value={bankName}
                 onChange={(event) => setBankName(event.target.value)}
-                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
+                className="w-full px-3 py-2.5 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-2">Vade Tarihi *</label>
+              <label className="block text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">Vade Tarihi *</label>
               <input
                 type="date"
                 value={dueDate}
                 onChange={(event) => setDueDate(event.target.value)}
-                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
+                className="w-full px-3 py-2.5 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
               />
             </div>
             <div>
-              <label className="block text-xs font-black text-slate-600 uppercase tracking-widest mb-2">Keşideci *</label>
+              <label className="block text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-2">Keşideci *</label>
               <input
                 type="text"
                 value={drawerName}
                 onChange={(event) => setDrawerName(event.target.value)}
                 placeholder="Çeki/senedi düzenleyen kişi/firma"
-                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
+                className="w-full px-3 py-2.5 bg-slate-50 dark:bg-gray-800/50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none"
               />
             </div>
           </div>
@@ -278,7 +278,7 @@ export default function NewPaymentForm({ customers, invoices, defaultInvoiceId }
       <div className="flex items-center justify-end gap-3 pb-8">
         <button
           onClick={() => router.push("/dashboard/finances/payments")}
-          className="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors"
+          className="px-5 py-2.5 text-sm font-bold text-slate-600 bg-white dark:bg-gray-800 border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors"
         >
           İptal
         </button>

@@ -4,10 +4,14 @@ import PageShell, { PageError } from "@/components/dashboard/PageShell";
 import NotificationListClient from "./NotificationListClient";
 import NotificationWorkspaceNav from "@/components/dashboard/notifications/NotificationWorkspaceNav";
 import type { NotificationListItem } from "@/components/dashboard/notifications/types";
+import { DASHBOARD_SURFACES } from "@/lib/dashboard-ui-standards";
 
 export const metadata = {
   title: "Bildirimler | MS Oto Servis",
 };
+
+const metricCardClass = `${DASHBOARD_SURFACES.panel} p-4`;
+const metricLabelClass = "text-[10px] font-black uppercase tracking-widest text-on-surface-variant/70";
 
 export default async function NotificationsPage() {
   const session = await auth();
@@ -55,22 +59,22 @@ export default async function NotificationsPage() {
 
       {/* Özet Kart */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Toplam Bildirim</span>
-          <span className="text-3xl font-black text-slate-900 block mt-1">{total}</span>
+        <div className={metricCardClass}>
+          <span className={metricLabelClass}>Toplam Bildirim</span>
+          <span className="text-3xl font-black text-on-surface block mt-1">{total}</span>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Son 7 Gün Başarı</span>
-          <span className={`text-3xl font-black block mt-1 ${successRate >= 80 ? "text-emerald-600" : successRate >= 50 ? "text-amber-600" : "text-red-600"}`}>
+        <div className={metricCardClass}>
+          <span className={metricLabelClass}>Son 7 Gün Başarı</span>
+          <span className={`text-3xl font-black block mt-1 ${successRate >= 80 ? "text-tertiary" : successRate >= 50 ? "text-secondary" : "text-error"}`}>
             %{successRate}
           </span>
-          <p className="text-xs text-slate-400 mt-1">{recentSent}/{recentTotal} gönderildi</p>
+          <p className="text-xs text-on-surface-variant/70 mt-1">{recentSent}/{recentTotal} gönderildi</p>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Kanallar</span>
+        <div className={metricCardClass}>
+          <span className={metricLabelClass}>Kanallar</span>
           <div className="flex gap-2 mt-2 flex-wrap">
             {["SMS", "WHATSAPP", "EMAIL", "IN_APP"].map((ch) => (
-              <span key={ch} className="text-xs font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded-lg">
+              <span key={ch} className="text-xs font-bold bg-surface-container-low text-on-surface-variant border border-outline-variant/25 px-2 py-1 rounded-lg">
                 {ch}
               </span>
             ))}

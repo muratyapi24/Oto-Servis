@@ -80,7 +80,7 @@ export function TwoFactorSettings({ hasTwoFactor }: TwoFactorSettingsProps) {
         </p>
         <div className="grid grid-cols-2 gap-2 mb-4">
           {backupCodes.map((code) => (
-            <code key={code} className="bg-white border px-2 py-1 rounded text-sm font-mono">
+            <code key={code} className="bg-white dark:bg-gray-800 border px-2 py-1 rounded text-sm font-mono">
               {code}
             </code>
           ))}
@@ -175,7 +175,7 @@ export function TwoFactorSettings({ hasTwoFactor }: TwoFactorSettingsProps) {
         {hasTwoFactor ? (
           <button
             onClick={() => setStep("disable")}
-            className="px-4 py-2 border border-red-300 text-red-600 rounded hover:bg-red-50 text-sm"
+            className="px-4 py-2 border border-red-300 text-red-600 rounded hover:bg-red-50 dark:bg-red-900/30 text-sm"
           >
             Devre Dışı Bırak
           </button>

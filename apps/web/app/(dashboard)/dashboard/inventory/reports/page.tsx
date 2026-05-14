@@ -6,12 +6,15 @@ import {
   getStockMovementReport,
 } from "@/lib/actions/inventory.actions";
 import PageShell, { PageError } from "@/components/dashboard/PageShell";
+import ReportWorkspaceNav from "@/components/dashboard/reports/ReportWorkspaceNav";
 import ReportsTabs from "./ReportsTabs";
 import { BarChart2 } from "lucide-react";
 
 export const metadata = {
   title: "Gelişmiş Raporlar | MS Oto Servis",
 };
+
+type ReportsTabsProps = Parameters<typeof ReportsTabs>[0];
 
 function ReportsLoading() {
   return (
@@ -50,14 +53,14 @@ async function ReportsContent() {
     },
   };
 
-  const topUsedParts =
+  const topUsedParts: ReportsTabsProps["topUsedParts"] =
     topUsedResult.success && topUsedResult.data
-      ? (topUsedResult.data.parts as any[]).filter(Boolean)
+      ? (topUsedResult.data.parts.filter(Boolean) as ReportsTabsProps["topUsedParts"])
       : [];
 
-  const criticalParts =
+  const criticalParts: ReportsTabsProps["criticalParts"] =
     criticalResult.success && criticalResult.data
-      ? criticalResult.data.parts
+      ? (criticalResult.data.parts as ReportsTabsProps["criticalParts"])
       : [];
 
   const criticalSummary =
@@ -65,9 +68,9 @@ async function ReportsContent() {
       ? criticalResult.data.summary
       : { totalCritical: 0, outOfStock: 0, belowMinimum: 0 };
 
-  const initialMovements =
+  const initialMovements: ReportsTabsProps["initialMovements"] =
     movementResult.success && movementResult.data
-      ? movementResult.data.movements
+      ? (movementResult.data.movements as ReportsTabsProps["initialMovements"])
       : [];
 
   const initialPagination =
@@ -86,9 +89,9 @@ async function ReportsContent() {
       stockValueSummary={stockValueData.summary}
       topUsedParts={topUsedParts}
       defaultDateRange={defaultDateRange}
-      criticalParts={criticalParts as any[]}
+      criticalParts={criticalParts}
       criticalSummary={criticalSummary}
-      initialMovements={initialMovements as any[]}
+      initialMovements={initialMovements}
       initialPagination={initialPagination}
     />
   );
@@ -107,6 +110,7 @@ export default function ReportsPage() {
         </div>
       }
     >
+      <ReportWorkspaceNav />
       <Suspense fallback={<ReportsLoading />}>
         <ReportsContent />
       </Suspense>

@@ -3,6 +3,12 @@
 import { useState } from "react";
 import { TrendingUp, TrendingDown, Clock, Wrench, DollarSign, Plus, AlertCircle, CheckCircle2 } from "lucide-react";
 import { createCommissionRule } from "@/lib/actions/mechanic.actions";
+import {
+  DASHBOARD_ACTIONS,
+  DASHBOARD_DETAIL,
+  DASHBOARD_FORMS,
+  dashboardStatusBadgeClass,
+} from "@/lib/dashboard-ui-standards";
 
 interface PerformanceData {
   period: string;
@@ -28,7 +34,12 @@ interface Props {
   commissionAmount: number;
 }
 
-const inputCls = "w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500";
+const inputCls = DASHBOARD_FORMS.control;
+const labelCls = DASHBOARD_FORMS.label;
+
+function trendClass(isPositive: boolean, positiveIsGood = true) {
+  return isPositive === positiveIsGood ? "text-tertiary" : "text-error";
+}
 
 export default function PerformanceReport({ mechanicId, current, previous, commissionRules, commissionAmount }: Props) {
   const [showRuleForm, setShowRuleForm] = useState(false);
@@ -65,29 +76,29 @@ export default function PerformanceReport({ mechanicId, current, previous, commi
   return (
     <div className="space-y-6">
       {/* Dönemsel Karşılaştırma */}
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="bg-gray-50 px-5 py-4 border-b">
-          <h3 className="text-sm font-bold text-gray-700 uppercase tracking-widest">Aylık Performans Karşılaştırması</h3>
+      <div className={DASHBOARD_DETAIL.tableShell}>
+        <div className={DASHBOARD_DETAIL.tableToolbarRow}>
+          <h3 className={DASHBOARD_DETAIL.tableTitle}>Aylık Performans Karşılaştırması</h3>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-100">
+        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-outline-variant/20">
           {/* Tamamlanan İş */}
           <div className="p-5">
             <div className="flex items-center gap-2 mb-3">
-              <Wrench className="w-4 h-4 text-gray-400" />
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Tamamlanan İş</span>
+              <Wrench className="w-4 h-4 text-on-surface-variant" />
+              <span className={DASHBOARD_DETAIL.relatedLabel}>Tamamlanan İş</span>
             </div>
             <div className="flex items-end gap-3">
               <div>
-                <p className="text-3xl font-bold text-gray-900">{current.completedCount}</p>
-                <p className="text-xs text-gray-400 mt-0.5">Bu ay</p>
+                <p className="text-3xl font-bold text-on-surface">{current.completedCount}</p>
+                <p className={DASHBOARD_DETAIL.tableCellMutedSmall}>Bu ay</p>
               </div>
               <div className="text-right pb-1">
-                <p className="text-lg text-gray-400">{previous.completedCount}</p>
-                <p className="text-xs text-gray-400">Geçen ay</p>
+                <p className="text-lg text-on-surface-variant">{previous.completedCount}</p>
+                <p className={DASHBOARD_DETAIL.tableCellMutedSmall}>Geçen ay</p>
               </div>
             </div>
             {countDiff !== 0 && (
-              <div className={`flex items-center gap-1 mt-2 text-xs font-bold ${countDiff > 0 ? "text-green-600" : "text-red-500"}`}>
+              <div className={`flex items-center gap-1 mt-2 text-xs font-bold ${trendClass(countDiff > 0)}`}>
                 {countDiff > 0 ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
                 {countDiff > 0 ? "+" : ""}{countDiff} iş
               </div>
@@ -97,21 +108,21 @@ export default function PerformanceReport({ mechanicId, current, previous, commi
           {/* İşçilik Tutarı */}
           <div className="p-5">
             <div className="flex items-center gap-2 mb-3">
-              <DollarSign className="w-4 h-4 text-gray-400" />
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">İşçilik Tutarı</span>
+              <DollarSign className="w-4 h-4 text-on-surface-variant" />
+              <span className={DASHBOARD_DETAIL.relatedLabel}>İşçilik Tutarı</span>
             </div>
             <div className="flex items-end gap-3">
               <div>
-                <p className="text-3xl font-bold text-gray-900">₺{current.totalLaborAmount.toLocaleString("tr-TR", { maximumFractionDigits: 0 })}</p>
-                <p className="text-xs text-gray-400 mt-0.5">Bu ay</p>
+                <p className="text-3xl font-bold text-on-surface">₺{current.totalLaborAmount.toLocaleString("tr-TR", { maximumFractionDigits: 0 })}</p>
+                <p className={DASHBOARD_DETAIL.tableCellMutedSmall}>Bu ay</p>
               </div>
               <div className="text-right pb-1">
-                <p className="text-lg text-gray-400">₺{previous.totalLaborAmount.toLocaleString("tr-TR", { maximumFractionDigits: 0 })}</p>
-                <p className="text-xs text-gray-400">Geçen ay</p>
+                <p className="text-lg text-on-surface-variant">₺{previous.totalLaborAmount.toLocaleString("tr-TR", { maximumFractionDigits: 0 })}</p>
+                <p className={DASHBOARD_DETAIL.tableCellMutedSmall}>Geçen ay</p>
               </div>
             </div>
             {laborDiff !== 0 && (
-              <div className={`flex items-center gap-1 mt-2 text-xs font-bold ${laborDiff > 0 ? "text-green-600" : "text-red-500"}`}>
+              <div className={`flex items-center gap-1 mt-2 text-xs font-bold ${trendClass(laborDiff > 0)}`}>
                 {laborDiff > 0 ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
                 {laborDiff > 0 ? "+" : ""}₺{Math.abs(laborDiff).toLocaleString("tr-TR", { maximumFractionDigits: 0 })}
               </div>
@@ -121,21 +132,21 @@ export default function PerformanceReport({ mechanicId, current, previous, commi
           {/* Ort. Süre */}
           <div className="p-5">
             <div className="flex items-center gap-2 mb-3">
-              <Clock className="w-4 h-4 text-gray-400" />
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Ort. Tamamlama Süresi</span>
+              <Clock className="w-4 h-4 text-on-surface-variant" />
+              <span className={DASHBOARD_DETAIL.relatedLabel}>Ort. Tamamlama Süresi</span>
             </div>
             <div className="flex items-end gap-3">
               <div>
-                <p className="text-3xl font-bold text-gray-900">{current.avgDurationHours}s</p>
-                <p className="text-xs text-gray-400 mt-0.5">Bu ay</p>
+                <p className="text-3xl font-bold text-on-surface">{current.avgDurationHours}s</p>
+                <p className={DASHBOARD_DETAIL.tableCellMutedSmall}>Bu ay</p>
               </div>
               <div className="text-right pb-1">
-                <p className="text-lg text-gray-400">{previous.avgDurationHours}s</p>
-                <p className="text-xs text-gray-400">Geçen ay</p>
+                <p className="text-lg text-on-surface-variant">{previous.avgDurationHours}s</p>
+                <p className={DASHBOARD_DETAIL.tableCellMutedSmall}>Geçen ay</p>
               </div>
             </div>
             {durationDiff !== 0 && (
-              <div className={`flex items-center gap-1 mt-2 text-xs font-bold ${durationDiff < 0 ? "text-green-600" : "text-orange-500"}`}>
+              <div className={`flex items-center gap-1 mt-2 text-xs font-bold ${trendClass(durationDiff < 0)}`}>
                 {durationDiff < 0 ? <TrendingDown className="w-3.5 h-3.5" /> : <TrendingUp className="w-3.5 h-3.5" />}
                 {durationDiff > 0 ? "+" : ""}{durationDiff.toFixed(1)} saat
               </div>
@@ -145,33 +156,33 @@ export default function PerformanceReport({ mechanicId, current, previous, commi
       </div>
 
       {/* Komisyon */}
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
+      <div className={DASHBOARD_DETAIL.infoCard}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-bold text-gray-700 uppercase tracking-widest">Komisyon</h3>
-          <button onClick={() => setShowRuleForm(!showRuleForm)} className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors">
+          <h3 className={DASHBOARD_DETAIL.tableTitle}>Komisyon</h3>
+          <button onClick={() => setShowRuleForm(!showRuleForm)} className={`${DASHBOARD_ACTIONS.iconButtonPrimary} gap-1.5 px-3 py-1.5 text-xs font-bold`}>
             <Plus className="w-3.5 h-3.5" /> Kural Ekle
           </button>
         </div>
 
         {/* Bu ayki komisyon önizlemesi */}
-        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-4">
-          <p className="text-xs text-blue-600 font-bold uppercase tracking-widest mb-1">Bu Ay Tahmini Komisyon</p>
-          <p className="text-3xl font-bold text-blue-900">₺{commissionAmount.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}</p>
+        <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-4">
+          <p className="text-xs text-primary font-bold uppercase tracking-widest mb-1">Bu Ay Tahmini Komisyon</p>
+          <p className="text-3xl font-bold text-on-surface">₺{commissionAmount.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}</p>
         </div>
 
         {/* Mevcut Kurallar */}
         {commissionRules.length > 0 && (
           <div className="space-y-2 mb-4">
             {commissionRules.map(rule => (
-              <div key={rule.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg text-sm">
+              <div key={rule.id} className="flex items-center justify-between p-3 bg-surface-container-low border border-outline-variant/20 rounded-lg text-sm">
                 <div>
-                  <span className="font-bold text-gray-800">
+                  <span className={DASHBOARD_DETAIL.infoValue}>
                     {rule.ruleType === "PERCENTAGE" ? `%${rule.value}` : `₺${rule.value} sabit`}
                   </span>
-                  {rule.minAmount && <span className="text-gray-400 ml-2 text-xs">Min: ₺{rule.minAmount}</span>}
-                  {rule.maxAmount && <span className="text-gray-400 ml-1 text-xs">Max: ₺{rule.maxAmount}</span>}
+                  {rule.minAmount && <span className="text-on-surface-variant ml-2 text-xs">Min: ₺{rule.minAmount}</span>}
+                  {rule.maxAmount && <span className="text-on-surface-variant ml-1 text-xs">Max: ₺{rule.maxAmount}</span>}
                 </div>
-                <span className="text-xs text-gray-400">{rule.mechanic ? "Kişiye özel" : "Genel kural"}</span>
+                <span className={dashboardStatusBadgeClass(rule.mechanic ? "info" : "neutral", "text-xs px-2 py-0.5")}>{rule.mechanic ? "Kişiye özel" : "Genel kural"}</span>
               </div>
             ))}
           </div>
@@ -179,37 +190,37 @@ export default function PerformanceReport({ mechanicId, current, previous, commi
 
         {/* Kural Ekleme Formu */}
         {showRuleForm && (
-          <form onSubmit={handleCreateRule} className="border border-gray-200 rounded-xl p-4 space-y-3 bg-gray-50">
-            {formError && <div className="flex items-center gap-2 text-red-600 text-xs"><AlertCircle className="w-3.5 h-3.5" />{formError}</div>}
-            {formSuccess && <div className="flex items-center gap-2 text-green-600 text-xs"><CheckCircle2 className="w-3.5 h-3.5" />{formSuccess}</div>}
+          <form onSubmit={handleCreateRule} className="border border-outline-variant/30 rounded-xl p-4 space-y-3 bg-surface-container-low">
+            {formError && <div className="flex items-center gap-2 text-error text-xs"><AlertCircle className="w-3.5 h-3.5" />{formError}</div>}
+            {formSuccess && <div className="flex items-center gap-2 text-tertiary text-xs"><CheckCircle2 className="w-3.5 h-3.5" />{formSuccess}</div>}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Kural Tipi</label>
-                <select value={ruleType} onChange={e => setRuleType(e.target.value as any)} className={inputCls}>
+                <label className={labelCls}>Kural Tipi</label>
+                <select value={ruleType} onChange={e => setRuleType(e.target.value as "PERCENTAGE" | "FIXED")} className={DASHBOARD_FORMS.select}>
                   <option value="PERCENTAGE">Yüzde (%)</option>
                   <option value="FIXED">Sabit Tutar (₺)</option>
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Değer *</label>
+                <label className={labelCls}>Değer *</label>
                 <input type="number" step="0.01" min="0" value={ruleValue} onChange={e => setRuleValue(e.target.value)} className={inputCls} placeholder={ruleType === "PERCENTAGE" ? "Örn: 10" : "Örn: 500"} />
               </div>
               {ruleType === "PERCENTAGE" && (
                 <>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Min Tutar (₺)</label>
+                    <label className={labelCls}>Min Tutar (₺)</label>
                     <input type="number" step="0.01" min="0" value={minAmount} onChange={e => setMinAmount(e.target.value)} className={inputCls} placeholder="Opsiyonel" />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Max Tutar (₺)</label>
+                    <label className={labelCls}>Max Tutar (₺)</label>
                     <input type="number" step="0.01" min="0" value={maxAmount} onChange={e => setMaxAmount(e.target.value)} className={inputCls} placeholder="Opsiyonel" />
                   </div>
                 </>
               )}
             </div>
             <div className="flex gap-2 justify-end">
-              <button type="button" onClick={() => setShowRuleForm(false)} className="px-3 py-1.5 border border-gray-300 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100">İptal</button>
-              <button type="submit" disabled={submitting} className="px-4 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 disabled:opacity-70">
+              <button type="button" onClick={() => setShowRuleForm(false)} className={`${DASHBOARD_ACTIONS.secondaryButton} px-3 py-1.5 text-xs`}>İptal</button>
+              <button type="submit" disabled={submitting} className={`${DASHBOARD_FORMS.primaryButton} px-4 py-1.5 text-xs`}>
                 {submitting ? "Kaydediliyor..." : "Kaydet"}
               </button>
             </div>

@@ -77,30 +77,30 @@ export default function ChecksClient({
   return (
     <div className="space-y-6">
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium">
+        <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm font-medium">
           {error}
         </div>
       )}
 
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Bekleyen</span>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-100 shadow-sm p-4">
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Bekleyen</span>
           <span className="text-3xl font-black text-amber-600 block mt-1">{pendingChecks.length}</span>
         </div>
-        <div className="bg-white rounded-2xl border border-amber-100 shadow-sm p-4">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">3 Gün İçinde</span>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-amber-100 shadow-sm p-4">
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">3 Gün İçinde</span>
           <span className="text-3xl font-black text-red-600 block mt-1">{upcomingCount}</span>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
-          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Toplam</span>
-          <span className="text-3xl font-black text-slate-900 block mt-1">{checks.length}</span>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-100 shadow-sm p-4">
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Toplam</span>
+          <span className="text-3xl font-black text-slate-900 dark:text-white block mt-1">{checks.length}</span>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
+            <thead className="bg-slate-50 dark:bg-gray-800/50 text-slate-500 font-bold border-b border-slate-100">
               <tr>
                 <th className="px-6 py-4">Çek/Senet No</th>
                 <th className="px-6 py-4">Müşteri</th>
@@ -114,7 +114,7 @@ export default function ChecksClient({
             <tbody className="divide-y divide-slate-100">
               {checks.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-16 text-center text-slate-400">
+                  <td colSpan={7} className="px-6 py-16 text-center text-slate-400 dark:text-slate-500">
                     Çek/senet kaydı bulunamadı.
                   </td>
                 </tr>
@@ -131,10 +131,10 @@ export default function ChecksClient({
                       key={check.id}
                       className={`hover:bg-slate-50/50 transition-colors ${isOverdue ? "bg-red-50/30" : isDueSoon ? "bg-amber-50/30" : ""}`}
                     >
-                      <td className="px-6 py-4 font-black text-slate-900">{check.checkNumber}</td>
-                      <td className="px-6 py-4 text-slate-700">{resolveCustomerName(check)}</td>
-                      <td className="px-6 py-4 text-slate-600">{check.bankName}</td>
-                      <td className="px-6 py-4 font-black text-slate-900">{formatMoney(check.payment?.amount)}</td>
+                      <td className="px-6 py-4 font-black text-slate-900 dark:text-white">{check.checkNumber}</td>
+                      <td className="px-6 py-4 text-slate-700 dark:text-gray-300">{resolveCustomerName(check)}</td>
+                      <td className="px-6 py-4 text-slate-600 dark:text-slate-400">{check.bankName}</td>
+                      <td className="px-6 py-4 font-black text-slate-900 dark:text-white">{formatMoney(check.payment?.amount)}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-1.5">
                           {(isOverdue || isDueSoon) && <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />}
@@ -154,7 +154,7 @@ export default function ChecksClient({
                             <button
                               onClick={() => handleStatusUpdate(check.paymentId, "COLLECTED")}
                               disabled={loadingId === check.paymentId}
-                              className="flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors disabled:opacity-50"
+                              className="flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors disabled:opacity-50"
                             >
                               {loadingId === check.paymentId ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                               Tahsil
@@ -162,7 +162,7 @@ export default function ChecksClient({
                             <button
                               onClick={() => handleStatusUpdate(check.paymentId, "BOUNCED")}
                               disabled={loadingId === check.paymentId}
-                              className="flex items-center gap-1 bg-red-50 hover:bg-red-100 text-red-700 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors disabled:opacity-50"
+                              className="flex items-center gap-1 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 text-red-700 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors disabled:opacity-50"
                             >
                               {loadingId === check.paymentId ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5" />}
                               Karşılıksız

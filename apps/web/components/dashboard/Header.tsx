@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { GlobalSearch } from "./global-search";
 import { DASHBOARD_QUICK_LINKS } from "@/lib/dashboard-navigation";
+import { DASHBOARD_CHROME } from "@/lib/dashboard-ui-standards";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 /*
   Üst menü çubuğu — Türkçe başlıklar & işlevsel kısayollar.
@@ -33,7 +35,7 @@ export function Header() {
   const currentRoleLabel = userRole ? roleLabel[userRole] : undefined;
 
   return (
-    <header className="w-full sticky top-0 z-40 bg-white/80 backdrop-blur-md px-8 py-4 flex justify-between items-center ambient-shadow border-b border-outline-variant/5">
+    <header className={DASHBOARD_CHROME.headerShell}>
       <div className="flex items-center space-x-8">
         {/* Global Arama */}
         <GlobalSearch />
@@ -50,10 +52,10 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-sm transition-colors pb-1 ${
+                className={`${DASHBOARD_CHROME.headerQuickLink} ${
                   isActive
-                    ? "text-blue-700 font-semibold border-b-2 border-blue-700"
-                    : "text-slate-500 font-medium hover:text-blue-600"
+                    ? DASHBOARD_CHROME.headerQuickLinkActive
+                    : DASHBOARD_CHROME.headerQuickLinkIdle
                 }`}
               >
                 {link.name}
@@ -66,22 +68,23 @@ export function Header() {
       <div className="flex items-center space-x-4">
         {/* İşlem Butonları */}
         <div className="flex items-center space-x-2 mr-4 border-r border-outline-variant/20 pr-4">
-          <Link href="/dashboard/notifications" className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors relative" title="Bildirimler">
+          <ThemeToggle />
+          <Link href="/dashboard/notifications" className={`${DASHBOARD_CHROME.headerIconLink} relative`} title="Bildirimler">
             <span className="material-symbols-outlined">notifications</span>
-            <span className="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full border-2 border-white"></span>
+            <span className="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full border-2 border-surface-container-lowest"></span>
           </Link>
-          <Link href="/dashboard/settings" className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors" title="Ayarlar">
+          <Link href="/dashboard/settings" className={DASHBOARD_CHROME.headerIconLink} title="Ayarlar">
             <span className="material-symbols-outlined">settings</span>
           </Link>
         </div>
         {/* Profil */}
         <div className="flex items-center">
-          <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-800 font-bold flex items-center justify-center text-sm mr-3 ring-2 ring-blue-50">
+          <div className={DASHBOARD_CHROME.headerAvatar}>
             {getInitials(session?.user?.name || "Admin")}
           </div>
           <div className="hidden md:block">
             <p className="text-sm font-bold text-on-surface leading-none">{session?.user?.name || "Ahmet Bey"}</p>
-            <p className="text-[11px] text-slate-500 font-medium">{currentRoleLabel || "Servis Müdürü"}</p>
+            <p className={DASHBOARD_CHROME.headerMeta}>{currentRoleLabel || "Servis Müdürü"}</p>
           </div>
         </div>
       </div>

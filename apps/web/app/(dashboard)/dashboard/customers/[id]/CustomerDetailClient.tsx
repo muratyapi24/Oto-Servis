@@ -7,6 +7,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { updateCustomerSchema, UpdateCustomerInput } from "@/lib/validations/customers";
 import { updateCustomer } from "@/lib/actions/customer.actions";
 import {
+  DASHBOARD_ACTIONS,
+  DASHBOARD_DETAIL,
+  DASHBOARD_FORMS,
+  DASHBOARD_MODAL,
+  dashboardStatusBadgeClass,
+  type DashboardStatusTone,
+} from "@/lib/dashboard-ui-standards";
+import {
   User,
   Building2,
   Phone,
@@ -64,30 +72,30 @@ type CustomerWithRelations = {
   _count: { invoices: number };
 };
 
-const STATUS_MAP: Record<string, { label: string; className: string; icon: React.ReactNode }> = {
+const STATUS_MAP: Record<string, { label: string; tone: DashboardStatusTone; icon: React.ReactNode }> = {
   PENDING: {
     label: "Bekliyor",
-    className: "bg-gray-100 text-gray-700",
+    tone: "neutral",
     icon: <Clock className="w-3.5 h-3.5" />,
   },
   IN_PROGRESS: {
     label: "İşlemde",
-    className: "bg-blue-100 text-blue-800",
+    tone: "info",
     icon: <Wrench className="w-3.5 h-3.5" />,
   },
   WAITING_APPROVAL: {
     label: "Onay Bekliyor",
-    className: "bg-orange-100 text-orange-800",
+    tone: "warning",
     icon: <AlertCircle className="w-3.5 h-3.5" />,
   },
   COMPLETED: {
     label: "Tamamlandı",
-    className: "bg-green-100 text-green-800",
+    tone: "success",
     icon: <CheckCircle2 className="w-3.5 h-3.5" />,
   },
   CANCELLED: {
     label: "İptal",
-    className: "bg-red-100 text-red-800",
+    tone: "danger",
     icon: <XCircle className="w-3.5 h-3.5" />,
   },
 };
@@ -101,9 +109,9 @@ const PAYMENT_METHOD_MAP: Record<string, string> = {
 };
 
 function StatusBadge({ status }: { status: string }) {
-  const s = STATUS_MAP[status] ?? { label: status, className: "bg-gray-100 text-gray-700", icon: null };
+  const s = STATUS_MAP[status] ?? { label: status, tone: "neutral" satisfies DashboardStatusTone, icon: null };
   return (
-    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${s.className}`}>
+    <span className={dashboardStatusBadgeClass(s.tone, "px-2.5 py-1 text-xs")}>
       {s.icon}
       {s.label}
     </span>
@@ -166,23 +174,23 @@ export default function CustomerDetailClient({ customer }: { customer: CustomerW
   return (
     <div className="space-y-6">
       {/* ── Başlık Satırı ── */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-gray-200 rounded-xl shadow-sm p-5">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+      <div className={DASHBOARD_DETAIL.profileHeader}>
+        <div className={DASHBOARD_DETAIL.profileIdentity}>
+          <div className={DASHBOARD_DETAIL.profileAvatar}>
             {customer.type === "CORPORATE" ? (
-              <Building2 className="w-6 h-6 text-blue-700" />
+              <Building2 className={DASHBOARD_DETAIL.profileIcon} />
             ) : (
-              <User className="w-6 h-6 text-blue-700" />
+              <User className={DASHBOARD_DETAIL.profileIcon} />
             )}
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">{displayName}</h2>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-0.5">
+            <h2 className={DASHBOARD_DETAIL.profileTitle}>{displayName}</h2>
+            <p className={DASHBOARD_DETAIL.profileMeta}>
               {customer.type === "CORPORATE" ? "Kurumsal Müşteri" : "Bireysel Müşteri"}
             </p>
           </div>
           {customer.isBlacklisted && (
-            <span className="flex items-center gap-1 bg-red-100 text-red-700 text-xs font-bold px-3 py-1 rounded-full border border-red-200">
+            <span className={dashboardStatusBadgeClass("danger", "px-3 py-1 text-xs")}>
               <AlertTriangle className="w-3.5 h-3.5" />
               Kara Liste
             </span>
@@ -190,7 +198,7 @@ export default function CustomerDetailClient({ customer }: { customer: CustomerW
         </div>
         <button
           onClick={() => setEditOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl text-sm font-bold hover:opacity-90 transition-opacity shadow-sm"
+          className={DASHBOARD_ACTIONS.primaryButton}
         >
           <Edit2 className="w-4 h-4" />
           Düzenle
@@ -198,7 +206,7 @@ export default function CustomerDetailClient({ customer }: { customer: CustomerW
       </div>
 
       {submitSuccess && (
-        <div className="flex items-center gap-2 bg-green-50 text-green-700 border border-green-200 rounded-xl p-4 text-sm font-medium">
+        <div className={DASHBOARD_FORMS.alertSuccess}>
           <CheckCircle2 className="w-5 h-5" />
           {submitSuccess}
         </div>
@@ -207,11 +215,11 @@ export default function CustomerDetailClient({ customer }: { customer: CustomerW
       {/* ── Üst Grid: Bilgi Kartı + Finansal Özet ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Müşteri Bilgi Kartı */}
-        <div className="lg:col-span-2 bg-white border border-gray-200 rounded-xl shadow-sm p-5 space-y-4">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-2 flex items-center gap-2">
+        <div className={`${DASHBOARD_DETAIL.infoCard} lg:col-span-2 space-y-4`}>
+          <h3 className={DASHBOARD_DETAIL.sectionTitleRow}>
             <User className="w-4 h-4" /> İletişim Bilgileri
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          <div className={DASHBOARD_DETAIL.infoRowsGrid}>
             {customer.type === "CORPORATE" && customer.contactPerson && (
               <InfoRow icon={<User className="w-4 h-4" />} label="Yetkili Kişi" value={customer.contactPerson} />
             )}
@@ -234,10 +242,10 @@ export default function CustomerDetailClient({ customer }: { customer: CustomerW
 
           {(customer.taxOffice || customer.taxNumber) && (
             <>
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-2 flex items-center gap-2 pt-2">
+              <h3 className={`${DASHBOARD_DETAIL.sectionTitleRow} pt-2`}>
                 <FileText className="w-4 h-4" /> Vergi Bilgileri
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+              <div className={DASHBOARD_DETAIL.infoRowsGrid}>
                 {customer.taxOffice && (
                   <InfoRow icon={<FileText className="w-4 h-4" />} label="Vergi Dairesi" value={customer.taxOffice} />
                 )}
@@ -250,38 +258,38 @@ export default function CustomerDetailClient({ customer }: { customer: CustomerW
 
           {customer.notes && (
             <>
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-2 flex items-center gap-2 pt-2">
+              <h3 className={`${DASHBOARD_DETAIL.sectionTitleRow} pt-2`}>
                 <FileText className="w-4 h-4" /> Notlar
               </h3>
-              <p className="text-sm text-gray-600 bg-gray-50 rounded-lg p-3 leading-relaxed">{customer.notes}</p>
+              <p className={`${DASHBOARD_DETAIL.notePanel} ${DASHBOARD_DETAIL.noteText}`}>{customer.notes}</p>
             </>
           )}
         </div>
 
         {/* Finansal Özet */}
         <div className="space-y-4">
-          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-2 mb-4 flex items-center gap-2">
+          <div className={DASHBOARD_DETAIL.infoCard}>
+            <h3 className={`${DASHBOARD_DETAIL.sectionTitleRow} mb-4`}>
               <CreditCard className="w-4 h-4" /> Finansal Özet
             </h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">Bakiye</span>
-                <span className={`text-lg font-bold font-mono ${customer.balance > 0 ? "text-red-600" : "text-green-600"}`}>
+            <div className={DASHBOARD_DETAIL.financeMetricGroup}>
+              <div className={DASHBOARD_DETAIL.financeMetricRow}>
+                <span className={DASHBOARD_DETAIL.financeMetricLabel}>Bakiye</span>
+                <span className={customer.balance > 0 ? DASHBOARD_DETAIL.financeMetricValueDanger : DASHBOARD_DETAIL.financeMetricValueSuccess}>
                   ₺{customer.balance.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
                 </span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">Toplam Fatura</span>
-                <span className="text-base font-bold text-gray-800">{customer._count.invoices}</span>
+              <div className={DASHBOARD_DETAIL.financeMetricRow}>
+                <span className={DASHBOARD_DETAIL.financeMetricLabel}>Toplam Fatura</span>
+                <span className={DASHBOARD_DETAIL.financeMetricValue}>{customer._count.invoices}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">Kayıtlı Araç</span>
-                <span className="text-base font-bold text-gray-800">{customer.vehicles.length}</span>
+              <div className={DASHBOARD_DETAIL.financeMetricRow}>
+                <span className={DASHBOARD_DETAIL.financeMetricLabel}>Kayıtlı Araç</span>
+                <span className={DASHBOARD_DETAIL.financeMetricValue}>{customer.vehicles.length}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">Servis Kaydı</span>
-                <span className="text-base font-bold text-gray-800">{customer.serviceOrders.length}</span>
+              <div className={DASHBOARD_DETAIL.financeMetricRow}>
+                <span className={DASHBOARD_DETAIL.financeMetricLabel}>Servis Kaydı</span>
+                <span className={DASHBOARD_DETAIL.financeMetricValue}>{customer.serviceOrders.length}</span>
               </div>
             </div>
           </div>
@@ -289,33 +297,33 @@ export default function CustomerDetailClient({ customer }: { customer: CustomerW
       </div>
 
       {/* ── Araç Listesi ── */}
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="flex items-center gap-2 px-5 py-4 border-b bg-gray-50">
-          <Car className="w-4 h-4 text-gray-500" />
-          <h3 className="text-sm font-bold text-gray-700 uppercase tracking-widest">Araçlar</h3>
-          <span className="ml-auto text-xs font-bold text-gray-400">{customer.vehicles.length} araç</span>
+      <div className={DASHBOARD_DETAIL.tableShell}>
+        <div className={DASHBOARD_DETAIL.tableToolbarRow}>
+          <Car className={DASHBOARD_DETAIL.tableTitleIcon} />
+          <h3 className={DASHBOARD_DETAIL.tableTitle}>Araçlar</h3>
+          <span className={DASHBOARD_DETAIL.tableCount}>{customer.vehicles.length} araç</span>
         </div>
         {customer.vehicles.length === 0 ? (
-          <div className="px-5 py-10 text-center text-gray-400 text-sm">
-            <Car className="w-8 h-8 mx-auto mb-2 text-gray-200" />
+          <div className={DASHBOARD_DETAIL.tableEmpty}>
+            <Car className={DASHBOARD_DETAIL.tableEmptyIcon} />
             Kayıtlı araç bulunmuyor.
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className={DASHBOARD_DETAIL.linkList}>
             {customer.vehicles.map((v) => (
               <Link
                 key={v.id}
                 href={`/dashboard/vehicles/${v.id}`}
-                className="flex items-center justify-between px-5 py-3.5 hover:bg-blue-50 transition-colors group"
+                className={DASHBOARD_DETAIL.linkListRow}
               >
                 <div className="flex items-center gap-3">
-                  <span className="font-bold text-blue-900 text-base font-mono">{v.plate}</span>
-                  <span className="text-sm text-gray-600">
+                  <span className={DASHBOARD_DETAIL.linkListPrimary}>{v.plate}</span>
+                  <span className={DASHBOARD_DETAIL.linkListMeta}>
                     {v.brand} {v.model}
                     {v.year ? ` (${v.year})` : ""}
                   </span>
                 </div>
-                <span className="text-xs text-gray-400 group-hover:text-blue-600 transition-colors">Detay →</span>
+                <span className={DASHBOARD_DETAIL.linkListAction}>Detay →</span>
               </Link>
             ))}
           </div>
@@ -323,53 +331,53 @@ export default function CustomerDetailClient({ customer }: { customer: CustomerW
       </div>
 
       {/* ── Servis Geçmişi ── */}
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="flex items-center gap-2 px-5 py-4 border-b bg-gray-50">
-          <Wrench className="w-4 h-4 text-gray-500" />
-          <h3 className="text-sm font-bold text-gray-700 uppercase tracking-widest">Servis Geçmişi</h3>
-          <span className="ml-auto text-xs font-bold text-gray-400">{customer.serviceOrders.length} kayıt</span>
+      <div className={DASHBOARD_DETAIL.tableShell}>
+        <div className={DASHBOARD_DETAIL.tableToolbarRow}>
+          <Wrench className={DASHBOARD_DETAIL.tableTitleIcon} />
+          <h3 className={DASHBOARD_DETAIL.tableTitle}>Servis Geçmişi</h3>
+          <span className={DASHBOARD_DETAIL.tableCount}>{customer.serviceOrders.length} kayıt</span>
         </div>
         {customer.serviceOrders.length === 0 ? (
-          <div className="px-5 py-10 text-center text-gray-400 text-sm">
-            <Wrench className="w-8 h-8 mx-auto mb-2 text-gray-200" />
+          <div className={DASHBOARD_DETAIL.tableEmpty}>
+            <Wrench className={DASHBOARD_DETAIL.tableEmptyIcon} />
             Servis kaydı bulunmuyor.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-white border-b text-gray-400 text-xs uppercase tracking-wider">
+              <thead className={DASHBOARD_DETAIL.tableHead}>
                 <tr>
-                  <th className="px-5 py-3 text-left">İş Emri</th>
-                  <th className="px-5 py-3 text-left">Araç</th>
-                  <th className="px-5 py-3 text-left">Tarih</th>
-                  <th className="px-5 py-3 text-left">Durum</th>
-                  <th className="px-5 py-3 text-right">Tutar</th>
+                  <th className={DASHBOARD_DETAIL.tableHeaderCell}>İş Emri</th>
+                  <th className={DASHBOARD_DETAIL.tableHeaderCell}>Araç</th>
+                  <th className={DASHBOARD_DETAIL.tableHeaderCell}>Tarih</th>
+                  <th className={DASHBOARD_DETAIL.tableHeaderCell}>Durum</th>
+                  <th className={DASHBOARD_DETAIL.tableHeaderCellRight}>Tutar</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className={DASHBOARD_DETAIL.tableBody}>
                 {customer.serviceOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-5 py-3">
+                  <tr key={order.id} className={DASHBOARD_DETAIL.tableRow}>
+                    <td className={DASHBOARD_DETAIL.tableCell}>
                       <Link
                         href={`/dashboard/services/${order.id}`}
-                        className="font-bold text-blue-700 hover:underline"
+                        className={DASHBOARD_DETAIL.relatedLink}
                       >
                         #{order.orderNumber}
                       </Link>
                     </td>
-                    <td className="px-5 py-3 text-gray-600">
-                      <span className="font-mono font-bold text-gray-800">{order.vehicle.plate}</span>
-                      <span className="text-xs text-gray-400 ml-1">
+                    <td className={`${DASHBOARD_DETAIL.tableCell} ${DASHBOARD_DETAIL.tableCellMuted}`}>
+                      <span className={`${DASHBOARD_DETAIL.tableCellStrong} font-mono`}>{order.vehicle.plate}</span>
+                      <span className={`${DASHBOARD_DETAIL.tableCellMutedSmall} ml-1`}>
                         {order.vehicle.brand} {order.vehicle.model}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-gray-500 text-xs">
+                    <td className={`${DASHBOARD_DETAIL.tableCell} ${DASHBOARD_DETAIL.tableCellMutedSmall}`}>
                       {dayjs(order.receptionDate).locale("tr").format("DD MMM YYYY")}
                     </td>
-                    <td className="px-5 py-3">
+                    <td className={DASHBOARD_DETAIL.tableCell}>
                       <StatusBadge status={order.status} />
                     </td>
-                    <td className="px-5 py-3 text-right font-mono font-bold text-gray-800">
+                    <td className={`${DASHBOARD_DETAIL.tableCellRight} ${DASHBOARD_DETAIL.tableCellMoneyStrong}`}>
                       ₺{order.totalAmount.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
                     </td>
                   </tr>
@@ -381,37 +389,37 @@ export default function CustomerDetailClient({ customer }: { customer: CustomerW
       </div>
 
       {/* ── Son Ödemeler ── */}
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="flex items-center gap-2 px-5 py-4 border-b bg-gray-50">
-          <CreditCard className="w-4 h-4 text-gray-500" />
-          <h3 className="text-sm font-bold text-gray-700 uppercase tracking-widest">Son Ödemeler</h3>
-          <span className="ml-auto text-xs font-bold text-gray-400">Son {customer.payments.length} kayıt</span>
+      <div className={DASHBOARD_DETAIL.tableShell}>
+        <div className={DASHBOARD_DETAIL.tableToolbarRow}>
+          <CreditCard className={DASHBOARD_DETAIL.tableTitleIcon} />
+          <h3 className={DASHBOARD_DETAIL.tableTitle}>Son Ödemeler</h3>
+          <span className={DASHBOARD_DETAIL.tableCount}>Son {customer.payments.length} kayıt</span>
         </div>
         {customer.payments.length === 0 ? (
-          <div className="px-5 py-10 text-center text-gray-400 text-sm">
-            <CreditCard className="w-8 h-8 mx-auto mb-2 text-gray-200" />
+          <div className={DASHBOARD_DETAIL.tableEmpty}>
+            <CreditCard className={DASHBOARD_DETAIL.tableEmptyIcon} />
             Ödeme kaydı bulunmuyor.
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className={DASHBOARD_DETAIL.paymentList}>
             {customer.payments.map((p) => (
-              <div key={p.id} className="flex items-center justify-between px-5 py-3.5">
+              <div key={p.id} className={DASHBOARD_DETAIL.paymentRow}>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
-                    <CreditCard className="w-4 h-4 text-green-700" />
+                  <div className={DASHBOARD_DETAIL.paymentIcon}>
+                    <CreditCard className={DASHBOARD_DETAIL.paymentIconGlyph} />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-gray-800">
+                    <p className={DASHBOARD_DETAIL.tableCellStrong}>
                       {PAYMENT_METHOD_MAP[p.paymentMethod] ?? p.paymentMethod}
                     </p>
-                    {p.notes && <p className="text-xs text-gray-400">{p.notes}</p>}
+                    {p.notes && <p className={DASHBOARD_DETAIL.tableCellMutedSmall}>{p.notes}</p>}
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-mono font-bold text-green-700">
+                  <p className={DASHBOARD_DETAIL.financeMetricValueSuccess}>
                     ₺{p.amount.toLocaleString("tr-TR", { minimumFractionDigits: 2 })}
                   </p>
-                  <p className="text-xs text-gray-400">
+                  <p className={DASHBOARD_DETAIL.tableCellMutedSmall}>
                     {dayjs(p.paymentDate).locale("tr").format("DD MMM YYYY")}
                   </p>
                 </div>
@@ -423,18 +431,18 @@ export default function CustomerDetailClient({ customer }: { customer: CustomerW
 
       {/* ── Düzenleme Modalı ── */}
       {editOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col">
-            <div className="flex items-center justify-between p-6 border-b sticky top-0 bg-white z-10">
-              <h2 className="text-xl font-bold text-gray-800">Müşteri Bilgilerini Düzenle</h2>
-              <button onClick={() => setEditOpen(false)} className="text-gray-500 hover:text-gray-800 transition-colors">
+        <div className={`${DASHBOARD_MODAL.backdrop} backdrop-blur-sm`}>
+          <div className={DASHBOARD_MODAL.dialogWide}>
+            <div className={`${DASHBOARD_MODAL.header} sticky top-0 bg-surface-container-lowest z-10`}>
+              <h2 className={DASHBOARD_ACTIONS.pageTitle}>Müşteri Bilgilerini Düzenle</h2>
+              <button onClick={() => setEditOpen(false)} className={DASHBOARD_MODAL.closeButton}>
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             <div className="p-6">
               {submitError && (
-                <div className="mb-4 p-4 bg-red-50 text-red-600 rounded-lg flex items-center gap-2 text-sm border border-red-100">
+                <div className={DASHBOARD_FORMS.alertError}>
                   <AlertCircle className="w-5 h-5 shrink-0" />
                   {submitError}
                 </div>
@@ -445,10 +453,10 @@ export default function CustomerDetailClient({ customer }: { customer: CustomerW
 
                 {/* Müşteri Tipi */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Müşteri Tipi</label>
+                  <label className={DASHBOARD_FORMS.label}>Müşteri Tipi</label>
                   <select
                     {...form.register("type")}
-                    className="w-full p-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary"
+                    className={DASHBOARD_FORMS.select}
                   >
                     <option value="INDIVIDUAL">Şahıs (Bireysel)</option>
                     <option value="CORPORATE">Firma (Kurumsal)</option>
@@ -513,18 +521,18 @@ export default function CustomerDetailClient({ customer }: { customer: CustomerW
                   </FormField>
                 </div>
 
-                <div className="pt-4 border-t flex justify-end gap-3 sticky bottom-0 bg-white">
+                <div className="pt-4 border-t border-outline-variant/20 flex justify-end gap-3 sticky bottom-0 bg-surface-container-lowest">
                   <button
                     type="button"
                     onClick={() => setEditOpen(false)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+                    className={DASHBOARD_ACTIONS.secondaryButton}
                   >
                     İptal
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-6 py-2 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity font-medium disabled:opacity-70"
+                    className={DASHBOARD_FORMS.primaryButton}
                   >
                     {submitting ? "Kaydediliyor..." : "Kaydet"}
                   </button>
@@ -540,8 +548,7 @@ export default function CustomerDetailClient({ customer }: { customer: CustomerW
 
 // ── Yardımcı bileşenler ──
 
-const inputCls =
-  "w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-primary focus:border-primary";
+const inputCls = DASHBOARD_FORMS.control;
 
 function InfoRow({
   icon,
@@ -555,11 +562,11 @@ function InfoRow({
   className?: string;
 }) {
   return (
-    <div className={`flex items-start gap-2 ${className}`}>
-      <span className="text-gray-400 mt-0.5 shrink-0">{icon}</span>
+    <div className={`${DASHBOARD_DETAIL.infoRow} ${className}`}>
+      <span className={DASHBOARD_DETAIL.infoRowIcon}>{icon}</span>
       <div>
-        <p className="text-xs text-gray-400 font-medium">{label}</p>
-        <p className="text-sm font-medium text-gray-800">{value}</p>
+        <p className={DASHBOARD_DETAIL.infoRowLabel}>{label}</p>
+        <p className={DASHBOARD_DETAIL.infoRowValue}>{value}</p>
       </div>
     </div>
   );
@@ -578,9 +585,9 @@ function FormField({
 }) {
   return (
     <div className={className}>
-      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <label className={DASHBOARD_FORMS.label}>{label}</label>
       {children}
-      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+      {error && <p className="text-error text-xs mt-1">{error}</p>}
     </div>
   );
 }

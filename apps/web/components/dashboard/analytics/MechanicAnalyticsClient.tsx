@@ -59,18 +59,18 @@ export default function MechanicAnalyticsClient({ mechanics, rules }: { mechanic
 
   return (
     <div className="flex-1 space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-4 rounded-2xl border border-slate-200">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-2xl border border-slate-200">
          <div className="relative flex-1 max-w-sm">
-           <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+           <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
            <input 
               type="text" 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none" 
+              className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-gray-800/50 border-none rounded-xl text-sm focus:ring-2 focus:ring-amber-500/50 outline-none" 
               placeholder="Teknisyen veya yetkinlik ara..." 
            />
          </div>
-         <div className="text-sm text-slate-500 font-medium">Toplam {filteredMechanics.length} teknisyen</div>
+         <div className="text-sm text-slate-500 dark:text-slate-400 font-medium">Toplam {filteredMechanics.length} teknisyen</div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
@@ -83,13 +83,13 @@ export default function MechanicAnalyticsClient({ mechanics, rules }: { mechanic
           const comm = commissionData[mechanic.id];
 
           return (
-            <div key={mechanic.id} className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
+            <div key={mechanic.id} className="bg-white dark:bg-gray-800 border border-slate-200 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
                <div className="flex justify-between items-start mb-6">
                  <div>
-                   <h3 className="text-xl font-bold text-slate-900">{mechanic.firstName} {mechanic.lastName}</h3>
+                   <h3 className="text-xl font-bold text-slate-900 dark:text-white">{mechanic.firstName} {mechanic.lastName}</h3>
                    <div className="flex flex-wrap gap-2 mt-2">
                      {mechanic.specialties.map(s => (
-                       <span key={s} className="px-2 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-semibold">{s}</span>
+                       <span key={s} className="px-2 py-1 bg-slate-100 dark:bg-gray-700 text-slate-600 rounded-md text-xs font-semibold">{s}</span>
                      ))}
                    </div>
                  </div>
@@ -99,22 +99,22 @@ export default function MechanicAnalyticsClient({ mechanics, rules }: { mechanic
                </div>
 
                <div className="grid grid-cols-2 gap-4 mb-6">
-                 <div className="p-4 bg-slate-50 rounded-2xl">
-                   <div className="text-xs text-slate-500 font-bold mb-1 uppercase tracking-wider flex items-center gap-1">
+                 <div className="p-4 bg-slate-50 dark:bg-gray-800/50 rounded-2xl">
+                   <div className="text-xs text-slate-500 dark:text-slate-400 font-bold mb-1 uppercase tracking-wider flex items-center gap-1">
                      <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Tamamlanan İş
                    </div>
-                   <div className="text-2xl font-black text-slate-900">{curr.completedCount}</div>
+                   <div className="text-2xl font-black text-slate-900 dark:text-white">{curr.completedCount}</div>
                    <div className={`text-xs font-semibold mt-1 flex items-center gap-1 ${countTrend >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                      {countTrend >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                      {countTrend > 0 ? "+" : ""}{countTrend}% geçen aya göre
                    </div>
                  </div>
                  
-                 <div className="p-4 bg-slate-50 rounded-2xl">
-                   <div className="text-xs text-slate-500 font-bold mb-1 uppercase tracking-wider flex items-center gap-1">
+                 <div className="p-4 bg-slate-50 dark:bg-gray-800/50 rounded-2xl">
+                   <div className="text-xs text-slate-500 dark:text-slate-400 font-bold mb-1 uppercase tracking-wider flex items-center gap-1">
                      <Calculator className="w-4 h-4 text-indigo-500" /> İşçilik Geliri
                    </div>
-                   <div className="text-2xl font-black text-slate-900">{formatMoney(curr.totalLaborAmount)}</div>
+                   <div className="text-2xl font-black text-slate-900 dark:text-white">{formatMoney(curr.totalLaborAmount)}</div>
                    <div className={`text-xs font-semibold mt-1 flex items-center gap-1 ${laborTrend >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                      {laborTrend >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                      {laborTrend > 0 ? "+" : ""}{laborTrend}% geçen aya göre
@@ -122,14 +122,14 @@ export default function MechanicAnalyticsClient({ mechanics, rules }: { mechanic
                  </div>
                </div>
 
-               <div className="flex items-center justify-between border-t border-slate-100 pt-5">
-                 <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
-                   <Clock className="w-4 h-4 text-slate-400" />
-                   Ort. Süre: <span className="text-slate-900 font-bold">{curr.avgDurationHours} Saat</span>
+               <div className="flex items-center justify-between border-t border-slate-100 dark:border-gray-700 pt-5">
+                 <div className="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400">
+                   <Clock className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+                   Ort. Süre: <span className="text-slate-900 dark:text-white font-bold">{curr.avgDurationHours} Saat</span>
                  </div>
 
                  {comm ? (
-                   <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-xl text-sm font-bold border border-emerald-100">
+                   <div className="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 px-4 py-2 rounded-xl text-sm font-bold border border-emerald-100">
                      Hakediş: {formatMoney(comm.amount)}
                    </div>
                  ) : (
@@ -146,7 +146,7 @@ export default function MechanicAnalyticsClient({ mechanics, rules }: { mechanic
           );
         })}
         {filteredMechanics.length === 0 && (
-          <div className="col-span-2 text-center py-12 text-slate-500">Kriterlere uygun teknisyen bulunamadı.</div>
+          <div className="col-span-2 text-center py-12 text-slate-500 dark:text-slate-400">Kriterlere uygun teknisyen bulunamadı.</div>
         )}
       </div>
     </div>

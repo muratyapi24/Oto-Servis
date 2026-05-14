@@ -85,7 +85,7 @@ export default function AppointmentFormModal({ isOpen, onClose, appointmentData,
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         
         {errorMsg && (
-          <div className="bg-red-50 text-red-600 p-4 rounded-xl flex items-start gap-3 text-sm font-bold border border-red-100">
+          <div className="bg-red-50 dark:bg-red-900/30 text-red-600 p-4 rounded-xl flex items-start gap-3 text-sm font-bold border border-red-100">
             <AlertCircle className="w-5 h-5 shrink-0" />
             <p>{errorMsg}</p>
           </div>
@@ -93,8 +93,8 @@ export default function AppointmentFormModal({ isOpen, onClose, appointmentData,
 
         <div className="space-y-4">
           <div className="space-y-1">
-            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Müşteri Seçimi *</label>
-            <select {...form.register("customerId")} className="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold">
+            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Müşteri Seçimi *</label>
+            <select {...form.register("customerId")} className="w-full bg-slate-50 dark:bg-gray-800/50 border border-slate-200 px-4 py-3 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold">
               <option value="">-- Müşteri Seçin --</option>
               {customers.map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
@@ -104,8 +104,8 @@ export default function AppointmentFormModal({ isOpen, onClose, appointmentData,
           </div>
 
           <div className="space-y-1">
-            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Araç Seçimi (Opsiyonel)</label>
-            <select {...form.register("vehicleId")} className="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold disabled:opacity-50">
+            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Araç Seçimi (Opsiyonel)</label>
+            <select {...form.register("vehicleId")} className="w-full bg-slate-50 dark:bg-gray-800/50 border border-slate-200 px-4 py-3 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold disabled:opacity-50">
               <option value="">Araç Belirtilmedi</option>
               {filteredVehicles.map(v => (
                 <option key={v.id} value={v.id}>{v.plate} - {v.brand} {v.model}</option>
@@ -117,25 +117,25 @@ export default function AppointmentFormModal({ isOpen, onClose, appointmentData,
           </div>
         </div>
         
-        <hr className="border-slate-100" />
+        <hr className="border-slate-100 dark:border-gray-700" />
         
         {/* Date & Time */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Tarih *</label>
-            <input type="date" {...form.register("appointmentDate", { valueAsDate: true })} className="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
+            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Tarih *</label>
+            <input type="date" {...form.register("appointmentDate", { valueAsDate: true })} className="w-full bg-slate-50 dark:bg-gray-800/50 border border-slate-200 px-4 py-3 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
             {form.formState.errors.appointmentDate && <p className="text-red-500 text-xs mt-1">{form.formState.errors.appointmentDate.message}</p>}
           </div>
           <div className="space-y-1">
-            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Saat *</label>
-            <input type="time" {...form.register("appointmentTime")} className="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
+            <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Saat *</label>
+            <input type="time" {...form.register("appointmentTime")} className="w-full bg-slate-50 dark:bg-gray-800/50 border border-slate-200 px-4 py-3 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold" />
             {form.formState.errors.appointmentTime && <p className="text-red-500 text-xs mt-1">{form.formState.errors.appointmentTime.message}</p>}
           </div>
         </div>
 
         <div className="space-y-1">
-          <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Servis Tipi *</label>
-          <select {...form.register("type")} className="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold">
+          <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Servis Tipi *</label>
+          <select {...form.register("type")} className="w-full bg-slate-50 dark:bg-gray-800/50 border border-slate-200 px-4 py-3 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold">
             <option value="BAKIM">Periyodik Bakım</option>
             <option value="ARIZA">Arıza & Onarım</option>
             <option value="MUAYENE">Muayene Hazırlık</option>
@@ -145,15 +145,15 @@ export default function AppointmentFormModal({ isOpen, onClose, appointmentData,
         </div>
 
         <div className="space-y-1">
-          <label className="text-[11px] font-black uppercase tracking-widest text-slate-500">Notlar / Şikayet (Opsiyonel)</label>
-          <textarea {...form.register("notes")} rows={3} placeholder="Müşterinin belirttiği ön şikayet veya notlar..." className="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold resize-none" />
+          <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Notlar / Şikayet (Opsiyonel)</label>
+          <textarea {...form.register("notes")} rows={3} placeholder="Müşterinin belirttiği ön şikayet veya notlar..." className="w-full bg-slate-50 dark:bg-gray-800/50 border border-slate-200 px-4 py-3 rounded-xl outline-none focus:border-blue-500 transition-colors text-sm font-bold resize-none" />
         </div>
 
-        <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
+        <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 dark:border-gray-700">
            <button 
              type="button"
              onClick={onClose}
-             className="px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest text-slate-500 bg-slate-100 hover:bg-slate-200:bg-slate-700 transition-colors"
+             className="px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest text-slate-500 bg-slate-100 dark:bg-gray-700 hover:bg-slate-200:bg-slate-700 transition-colors"
            >
              İPTAL
            </button>

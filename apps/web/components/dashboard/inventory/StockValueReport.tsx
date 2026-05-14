@@ -102,39 +102,39 @@ export default function StockValueReport({ categories, summary }: StockValueRepo
     <div className="space-y-6">
       {/* Özet Kartlar */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-100 shadow-sm p-4">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
               <Package className="w-4 h-4 text-blue-600" />
             </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Kategori</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Kategori</span>
           </div>
-          <span className="text-3xl font-black text-slate-900">{summary.totalCategories}</span>
+          <span className="text-3xl font-black text-slate-900 dark:text-white">{summary.totalCategories}</span>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-100 shadow-sm p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center">
               <FileText className="w-4 h-4 text-purple-600" />
             </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Parça Tipi</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Parça Tipi</span>
           </div>
-          <span className="text-3xl font-black text-slate-900">{summary.totalPartTypes}</span>
+          <span className="text-3xl font-black text-slate-900 dark:text-white">{summary.totalPartTypes}</span>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-100 shadow-sm p-4">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center">
               <TrendingUp className="w-4 h-4 text-emerald-600" />
             </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Toplam Stok</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Toplam Stok</span>
           </div>
-          <span className="text-3xl font-black text-slate-900">{summary.grandTotalStock.toLocaleString("tr-TR")}</span>
+          <span className="text-3xl font-black text-slate-900 dark:text-white">{summary.grandTotalStock.toLocaleString("tr-TR")}</span>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-100 shadow-sm p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center">
               <DollarSign className="w-4 h-4 text-amber-600" />
             </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Toplam Değer</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Toplam Değer</span>
           </div>
           <span className="text-2xl font-black text-amber-600">{formatCurrency(summary.grandTotalValue)}</span>
         </div>
@@ -160,25 +160,25 @@ export default function StockValueReport({ categories, summary }: StockValueRepo
       </div>
 
       {/* Tablo */}
-      <div id="stock-value-report-content" className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-slate-100 bg-slate-50">
-          <h3 className="font-black text-slate-700 text-sm">Kategori Bazlı Stok Değeri</h3>
-          <p className="text-xs text-slate-400 mt-0.5">Tarih: {new Date().toLocaleDateString("tr-TR")}</p>
+      <div id="stock-value-report-content" className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-slate-100 bg-slate-50 dark:bg-gray-800/50">
+          <h3 className="font-black text-slate-700 dark:text-gray-300 text-sm">Kategori Bazlı Stok Değeri</h3>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Tarih: {new Date().toLocaleDateString("tr-TR")}</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-100">
-                <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-400">Kategori / Parça</th>
-                <th className="text-right px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-400">Parça Sayısı</th>
-                <th className="text-right px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-400">Toplam Stok</th>
-                <th className="text-right px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-400">Toplam Değer</th>
+              <tr className="border-b border-slate-100 dark:border-gray-700">
+                <th className="text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Kategori / Parça</th>
+                <th className="text-right px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Parça Sayısı</th>
+                <th className="text-right px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Toplam Stok</th>
+                <th className="text-right px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Toplam Değer</th>
               </tr>
             </thead>
             <tbody>
               {categories.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="text-center py-12 text-slate-400 text-sm">
+                  <td colSpan={4} className="text-center py-12 text-slate-400 dark:text-slate-500 text-sm">
                     Stok verisi bulunamadı.
                   </td>
                 </tr>
@@ -190,42 +190,42 @@ export default function StockValueReport({ categories, summary }: StockValueRepo
                       <React.Fragment key={cat.categoryId}>
                         {/* Kategori Satırı */}
                         <tr
-                          className="border-b border-slate-50 bg-slate-50/50 hover:bg-slate-100/50 cursor-pointer transition-colors"
+                          className="border-b border-slate-50 bg-slate-50 dark:bg-gray-800/50/50 hover:bg-slate-100/50 cursor-pointer transition-colors"
                           onClick={() => toggleCategory(cat.categoryId)}
                         >
-                          <td className="px-4 py-3 font-black text-slate-700 flex items-center gap-2">
+                          <td className="px-4 py-3 font-black text-slate-700 dark:text-gray-300 flex items-center gap-2">
                             {isExpanded ? (
-                              <ChevronDown className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                              <ChevronDown className="w-4 h-4 text-slate-400 dark:text-slate-500 flex-shrink-0" />
                             ) : (
-                              <ChevronRight className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                              <ChevronRight className="w-4 h-4 text-slate-400 dark:text-slate-500 flex-shrink-0" />
                             )}
                             {cat.categoryName}
                           </td>
-                          <td className="px-4 py-3 text-right font-bold text-slate-600">{cat.partCount}</td>
-                          <td className="px-4 py-3 text-right font-bold text-slate-600">{cat.totalStock.toLocaleString("tr-TR")}</td>
+                          <td className="px-4 py-3 text-right font-bold text-slate-600 dark:text-slate-400">{cat.partCount}</td>
+                          <td className="px-4 py-3 text-right font-bold text-slate-600 dark:text-slate-400">{cat.totalStock.toLocaleString("tr-TR")}</td>
                           <td className="px-4 py-3 text-right font-black text-amber-600">{formatCurrency(cat.totalValue)}</td>
                         </tr>
                         {/* Parça Detay Satırları */}
                         {isExpanded &&
                           cat.parts.map((part) => (
-                            <tr key={part.id} className="border-b border-slate-50 hover:bg-blue-50/30 transition-colors">
-                              <td className="px-4 py-2.5 pl-12 text-slate-600">
+                            <tr key={part.id} className="border-b border-slate-50 hover:bg-blue-50 dark:hover:bg-gray-700/30 transition-colors">
+                              <td className="px-4 py-2.5 pl-12 text-slate-600 dark:text-slate-400">
                                 <span className="font-medium">{part.name}</span>
-                                <span className="ml-2 text-xs text-slate-400">#{part.partNumber}</span>
+                                <span className="ml-2 text-xs text-slate-400 dark:text-slate-500">#{part.partNumber}</span>
                               </td>
-                              <td className="px-4 py-2.5 text-right text-slate-500">—</td>
-                              <td className="px-4 py-2.5 text-right text-slate-600">{part.currentStock.toLocaleString("tr-TR")}</td>
-                              <td className="px-4 py-2.5 text-right text-slate-600">{formatCurrency(part.stockValue)}</td>
+                              <td className="px-4 py-2.5 text-right text-slate-500 dark:text-slate-400">—</td>
+                              <td className="px-4 py-2.5 text-right text-slate-600 dark:text-slate-400">{part.currentStock.toLocaleString("tr-TR")}</td>
+                              <td className="px-4 py-2.5 text-right text-slate-600 dark:text-slate-400">{formatCurrency(part.stockValue)}</td>
                             </tr>
                           ))}
                       </React.Fragment>
                     );
                   })}
                   {/* Genel Toplam */}
-                  <tr className="border-t-2 border-slate-200 bg-amber-50/50">
-                    <td className="px-4 py-3 font-black text-slate-900">GENEL TOPLAM</td>
-                    <td className="px-4 py-3 text-right font-black text-slate-900">{summary.totalPartTypes}</td>
-                    <td className="px-4 py-3 text-right font-black text-slate-900">{summary.grandTotalStock.toLocaleString("tr-TR")}</td>
+                  <tr className="border-t-2 border-slate-200 dark:border-gray-700 bg-amber-50/50">
+                    <td className="px-4 py-3 font-black text-slate-900 dark:text-white">GENEL TOPLAM</td>
+                    <td className="px-4 py-3 text-right font-black text-slate-900 dark:text-white">{summary.totalPartTypes}</td>
+                    <td className="px-4 py-3 text-right font-black text-slate-900 dark:text-white">{summary.grandTotalStock.toLocaleString("tr-TR")}</td>
                     <td className="px-4 py-3 text-right font-black text-amber-600 text-base">{formatCurrency(summary.grandTotalValue)}</td>
                   </tr>
                 </>

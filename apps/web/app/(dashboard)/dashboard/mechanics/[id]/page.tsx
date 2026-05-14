@@ -1,11 +1,24 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { getMechanicById, getMechanicPerformance, getCommissionRules, calculateCommission } from "@/lib/actions/mechanic.actions";
 import PageShell from "@/components/dashboard/PageShell";
 import MechanicDetailClient from "./MechanicDetailClient";
 import PerformanceReport from "@/components/dashboard/mechanics/PerformanceReport";
+import TeamWorkspaceNav from "@/components/dashboard/team/TeamWorkspaceNav";
 
 export const metadata = { title: "Usta Detayı | MS Oto Servis" };
+
+type PerformanceData = {
+  period: "current" | "previous";
+  completedCount: number;
+  totalLaborAmount: number;
+  avgDurationHours: number;
+};
+
+type PerformanceReportProps = Parameters<typeof PerformanceReport>[0];
+
+function emptyPerformance(period: "current" | "previous"): PerformanceData {
+  return { period, completedCount: 0, totalLaborAmount: 0, avgDurationHours: 0 };
+}
 
 export default async function MechanicDetailPage({
   params,
@@ -24,32 +37,33 @@ export default async function MechanicDetailPage({
 
   if (!result.mechanic) notFound();
 
-  const current = "error" in currentPerf ? { period: "current", completedCount: 0, totalLaborAmount: 0, avgDurationHours: 0 } : currentPerf;
-  const previous = "error" in previousPerf ? { period: "previous", completedCount: 0, totalLaborAmount: 0, avgDurationHours: 0 } : previousPerf;
-  const rules = "error" in rulesRes ? [] : (rulesRes.rules ?? []);
+  const current: PerformanceData = "error" in currentPerf ? emptyPerformance("current") : currentPerf;
+  const previous: PerformanceData = "error" in previousPerf ? emptyPerformance("previous") : previousPerf;
+  const rules: PerformanceReportProps["commissionRules"] = "error" in rulesRes
+    ? []
+    : (rulesRes.rules ?? []).map((rule) => ({
+        id: rule.id,
+        ruleType: rule.ruleType,
+        value: rule.value,
+        minAmount: rule.minAmount,
+        maxAmount: rule.maxAmount,
+        mechanic: rule.mechanic,
+      }));
   const commissionAmount = "error" in commissionRes ? 0 : (commissionRes.amount ?? 0);
 
   return (
     <PageShell
       title={`${result.mechanic.firstName} ${result.mechanic.lastName}`}
       subtitle="Usta profili, aktif ve tamamlanan iş emirleri"
-      sectionLabel="Ustalar"
-      actions={
-        <Link
-          href="/dashboard/mechanics"
-          className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-on-surface-variant border border-outline-variant/30 rounded-xl hover:bg-surface-container transition-colors"
-        >
-          <span className="material-symbols-outlined text-sm">arrow_back</span>
-          Geri
-        </Link>
-      }
+      sectionLabel="Ekip"
     >
+      <TeamWorkspaceNav />
       <MechanicDetailClient mechanic={result.mechanic} />
       <PerformanceReport
         mechanicId={id}
-        current={current as any}
-        previous={previous as any}
-        commissionRules={rules as any}
+        current={current}
+        previous={previous}
+        commissionRules={rules}
         commissionAmount={commissionAmount}
       />
     </PageShell>

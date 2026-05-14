@@ -1,11 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { DollarSign, Activity, BarChart2, AlertTriangle } from "lucide-react";
-import StockValueReport from "@/components/dashboard/inventory/StockValueReport";
-import MovementHistoryReport from "@/components/dashboard/inventory/MovementHistoryReport";
-import TopUsedPartsReport from "@/components/dashboard/inventory/TopUsedPartsReport";
-import CriticalStockReport from "@/components/dashboard/inventory/CriticalStockReport";
+
+const StockValueReport = dynamic(
+  () => import("@/components/dashboard/inventory/StockValueReport"),
+  { loading: () => <ReportPanelLoading /> },
+);
+const MovementHistoryReport = dynamic(
+  () => import("@/components/dashboard/inventory/MovementHistoryReport"),
+  { loading: () => <ReportPanelLoading /> },
+);
+const TopUsedPartsReport = dynamic(
+  () => import("@/components/dashboard/inventory/TopUsedPartsReport"),
+  { loading: () => <ReportPanelLoading /> },
+);
+const CriticalStockReport = dynamic(
+  () => import("@/components/dashboard/inventory/CriticalStockReport"),
+  { loading: () => <ReportPanelLoading /> },
+);
 
 interface StockValueCategory {
   categoryId: string;
@@ -122,6 +136,15 @@ const TABS = [
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
+
+function ReportPanelLoading() {
+  return (
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-10 text-center">
+      <div className="w-7 h-7 border-4 border-amber-400 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+      <p className="text-slate-400 text-sm">Rapor paneli yükleniyor...</p>
+    </div>
+  );
+}
 
 export default function ReportsTabs({
   stockValueCategories,
